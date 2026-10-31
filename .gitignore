@@ -9,3 +9,4 @@ _site/
 # 只有 Windows 才用的东西
 morning_brief_watchdog.py
 run_briefing.bat
+简报运行日志.txt
