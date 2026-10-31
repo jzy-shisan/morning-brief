@@ -62,6 +62,17 @@ D:\python\python.exe morning_brief.py
 
 ## 每天 06:00 自动跑
 
+### 上线到 GitHub Pages（推荐，电脑可以关机）
+
+完整点击步骤见 **[GitHub上线教程.md](GitHub上线教程.md)**。要点：
+
+- `.github/workflows/daily.yml`：`cron "0 22 * * *"`（UTC）= 北京 06:00，也可在 Actions 页手动 Run
+- API key 走仓库 Secret `DAFEIYU_API_KEY`，代码里不落地；`load_config()` 让**环境变量覆盖 config.json**，本地和云端同一套代码
+- 每次跑完把新内容提交回仓库（存档 + `.seen_links.json` 去重账本），再发 Pages
+- 站点只暴露 `index.html`、`share/*.html`、`history/*.html`，`config.json` 与缓存都在 `.gitignore` 里
+
+### 本机定时（可选，电脑要开机）
+
 以**当前用户**身份执行，不要勾「只在用户登录时运行」以外的选项；电脑 6 点要开机（或从睡眠唤醒）。
 
 ```bat
