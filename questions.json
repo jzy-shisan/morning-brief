@@ -1,0 +1,92 @@
+[
+ {
+  "id": "math-tangent-01",
+  "track": "理",
+  "subject": "数学",
+  "source": "经典题型（人工录入）",
+  "source_type": "经典",
+  "question": "求曲线 y = x² 在点 (1, 1) 处的切线方程。",
+  "answer": "y = 2x − 1。因为 y′ = 2x，在 x = 1 处斜率为 2，代入点斜式 y − 1 = 2(x − 1)。",
+  "point": "导数的几何意义：切点处导数值 = 切线斜率"
+ },
+ {
+  "id": "phys-newton-02",
+  "track": "理",
+  "subject": "物理",
+  "source": "经典题型（人工录入）",
+  "source_type": "经典",
+  "question": "质量为 2 kg 的物体受到 6 N 的合外力，它的加速度是多少？",
+  "answer": "3 m/s²。由牛顿第二定律 F = ma，a = F/m = 6/2 = 3 m/s²，方向与合外力相同。",
+  "point": "牛顿第二定律 F = ma 及其矢量性"
+ },
+ {
+  "id": "chem-ph-03",
+  "track": "理",
+  "subject": "化学",
+  "source": "经典题型（人工录入）",
+  "source_type": "经典",
+  "question": "常温下 0.1 mol/L 盐酸溶液的 pH 是多少？",
+  "answer": "pH = 1。盐酸是强酸，完全电离，c(H⁺) = 0.1 mol/L = 10⁻¹，故 pH = −lg(10⁻¹) = 1。",
+  "point": "强酸完全电离与 pH 的定义"
+ },
+ {
+  "id": "bio-dna-04",
+  "track": "理",
+  "subject": "生物",
+  "source": "经典题型（人工录入）",
+  "source_type": "经典",
+  "question": "一个 DNA 分子连续复制 3 次，共产生多少个 DNA 分子？",
+  "answer": "8 个。半保留复制，n 次复制产生 2ⁿ 个，2³ = 8。",
+  "point": "DNA 半保留复制与 2ⁿ 规律"
+ },
+ {
+  "id": "chn-tengwang-05",
+  "track": "文",
+  "subject": "语文",
+  "source": "经典题型（人工录入）",
+  "source_type": "经典",
+  "question": "“落霞与孤鹜齐飞，秋水共长天一色”出自哪篇文章？作者是谁？",
+  "answer": "出自王勃的《滕王阁序》。",
+  "point": "名句默写与作家作品对应"
+ },
+ {
+  "id": "eng-tense-06",
+  "track": "文",
+  "subject": "英语",
+  "source": "经典题型（人工录入）",
+  "source_type": "经典",
+  "question": "用括号内动词的适当形式填空：He ______ (go) to school every day.",
+  "answer": "goes。主语 He 是第三人称单数，一般现在时动词加 -es。",
+  "point": "一般现在时第三人称单数"
+ },
+ {
+  "id": "pol-nature-07",
+  "track": "文",
+  "subject": "政治",
+  "source": "经典题型（人工录入）",
+  "source_type": "经典",
+  "question": "我国的国家性质是什么？",
+  "answer": "我国是人民民主专政的社会主义国家，本质是人民当家作主。",
+  "point": "国家性质（国体）"
+ },
+ {
+  "id": "his-shangyang-08",
+  "track": "文",
+  "subject": "历史",
+  "source": "经典题型（人工录入）",
+  "source_type": "经典",
+  "question": "商鞅变法开始于哪一年？",
+  "answer": "公元前 356 年。秦孝公任用商鞅主持变法。",
+  "point": "战国时期变法运动"
+ },
+ {
+  "id": "geo-rotation-09",
+  "track": "文",
+  "subject": "地理",
+  "source": "经典题型（人工录入）",
+  "source_type": "经典",
+  "question": "地球自转的方向是什么？",
+  "answer": "自西向东。从北极上空看呈逆时针，从南极上空看呈顺时针。",
+  "point": "地球自转方向与视角判断"
+ }
+]

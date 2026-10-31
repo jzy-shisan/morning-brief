@@ -1,0 +1,92 @@
+:root{
+  --bg:#f6f9fb; --ink:#12252e; --muted:#6b8491; --line:#e2ecf1;
+  --sea:#0f3b4c; --sea-2:#1c6b7f; --accent:#ffb703; --accent-2:#ffd166;
+  --card:#ffffff; --radius:18px; --shadow:0 6px 24px rgba(15,59,76,.08);
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#0b1a21; --ink:#e7f2f6; --muted:#8fa9b4; --line:#1d3540;
+         --card:#10242d; --sea:#0a2a36; --shadow:0 6px 24px rgba(0,0,0,.35); }
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink); font:16px/1.7 -apple-system,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+main.wrap{padding-bottom:56px}
+a{color:var(--sea-2); text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:820px; margin:0 auto; padding:0 18px}
+
+/* ---------- 选择页 ---------- */
+.splash{min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:10px;
+  background:radial-gradient(120% 80% at 50% 0%,#1c6b7f 0%,var(--sea) 60%,#08222c 100%); color:#eff8fb; padding:28px 18px}
+.splash .logo{font-size:64px; line-height:1; filter:drop-shadow(0 8px 20px rgba(0,0,0,.35))}
+.splash h1{margin:6px 0 0; font-size:26px; letter-spacing:2px}
+.splash p{margin:0; color:#a9c7d2; font-size:14px}
+.choices{display:grid; gap:16px; width:100%; max-width:430px; margin-top:26px}
+.choice{
+  display:flex; align-items:center; gap:16px; padding:20px 22px; border-radius:var(--radius);
+  background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.14); color:#fff;
+  cursor:pointer; backdrop-filter:blur(6px); transition:.18s; text-align:left; font:inherit; width:100%;
+}
+.choice:hover{transform:translateY(-2px); background:rgba(255,255,255,.12)}
+.choice .ico{font-size:32px}
+.choice .txt strong{display:block; font-size:18px}
+.choice .txt span{font-size:13px; color:#b8d3dc}
+
+/* ---------- 顶栏 ---------- */
+header.top{position:sticky; top:0; z-index:9; background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:blur(10px); border-bottom:1px solid var(--line)}
+.top .inner{display:flex; align-items:center; gap:12px; padding:12px 0}
+.top .brand{font-weight:700; letter-spacing:1px; display:flex; align-items:center; gap:8px}
+.top .date{color:var(--muted); font-size:13px; margin-left:auto}
+.tabs{display:flex; gap:6px; background:var(--line); padding:4px; border-radius:999px}
+.tabs button{border:0; background:transparent; color:var(--muted); padding:6px 14px; border-radius:999px; font:inherit; font-size:14px; cursor:pointer}
+.tabs button.on{background:var(--card); color:var(--ink); box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.intro{padding:26px 0 6px}
+.intro h2{margin:0 0 4px; font-size:22px}
+.intro p{margin:0; color:var(--muted); font-size:14px}
+
+/* ---------- 板块与卡片 ---------- */
+section.sec{margin-top:26px}
+section.sec > h3{font-size:15px; letter-spacing:1px; color:var(--muted); margin:0 0 12px; font-weight:600}
+.card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:18px 20px; box-shadow:var(--shadow); margin-bottom:14px}
+.card.small{padding:14px 18px; opacity:.96}
+.card h4{margin:0 0 4px; font-size:17px; line-height:1.5}
+.card .orig{font-size:12.5px; color:var(--muted); margin:0 0 8px; line-height:1.45}
+.intro .arch{margin:8px 0 0; font-size:13px}
+.card .meta{display:flex; gap:10px; flex-wrap:wrap; font-size:12px; color:var(--muted); margin-bottom:8px}
+.card .summary{margin:0 0 10px; color:var(--ink)}
+.card ul{margin:6px 0 10px; padding-left:20px}
+.card ul li{margin:4px 0}
+.qbox{background:color-mix(in srgb,var(--accent-2) 18%,transparent); border-left:4px solid var(--accent);
+  border-radius:10px; padding:12px 14px; margin:10px 0; font-size:15px}
+.answer{display:none; margin-top:10px; padding-top:10px; border-top:1px dashed var(--line); white-space:pre-wrap}
+.answer.show{display:block}
+.btn-answer{border:1px solid var(--line); background:transparent; color:var(--sea-2); border-radius:999px;
+  padding:5px 14px; font:inherit; font-size:13px; cursor:pointer}
+.btn-answer:hover{background:var(--line)}
+.comment{margin-top:12px; background:color-mix(in srgb,var(--sea-2) 10%,transparent);
+  border-radius:4px 14px 14px 14px; padding:10px 14px; font-size:14px; color:var(--ink)}
+.comment b{color:var(--sea-2)}
+.tip{margin-top:8px; font-size:13px; color:var(--muted)}
+
+/* ---------- 状态 ---------- */
+.state{max-width:520px; margin:16vh auto; text-align:center; color:var(--muted); padding:0 24px}
+.state .big{font-size:42px; margin-bottom:10px}
+.state h3{color:var(--ink); margin:0 0 6px}
+.skeleton{height:110px; border-radius:var(--radius); background:linear-gradient(90deg,var(--line),transparent,var(--line));
+  background-size:200% 100%; animation:sk 1.2s infinite; margin-bottom:14px}
+@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.divider{display:flex; align-items:center; gap:12px; margin:26px 2px 14px; color:var(--muted); font-size:13px}
+.divider::before,.divider::after{content:""; flex:1; height:1px; background:var(--line)}
+.divider span{white-space:nowrap; letter-spacing:.06em}
+
+footer{color:var(--muted); font-size:12px; text-align:center; padding:30px 18px 0}
+@media(max-width:520px){
+  .card{padding:16px}
+  .top .brand{font-size:15px}
+  .top .date{display:none}
+  .tabs button{padding:6px 11px}
+}

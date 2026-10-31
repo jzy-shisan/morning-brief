@@ -1087,6 +1087,60 @@ def render(selected: dict[str, list[dict]], stats: dict, tips, now: dt.datetime,
     return "\n".join(lines)
 
 
+DOCS_DATA = BASE_DIR / "docs" / "data"
+
+
+def write_web(selected: dict[str, list[dict]], tips, now: dt.datetime) -> Path:
+    """给网页端（docs/）用的精简数据，字段和 app.js 对齐。"""
+    try:
+        from render_html import split_title
+    except Exception:  # noqa: BLE001
+        split_title = lambda s: (s, "")  # noqa: E731
+    sections = []
+    for domain in DOMAIN_ORDER:
+        items = selected[domain]
+        if not items:
+            continue
+        sections.append({
+            "name": DOMAIN_TITLES[domain],
+            "items": [{
+                "title": split_title(title_display(it["title"], it.get("title_zh", "")))[0],
+                "orig": split_title(title_display(it["title"], it.get("title_zh", "")))[1],
+                "summary": it.get("summary", ""),
+                "points": it.get("points", [])[:4],
+                "comment": it.get("comment", ""),
+                "source": it.get("source", ""),
+                "link": it.get("link", ""),
+                "badge": "",
+            } for it in items],
+        })
+    if tips:
+        sections.append({
+            "name": "💡 今日小公告栏",
+            "items": [{
+                "title": f"{category} · {tip}",
+                "summary": "",
+                "points": [],
+                "comment": comment,
+                "source": "",
+                "link": "",
+                "badge": "",
+                "small": True,
+            } for category, tip, comment in tips],
+        })
+    data = {
+        "group": "news",
+        "date": now.strftime("%Y-%m-%d"),
+        "title": "新闻简报",
+        "subtitle": f"{now:%Y年%m月%d日} · 共 {sum(len(v) for v in selected.values())} 条",
+        "sections": sections,
+    }
+    DOCS_DATA.mkdir(parents=True, exist_ok=True)
+    path = DOCS_DATA / "news.json"
+    path.write_text(json.dumps(data, ensure_ascii=False, indent=1), "utf-8")
+    return path
+
+
 def main() -> int:
     try:
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -1150,6 +1204,11 @@ def main() -> int:
 
         HIST_DIR.mkdir(exist_ok=True)
         (HIST_DIR / f"{now:%Y-%m-%d}.md").write_text(text, encoding="utf-8")
+
+        try:
+            log(f"✅ 网页数据：{write_web(selected, tips, now).name}")
+        except Exception as exc:  # noqa: BLE001
+            log(f"⚠ 网页数据写出失败：{exc}")
 
         # 顺手出一份自包含的分享版 HTML（失败不影响主流程）
         try:

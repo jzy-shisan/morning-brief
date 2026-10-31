@@ -32,8 +32,11 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: 抓取并生成
+      - name: 抓取并生成（新闻）
         run: python morning_brief.py --force
+
+      - name: 抓取并生成（学生）
+        run: python student_brief.py --force
 
       - name: 把当天内容提交回仓库（存档 + 去重账本）
         run: |
@@ -50,7 +53,7 @@ jobs:
       - name: 组装站点目录
         run: |
           mkdir -p _site/share _site/history
-          cp index.html _site/
+          cp -r docs/. _site/
           cp share/*.html _site/share/
           cp history/*.html _site/history/ 2>/dev/null || true
           touch _site/.nojekyll

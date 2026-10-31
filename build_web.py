@@ -1,0 +1,224 @@
+# -*- coding: utf-8 -*-
+"""
+把已经生成好的 Markdown 回填成网页数据（不联网、不调模型）。
+
+用法：
+    python build_web.py          # 从 早晨简报.md / 学生简报.md 重建 docs/data/*.json
+    python build_web.py --all    # 连 history/ 与 history_student/ 也一起重建
+
+用途：
+    - 生成脚本已经把 JSON 写好了，这个脚本是「修数据」用的兜底
+    - 改了 MD 之后不想重跑抓取，跑它就行
+"""
+from __future__ import annotations
+
+import argparse
+import datetime as dt
+import json
+import re
+import sys
+from pathlib import Path
+
+import render_html as rh
+from morning_brief import BASE_DIR
+
+DOCS_DATA = BASE_DIR / "docs" / "data"
+OUT_MD = BASE_DIR / "早晨简报.md"
+HIST_DIR = BASE_DIR / "history"
+STUDENT_MD = BASE_DIR / "学生简报.md"
+STUDENT_HIST = BASE_DIR / "history_student"
+
+TIP_PREFIX = re.compile(r"^(\S+?)\s·\s")
+
+
+def _trim_title(raw: str) -> str:
+    """学生区的标题来自知乎热榜的长问句，展示时压短。"""
+    try:
+        from student_brief import short_title
+        return short_title(raw)
+    except Exception:  # noqa: BLE001
+        return raw
+
+
+def _blank_item(title: str) -> dict:
+    return {
+        "title": title,
+        "summary": "",
+        "points": [],
+        "comment": "",
+        "source": "",
+        "link": "",
+        "badge": "",
+    }
+
+
+def _split_title(raw: str) -> tuple[str, str]:
+    """把「英文原题（中文译名）」拆成 中文 + 英文。"""
+    return rh.split_title(raw)
+
+
+def news_from_md(md: Path) -> dict | None:
+    if not md.exists():
+        print(f"跳过（不存在）：{md.name}")
+        return None
+    doc = rh.parse_markdown(md.read_text("utf-8"))
+    sections = []
+    for sec in doc["sections"]:
+        items = []
+        for it in sec["items"]:
+            zh, orig = _split_title(it["title"])
+            items.append({
+                "title": zh,
+                "orig": orig,
+                "summary": it.get("summary", ""),
+                "points": it.get("points", [])[:4],
+                "comment": it.get("comment", ""),
+                "source": it.get("source", ""),
+                "link": it.get("link", ""),
+                "badge": "",
+            })
+        sections.append({"name": sec["name"], "items": items})
+    if doc.get("tips"):
+        sections.append({
+            "name": "💡 今日小公告栏",
+            "items": [{
+                "title": f"{cat} · {tip}",
+                "summary": "",
+                "points": [],
+                "comment": note,
+                "source": "",
+                "link": "",
+                "badge": "",
+                "small": True,
+            } for cat, tip, note in doc["tips"]],
+        })
+    total = sum(len(s["items"]) for s in sections if not s["name"].startswith("💡"))
+    y, mo, d = doc["date"].split("-")
+    return {
+        "group": "news",
+        "date": doc["date"],
+        "title": "新闻简报",
+        "subtitle": f"{y}年{int(mo)}月{int(d)}日 · 共 {total} 条",
+        "sections": sections,
+    }
+
+
+def student_from_md(md: Path) -> dict | None:
+    """学生简报结构固定（谈资 + 小题），用轻量解析即可。"""
+    if not md.exists():
+        print(f"跳过（不存在）：{md.name}")
+        return None
+    text = md.read_text("utf-8")
+    m = re.search(r"学生简报 · (\d{4}-\d{2}-\d{2})", text)
+    date = m.group(1) if m else dt.date.today().isoformat()
+
+    talk_items = []
+    quiz_items = []
+
+    talk_block = re.search(r"^## 🗣️ 今日谈资\s*$(.*?)(?=^## |\Z)", text, re.M | re.S)
+    if talk_block:
+        body = talk_block.group(1)
+        # 主梗
+        main = re.search(r"^### (.+?)$(.*?)(?=^\*\*今天还可以聊\*\*|\Z)", body, re.M | re.S)
+        if main:
+            item = _blank_item(_trim_title(main.group(1).strip()))
+            rest = main.group(2)
+            sm = re.search(r"\*\*发生了什么\*\*\s*\n+\s*- (.+)", rest)
+            if sm:
+                item["summary"] = sm.group(1).strip()
+            cm = re.search(r"> 🐟 \*\*大肥鱼\*\*：(.+)", rest)
+            if cm:
+                item["comment"] = cm.group(1).strip()
+            src = re.search(r"\*来源：(.+?)(?: · (.+?))?(?: · \[看看吧\]\((.+?)\))?\*", rest)
+            if src:
+                item["source"] = src.group(1).strip()
+                item["badge"] = (src.group(2) or "").strip()
+                item["link"] = (src.group(3) or "").strip()
+            if item["title"]:
+                talk_items.append(item)
+        # 今天还可以聊
+        for line in re.findall(r"^- \*\*(.+?)\*\*[^\n]*?——\s*(.+)$", body, re.M):
+            it = _blank_item(_trim_title(line[0].strip()))
+            it["comment"] = line[1].strip()
+            it["small"] = True
+            talk_items.append(it)
+
+    quiz_block = re.search(r"^## ✏️ 一道小题\s*$(.*?)(?=^## |\Z)", text, re.M | re.S)
+    if quiz_block:
+        body = quiz_block.group(1)
+        for chunk in re.split(r"^### ", body, flags=re.M)[1:]:
+            title, _, rest = chunk.partition("\n")
+            it = _blank_item(title.strip())
+            qm = re.search(r"\*\*题目\*\*：(.+)", rest)
+            if qm:
+                it["question"] = qm.group(1).strip()
+            am = re.search(r"\*\*答案\*\*：\s*\n+\s*(.+?)\n\s*\n", rest, re.S)
+            if am:
+                it["answer"] = am.group(1).strip()
+            pm = re.search(r"\*\*考点\*\*：(.+)", rest)
+            if pm:
+                it["point"] = pm.group(1).strip()
+            cm = re.search(r"> 🐟 \*\*大肥鱼\*\*：(.+)", rest)
+            if cm:
+                it["comment"] = cm.group(1).strip()
+            tm = re.search(r"\*本鱼的建议：(.+?)\*", rest)
+            if tm:
+                it["tip"] = tm.group(1).strip()
+            im = re.search(r"^\*([^*\n].+?)\*\s*$", rest, re.M)
+            if im:
+                it["summary"] = im.group(1).strip()
+            if it["question"]:
+                # 「物理 · 经典题型（人工录入）」→ 标题去掉括号，括号里当来源
+                paren = re.search(r"[（(]([^（）()]+)[）)]\s*$", it["title"])
+                if paren:
+                    it["source"] = paren.group(1).strip()
+                    it["title"] = it["title"][:paren.start()].strip()
+                quiz_items.append(it)
+
+    sections = []
+    if talk_items:
+        sections.append({"name": "🗣️ 今日谈资", "items": talk_items})
+    if quiz_items:
+        subject = quiz_items[0]["source"] or "综合"
+        sections.append({"name": f"✏️ 一道小题 · {subject}", "items": quiz_items})
+    return {
+        "group": "student",
+        "date": date,
+        "title": "学生简报",
+        "subtitle": f"{date} · 1 梗 + 3 备选 + 1 题",
+        "sections": sections,
+    }
+
+
+def write(data: dict | None, name: str) -> None:
+    if not data:
+        return
+    DOCS_DATA.mkdir(parents=True, exist_ok=True)
+    path = DOCS_DATA / f"{name}.json"
+    path.write_text(json.dumps(data, ensure_ascii=False, indent=1), "utf-8")
+    print(f"[ok] {path.relative_to(BASE_DIR)}")
+
+
+def main() -> int:
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:  # noqa: BLE001
+        pass
+    ap = argparse.ArgumentParser(description="从 Markdown 重建网页数据")
+    ap.add_argument("--all", action="store_true", help="连历史目录一起重建")
+    args = ap.parse_args()
+
+    write(news_from_md(OUT_MD), "news")
+    write(student_from_md(STUDENT_MD), "student")
+
+    if args.all:
+        for md in sorted(HIST_DIR.glob("*.md")):
+            write(news_from_md(md), f"news-{md.stem}")
+        for md in sorted(STUDENT_HIST.glob("*.md")):
+            write(student_from_md(md), f"student-{md.stem}")
+        print("（历史期已写入 docs/data/，网页端旧版沿用 share/ 的 HTML）")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

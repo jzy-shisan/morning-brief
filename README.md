@@ -1,6 +1,11 @@
 # 大肥鱼 · 每日早晨简报 v2
 
-每天 06:00 自动生成一份 5 大领域的简报：**科技 AI / 商业财经 / 社会热点 / 生活健康 / 数码娱乐**，每领域 2–3 条，外加一个「今日小公告栏」（随笔、思维、投资等生活向小建议，每天随机两条）。
+每天 06:00 自动生成两份简报：
+
+- **新闻版**：5 大领域（科技 AI / 商业财经 / 社会热点 / 生活健康 / 数码娱乐），每领域 2–3 条，外加「今日小公告栏」。
+- **学生版**：给高中生的 1 条主梗 + 3 条备选谈资 + 1 道小题（含答案与考点）。
+
+网页端是一个选择页，进去后顶栏可互切；电脑关机也照常更新（GitHub Actions 跑）。
 
 ## 每条长什么样
 
@@ -16,14 +21,47 @@
 
 | 文件 | 作用 |
 |---|---|
-| `morning_brief.py` | 主程序：抓取 → 清洗 → 补摘要 → 翻译/整理 → 渲染 |
+| `morning_brief.py` | 新闻版：抓取 → 清洗 → 补摘要 → 翻译/整理 → 渲染 |
+| `student_brief.py` | 学生版：知乎热榜 → 选 1 主梗 + 3 备选 + 1 道小题 → 写点评 |
+| `questions.json` | 小题题库（九门经典题，可自己加） |
+| `build_web.py` | 把当天 Markdown 转成 `docs/data/*.json`（不联网、不调模型） |
+| `render_html.py` | 单文件 HTML 分享版 + `docs/archive.html` 往期存档 |
+| `docs/` | 网页端：`index.html` 选择页、`app.js`、`style.css`、`data/` |
 | `tips.py` | 小公告栏素材库（90 条，可自己往里加） |
 | `run_briefing.bat` | 给计划任务/双击用的一键运行入口 |
 | `config.json` | 可选。填 API Key 后启用大模型整理（不填也能跑） |
-| `早晨简报.md` | 输出文件，每天覆盖 |
-| `history/` | 按日期存档 |
+| `早晨简报.md` / `学生简报.md` | 输出文件，每天覆盖 |
+| `history/` / `history_student/` | 按日期存档 |
 | `.summary_cache.json` | 整理结果缓存（标题/摘要/要点/点评） |
 | `.trans_cache.json` | 翻译缓存，同样的英文句子不会重复翻译 |
+| `.seen_links.json` | 三天内不重复的账本 |
+
+## 网页端（`docs/`）
+
+`docs/` 就是 GitHub Pages 发布的那一份，纯静态、零第三方依赖：
+
+- `index.html` 是入口：两个大按钮（新闻简报 / 学生简报），进去后顶栏还能互切。
+- 数据来自 `docs/data/news.json`、`docs/data/student.json`，每天由生成脚本重写。
+- `docs/archive.html` 是新闻版往期列表（`render_html.py --all` 生成）。
+- 本地预览（`docs/data/*.json` 是 fetch 来的，必须走 http，双击 `file://` 打不开）：
+
+```bat
+cd /d "C:\Users\AHS\Documents\deepseek-harness\default-workspace\morning_brief"
+start "" http://127.0.0.1:8795/docs/index.html
+D:\python\python.exe -m http.server 8795
+```
+
+## 学生版长什么样
+
+- **今日谈资**：1 条主梗（发生了什么 + 🐟 大肥鱼点评），下面「今天还可以聊」再给 3 条一句话点评。
+- **一道小题**：单数日理科、双数日文科，九门轮转，近三天不撞科；题目 → 看答案（折叠）→ 考点 → 点评 → 一句建议。
+- 铁律：可以抽高考真题，但不许编答案；点评可以「不懂装懂」，但不许胡说。
+
+```bat
+D:\python\python.exe student_brief.py          # 生成当天
+D:\python\python.exe student_brief.py --force  # 忽略当天已有文件
+D:\python\python.exe build_web.py              # 重新生成 docs/data/*.json
+```
 
 ## 跑一次
 

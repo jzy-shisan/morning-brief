@@ -983,10 +983,11 @@ footer{{margin-top:44px;font-size:12px;color:var(--muted);text-align:center}}
 <ul>
 {chr(10).join(items)}
 </ul>
-<footer>十分钟，过一遍今天</footer>
+<footer><a href="./" style="color:inherit;text-decoration:none;border-bottom:1px solid currentColor;opacity:.7">← 返回首页</a> · 十分钟，过一遍今天</footer>
 </div></body></html>
 """
-    out = BASE_DIR / "index.html"
+    out = BASE_DIR / "docs" / "archive.html"
+    out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(html, "utf-8")
     return out
 
