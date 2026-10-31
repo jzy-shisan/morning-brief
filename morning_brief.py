@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 大肥鱼 · 每日早晨简报生成器
 ================================
@@ -79,7 +79,7 @@ SOURCES = [
      "url": "https://api-one.wallstcn.com/apiv1/content/lives?channel=global-channel&limit=30"},
     {"name": "MarketWatch", "domain": "biz", "kind": "rss", "tier": 2,
      "url": "http://feeds.marketwatch.com/marketwatch/topstories/"},
-    {"name": "界面新闻", "domain": "society", "kind": "rss", "tier": 2,
+    {"name": "界面新闻", "domain": "biz", "kind": "rss", "tier": 2,
      "url": "https://a.jiemian.com/index.php?m=article&a=rss"},
     {"name": "雪球", "domain": "biz", "kind": "rss", "tier": 3,
      "url": "https://xueqiu.com/hots/topic/rss"},
@@ -90,8 +90,10 @@ SOURCES = [
      "url": "https://www.chinanews.com.cn/rss/society.xml"},
     {"name": "中新网 · 要闻", "domain": "society", "kind": "rss", "tier": 1,
      "url": "https://www.chinanews.com.cn/rss/importnews.xml"},
-    {"name": "新华网 国际", "domain": "society", "kind": "rss", "tier": 1,
-     "url": "http://www.xinhuanet.com/world/news_world.xml"},
+    {"name": "中新网 · 文化", "domain": "society", "kind": "rss", "tier": 1,
+     "url": "https://www.chinanews.com.cn/rss/culture.xml"},
+    {"name": "中新网 · 国内", "domain": "society", "kind": "rss", "tier": 1,
+     "url": "https://www.chinanews.com.cn/rss/china.xml"},
     {"name": "Solidot", "domain": "society", "kind": "rss", "tier": 2,
      "url": "https://www.solidot.org/index.rss"},
     # ── 生活健康 ──────────────────────────────────────────────
