@@ -40,6 +40,15 @@ def _trim_title(raw: str) -> str:
         return raw
 
 
+def _clip(text: str) -> str:
+    """知乎摘要常是整段转载稿，压到 200 字以内。"""
+    try:
+        from student_brief import clip_summary
+        return clip_summary(text)
+    except Exception:  # noqa: BLE001
+        return text
+
+
 def _blank_item(title: str) -> dict:
     return {
         "title": title,
@@ -125,7 +134,7 @@ def student_from_md(md: Path) -> dict | None:
             rest = main.group(2)
             sm = re.search(r"\*\*发生了什么\*\*\s*\n+\s*- (.+)", rest)
             if sm:
-                item["summary"] = sm.group(1).strip()
+                item["summary"] = _clip(sm.group(1).strip())
             cm = re.search(r"> 🐟 \*\*大肥鱼\*\*：(.+)", rest)
             if cm:
                 item["comment"] = cm.group(1).strip()

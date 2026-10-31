@@ -313,12 +313,23 @@ def render(talk: dict, quiz: dict | None, now: dt.datetime, mode: str) -> str:
     return "\n".join(lines)
 
 
+def clip_summary(text: str, limit: int = 200) -> str:
+    """知乎的摘要常是整段转载稿，砍到 200 字以内，尽量停在句号上。"""
+    t = (text or "").strip()
+    if len(t) <= limit:
+        return t
+    cut = max(t.rfind(ch, 0, limit) for ch in "。！？")
+    if cut < int(limit * 0.55):
+        return t[:limit].rstrip("，,、；;") + "…"
+    return t[: cut + 1]
+
+
 def to_json(talk: dict, quiz: dict | None, now: dt.datetime) -> dict:
     sections = [{
         "name": "🗣️ 今日谈资",
         "items": [{
             "title": talk["main"]["title"],
-            "summary": talk["main"].get("text", "")[:300],
+            "summary": clip_summary(talk["main"].get("text", "")),
             "points": [],
             "comment": talk["main"].get("comment", ""),
             "source": talk["main"].get("origin", ""),
