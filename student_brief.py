@@ -326,7 +326,7 @@ def to_json(talk: dict, quiz: dict | None, now: dt.datetime) -> dict:
             "badge": talk["main"].get("heat", ""),
         }] + [{
             "title": it["title"],
-            "summary": it.get("text", "")[:160],
+            "summary": "",
             "points": [],
             "comment": it.get("comment", ""),
             "source": it.get("origin", ""),
@@ -336,17 +336,22 @@ def to_json(talk: dict, quiz: dict | None, now: dt.datetime) -> dict:
         } for it in talk.get("others", [])],
     }]
     if quiz:
+        subj = quiz.get("subject", "")
+        raw = quiz.get("source", "") or "经典题型"
+        paren = re.search(r"[（(]([^（）()]+)[）)]\s*$", raw)
+        label = raw[:paren.start()].strip() if paren else raw
+        origin = paren.group(1).strip() if paren else "题库"
         sections.append({
-            "name": f"✏️ 一道小题 · {quiz.get('subject', '')}",
+            "name": f"✏️ 一道小题 · {subj}",
             "items": [{
-                "title": quiz.get("source", ""),
+                "title": f"{subj} · {label}".strip(" ·"),
                 "summary": quiz.get("intro", ""),
                 "question": quiz["question"],
                 "answer": quiz["answer"],
                 "point": quiz.get("point", ""),
                 "comment": quiz.get("comment", ""),
                 "tip": quiz.get("tip", ""),
-                "source": quiz.get("subject", ""),
+                "source": origin,
                 "link": "",
             }],
         })
@@ -354,7 +359,7 @@ def to_json(talk: dict, quiz: dict | None, now: dt.datetime) -> dict:
         "group": "student",
         "date": now.strftime("%Y-%m-%d"),
         "title": "学生简报",
-        "subtitle": f"{now:%Y年%m月%d日} · 1 梗 + 1 题",
+        "subtitle": f"{now:%Y年%m月%d日} · 1 梗 + 3 备选 + 1 题",
         "sections": sections,
     }
 
