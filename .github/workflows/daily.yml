@@ -36,6 +36,8 @@ jobs:
         run: python morning_brief.py --force
 
       - name: 抓取并生成（学生）
+        # 知乎对 GitHub 的机房 IP 有时会拦，学生版挂了也不要拖累新闻版发布
+        continue-on-error: true
         run: python student_brief.py --force
 
       - name: 把当天内容提交回仓库（存档 + 去重账本）
