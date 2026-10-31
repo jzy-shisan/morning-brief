@@ -1,0 +1,392 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>肥鱼晨报 · 2026-10-30</title>
+<style>
+:root{
+  --bg:#f6f4ef; --surface:#fffefb; --fg:#1c1a17; --muted:#8a847a;
+  --line:rgba(28,26,23,.10); --accent:#a8452a;
+  --serif: "Noto Serif SC","Source Han Serif SC","Songti SC","SimSun",Georgia,serif;
+  --sans: -apple-system,"Segoe UI","Microsoft YaHei UI","PingFang SC","Hiragino Sans GB",sans-serif;
+  --fs: 16px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--bg); color:var(--fg);
+  font-family:var(--sans); font-size:var(--fs); line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+  transition:background .35s ease,color .35s ease;
+}
+#progress{position:fixed;top:0;left:0;height:2px;width:0;background:var(--accent);
+  z-index:50;transition:width .1s linear;opacity:.85}
+.wrap{max-width:728px;margin:0 auto;padding:72px 28px 96px}
+
+/* 顶栏 */
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:44px}
+.brand{font-family:var(--serif);font-size:15px;letter-spacing:.18em;color:var(--muted)}
+.tools{display:flex;gap:6px}
+.tools button{
+  border:1px solid var(--line);background:transparent;color:var(--muted);
+  font-family:var(--sans);font-size:12px;letter-spacing:.08em;
+  padding:5px 10px;border-radius:999px;cursor:pointer;transition:.2s;
+}
+.tools button:hover{color:var(--fg);border-color:var(--muted)}
+.panel{
+  display:none;margin:0 0 40px;padding:16px 18px;border:1px solid var(--line);
+  border-radius:14px;background:var(--surface);
+}
+.panel.open{display:block}
+.panel .row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.panel .row > span{font-size:12px;color:var(--muted);letter-spacing:.1em;min-width:52px}
+.swatch{width:26px;height:26px;border-radius:50%;border:1px solid var(--line);cursor:pointer;
+  position:relative;transition:.2s;display:flex;align-items:center;justify-content:center;padding:0}
+.swatch i{display:block;width:9px;height:9px;border-radius:50%}
+.swatch:hover{transform:scale(1.08)}
+.swatch[data-active="1"]{box-shadow:0 0 0 2px var(--bg),0 0 0 3px var(--accent)}
+.sizewrap button{font-size:12px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);
+  background:transparent;color:var(--muted);cursor:pointer;margin-right:4px}
+.sizewrap button[data-active="1"]{color:var(--accent);border-color:var(--accent)}
+.bgwrap{display:flex;align-items:center;gap:10px}
+.bgwrap input[type=color]{width:26px;height:26px;padding:0;border:1px solid var(--line);
+  border-radius:50%;background:transparent;cursor:pointer;-webkit-appearance:none;appearance:none}
+.bgwrap input[type=color]::-webkit-color-swatch-wrapper{padding:2px}
+.bgwrap input[type=color]::-webkit-color-swatch{border:none;border-radius:50%}
+.bgwrap button{font-size:12px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);
+  background:transparent;color:var(--muted);cursor:pointer}
+
+/* 领域切换 */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:0 0 40px;
+  position:sticky;top:0;z-index:30;padding:10px 0 12px;
+  background:linear-gradient(var(--bg) 72%,transparent)}
+.tabs::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
+  background:var(--line);opacity:.5}
+.tabs button{
+  border:1px solid transparent;background:transparent;color:var(--muted);cursor:pointer;
+  font-family:var(--sans);font-size:12.5px;letter-spacing:.1em;padding:5px 11px;border-radius:999px;
+  transition:.2s;
+}
+.tabs button:hover{color:var(--fg)}
+.tabs button[data-active="1"]{color:var(--accent);border-color:var(--line);background:var(--surface)}
+
+/* 头图区 */
+header{text-align:center;margin-bottom:44px;position:relative}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(30px,5vw,42px);
+  line-height:1.3;margin:0 0 14px;letter-spacing:.01em}
+.date{font-size:13px;letter-spacing:.3em;color:var(--muted);text-transform:uppercase}
+.tagline{margin-top:18px;font-family:var(--serif);font-size:15px;color:var(--muted);letter-spacing:.06em}
+.rule{width:36px;height:1px;background:var(--accent);margin:26px auto 0;opacity:.7}
+
+/* 板块 */
+section{margin:0 0 52px}
+.sechead{display:flex;align-items:baseline;gap:12px;margin-bottom:22px}
+.sechead h2{font-family:var(--serif);font-size:17px;font-weight:600;margin:0;letter-spacing:.12em}
+.sechead h2::before{content:"";display:inline-block;width:5px;height:5px;margin-right:11px;
+  border:1px solid var(--accent);transform:rotate(45deg) translateY(-3px);opacity:.75}
+.sechead .n{font-size:11px;color:var(--muted);letter-spacing:.2em}
+.sechead .fill{flex:1;height:1px;background:var(--line);transform:translateY(-4px)}
+
+/* 条目 */
+article{padding:26px 0;border-top:1px solid var(--line)}
+article:first-of-type{border-top:none;padding-top:0}
+.hit{display:inline-flex;align-items:center;gap:5px;font-size:11px;letter-spacing:.16em;
+  color:var(--accent);margin-bottom:9px}
+.hit::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--accent)}
+.hit .pin{font-size:10px;letter-spacing:.06em;color:var(--muted);margin-left:4px}
+h3{font-family:var(--serif);font-weight:600;font-size:21px;line-height:1.5;margin:0 0 12px;
+  letter-spacing:.005em}
+h3 a{color:inherit;text-decoration:none}
+h3 a:hover{color:var(--accent)}
+.orig{font-family:var(--sans);font-size:12.5px;line-height:1.65;color:var(--muted);
+  letter-spacing:.01em;margin:-6px 0 12px}
+.lead{margin:0 0 16px;color:var(--fg);opacity:.92;font-size:15.5px;line-height:1.9;
+  letter-spacing:.005em}
+.points{margin:0 0 4px;padding:0;list-style:none;font-size:14.5px;color:var(--fg);opacity:.78;
+  line-height:1.85}
+.points li{position:relative;padding-left:16px;margin:5px 0}
+.points li::before{content:"";position:absolute;left:2px;top:.72em;width:4px;height:4px;
+  border-radius:50%;background:var(--accent);opacity:.55}
+em.kw{font-style:normal;background:rgba(168,69,42,.16);border-radius:3px;padding:0 3px;
+  box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.verdict{margin:18px 0 0;padding:12px 0 12px 16px;border-left:2px solid var(--line);
+  font-size:14.5px;color:var(--fg);opacity:.88;line-height:1.85}
+.verdict .who{font-family:var(--serif);color:var(--accent);letter-spacing:.18em;margin-right:10px;
+  font-size:12.5px;white-space:nowrap}
+.verdict .said{display:inline}
+details{margin-top:14px}
+details summary{cursor:pointer;font-size:12.5px;color:var(--muted);letter-spacing:.12em;
+  list-style:none;display:inline-flex;align-items:center;gap:6px;user-select:none}
+details summary::-webkit-details-marker{display:none}
+details summary::before{content:"＋";font-size:11px;transition:transform .2s;color:var(--accent)}
+details[open] summary::before{content:"－"}
+details ul{margin:12px 0 0;padding-left:18px;font-size:14.5px;color:var(--muted);line-height:1.9}
+details ul li{margin:3px 0}
+.src{margin-top:16px;font-size:12px;color:var(--muted);letter-spacing:.06em}
+.src a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line)}
+.src a:hover{color:var(--accent);border-color:var(--accent)}
+.more{margin-top:18px}
+.more button{background:transparent;border:none;padding:0;color:var(--muted);font-size:12.5px;
+  letter-spacing:.1em;cursor:pointer;border-bottom:1px dashed var(--line);font-family:var(--sans)}
+.more button:hover{color:var(--accent);border-color:var(--accent)}
+.hidden{display:none}
+.hidden-sec{display:none}
+.empty{font-size:13px;color:var(--muted);font-style:normal;padding:4px 0}
+
+/* 小公告栏 */
+.tips{border-top:1px solid var(--line);padding-top:34px;margin-top:8px}
+.tips h2{font-family:var(--serif);font-size:15px;font-weight:600;letter-spacing:.16em;
+  color:var(--muted);margin:0 0 20px}
+.tip{padding:14px 0;border-top:1px dashed var(--line)}
+.tip:first-of-type{border-top:none}
+.tip .cat{font-size:11px;letter-spacing:.2em;color:var(--accent);margin-bottom:6px}
+.tip .txt{font-size:15px}
+.tip .cm{margin-top:9px;font-size:13.5px;color:var(--muted);line-height:1.8}
+
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--line);
+  text-align:center;font-size:11.5px;color:var(--muted);letter-spacing:.1em;line-height:2}
+footer::before{content:"◦ ◦ ◦";display:block;margin-bottom:14px;font-size:9px;
+  letter-spacing:.5em;color:var(--accent);opacity:.5}
+
+@media (max-width:640px){
+  .wrap{padding:48px 20px 72px}
+  h3{font-size:19px}
+  .lead{font-size:15px}
+  .tabs{gap:4px;margin-bottom:34px}
+}
+@media print{
+  #progress,.tools,.panel,.more{display:none!important}
+  body{background:#fff}
+  article{break-inside:avoid}
+}
+</style>
+</head><body data-limit="2">
+<div id="progress"></div><div class="wrap">
+<div class="top">
+<div class="brand">肥鱼晨报</div>
+<div class="tools"><button id="tbtn" type="button">外观</button></div>
+</div>
+<div class="panel" id="panel">
+<div class="row"><span>配色</span><div style="display:flex;gap:10px"><button class="swatch" type="button" data-p="paper" data-vars="{&quot;--bg&quot;: &quot;#f6f4ef&quot;, &quot;--surface&quot;: &quot;#fffefb&quot;, &quot;--fg&quot;: &quot;#1c1a17&quot;, &quot;--muted&quot;: &quot;#8a847a&quot;, &quot;--line&quot;: &quot;rgba(28,26,23,.10)&quot;, &quot;--accent&quot;: &quot;#a8452a&quot;}" style="background:#f6f4ef;border-color:rgba(28,26,23,.10)" title="纸"><i style="background:#a8452a"></i></button><button class="swatch" type="button" data-p="ink" data-vars="{&quot;--bg&quot;: &quot;#f2f4f6&quot;, &quot;--surface&quot;: &quot;#fbfcfd&quot;, &quot;--fg&quot;: &quot;#16202a&quot;, &quot;--muted&quot;: &quot;#7d8894&quot;, &quot;--line&quot;: &quot;rgba(22,32,42,.10)&quot;, &quot;--accent&quot;: &quot;#2f5d8a&quot;}" style="background:#f2f4f6;border-color:rgba(22,32,42,.10)" title="墨"><i style="background:#2f5d8a"></i></button><button class="swatch" type="button" data-p="moss" data-vars="{&quot;--bg&quot;: &quot;#f3f4ee&quot;, &quot;--surface&quot;: &quot;#fcfdf8&quot;, &quot;--fg&quot;: &quot;#1d2118&quot;, &quot;--muted&quot;: &quot;#828777&quot;, &quot;--line&quot;: &quot;rgba(29,33,24,.10)&quot;, &quot;--accent&quot;: &quot;#4d6141&quot;}" style="background:#f3f4ee;border-color:rgba(29,33,24,.10)" title="苔"><i style="background:#4d6141"></i></button><button class="swatch" type="button" data-p="night" data-vars="{&quot;--bg&quot;: &quot;#15161a&quot;, &quot;--surface&quot;: &quot;#1c1e23&quot;, &quot;--fg&quot;: &quot;#e8e6e1&quot;, &quot;--muted&quot;: &quot;#8b8a86&quot;, &quot;--line&quot;: &quot;rgba(232,230,225,.12)&quot;, &quot;--accent&quot;: &quot;#d98b5f&quot;}" style="background:#15161a;border-color:rgba(232,230,225,.12)" title="夜"><i style="background:#d98b5f"></i></button></div></div>
+<div class="row"><span>背景</span><div class="bgwrap"><input type="color" id="bgpick" value="#f6f4ef" aria-label="自定义背景色"><button type="button" id="bgreset">恢复</button></div></div>
+<div class="row"><span>字号</span><div class="sizewrap"><button type="button" data-fs="15px">小</button><button type="button" data-fs="16px">中</button><button type="button" data-fs="17.5px">大</button></div></div>
+<div class="row"><span>条数</span><div class="sizewrap"><button type="button" data-den="1">少</button><button type="button" data-den="2">标准</button><button type="button" data-den="3">全</button></div></div>
+</div>
+<header>
+<h1>10 月 30 日</h1>
+<div class="date">2026-10-30 · 周五 · 约 <span id="mins">8</span> 分钟 · <span id="cnt">10 条</span></div>
+<div class="tagline">十分钟，过一遍今天</div>
+<div class="rule"></div>
+</header>
+<nav class="tabs" id="tabs"><button type="button" data-view="all" data-active="1">全部</button><button type="button" data-view="tech">科技 AI</button><button type="button" data-view="biz">商业财经</button><button type="button" data-view="society">社会热点</button><button type="button" data-view="life">生活健康</button><button type="button" data-view="digital">数码娱乐</button></nav>
+<section data-dom="tech">
+<div class="sechead">
+<h2>科技 AI</h2>
+<span class="n">03</span><span class="fill"></span>
+</div>
+<article class="" data-hit="1" data-ord="1" data-dom="tech"><div class="hit">关键词 · 开源<span class="pin">已置顶</span></div><h3><a href="https://techcrunch.com/2026/10/29/mistral-releases-weights-for-its-trillion-parameter-ai-model-targeting-cybersecurity/" target="_blank" rel="noopener">Mistral<em class="kw">开源</em>万亿参数模型瞄准网络安全防御</a></h3><p class="orig">Mistral releases weights for its trillion-parameter AI model, targeting cybersecurity</p><p class="lead">法国AI公司Mistral（米斯特拉尔）发布了其万亿参数级别模型的权重，主打网络安全场景，声称开放权重能让企业获得闭源模型给不了的控制权，可自行审查、部署和调整防御逻辑。这件事的分量在于，万亿参数级模型此前基本被闭源巨头把持，开放权重意味着安全团队能把模型放进自己的基础设施里跑，不必把敏感数据交给第三方。不过权重开放不等于能力开放，训练数据和完整配方仍不公开，实际防护效果还得看落地测试，不能只凭参数规模下结论。</p><ul class="points"><li>Mistral称开放权重让企业可自主审查和部署模型，闭源API做不到这一点</li><li>模型规模达到万亿参数级别，属于当前开放权重阵营里的第一梯队</li><li>主打网络安全防御场景，目标客户是需要在本地环境处理敏感数据的安全团队</li><li>训练数据和完整训练配方并未随权重一并公开</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">开放权重这步棋走得聪明，安全团队最怕的就是把日志和流量喂给别人的API。但万亿参数听着唬人，防护效果不看参数看实测，别被数字晃了眼。真正受益的是有自建算力的中大型企业，小团队拿去也跑不动。</span></blockquote><div class="src">TechCrunch AI · <a href="https://techcrunch.com/2026/10/29/mistral-releases-weights-for-its-trillion-parameter-ai-model-targeting-cybersecurity/" target="_blank" rel="noopener">原文</a></div></article>
+<article class="" data-hit="1" data-ord="2" data-dom="tech"><div class="hit">关键词 · 芯片<span class="pin">已置顶</span></div><h3><a href="https://www.theverge.com/tech/1022911/intel-wildcat-lake-sold-out-ram-shortage" target="_blank" rel="noopener">Intel称平价笔记本<em class="kw">芯片</em>产能已全部售罄</a></h3><p class="orig">Intel says it’s selling every affordable laptop chip it can make</p><p class="lead">Intel（英特尔）在最新财报电话会上透露，面向平价笔记本的Wildcat Lake（野猫湖）<em class="kw">芯片</em>需求超出供应，目前已全部售罄。CEO陈立武称需求正超过供给，CFO津斯纳表示该产品线增长显著，且因成本优化到位而赶上了合适的时间点。这说明低价PC市场正在回暖，厂商对入门级<em class="kw">芯片</em>的胃口比预期大，对Intel来说是难得的顺风局，但产能跟不上也暴露了其制造端的短板，卖光不等于赚够，后续扩产节奏才是关键。</p><ul class="points"><li>CEO陈立武在财报电话会上称Wildcat Lake需求正超过供给</li><li>CFO津斯纳确认该芯片目前已售罄，并称增长显著</li><li>产品定位成本优化，主攻平价笔记本市场</li><li>售罄反映入门级PC需求回暖，但也暴露产能瓶颈</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">卖光了听着提气，可这是平价芯片，单价低、利润薄，卖光更像是在提醒产能没跟上。低价PC回暖是真信号，但别急着吹翻身，先把扩产和良率搞定再说。受益的是下游整机厂，Intel自己赚的是辛苦钱。</span></blockquote><div class="src">The Verge · <a href="https://www.theverge.com/tech/1022911/intel-wildcat-lake-sold-out-ram-shortage" target="_blank" rel="noopener">原文</a></div></article>
+<article class="hidden" data-hit="0" data-ord="3" data-dom="tech"><h3><a href="https://www.technologyreview.com/2026/10/28/1147709/creating-ai-value-with-enterprise-context/" target="_blank" rel="noopener">企业AI落地卡在业务上下文缺失这一环</a></h3><p class="orig">Creating AI value with enterprise context</p><p class="lead">多套AI平台、对话助手和流程自动化工具同时在企业里运转，单看每个系统都够先进、响应也快，但真正跑起来时，输出的结果和动作却常常出错、混乱甚至跑偏。问题不在模型能力，而在于这些工具拿不到企业的业务上下文，不知道组织规则、数据口径和流程约束。这提醒企业，堆工具不等于创造价值，先把上下文打通、把数据和权限理顺，AI才谈得上靠谱，否则只是把混乱自动化了一遍。</p><ul class="points"><li>企业往往同时运行客服平台、对话助手、流程自动化等多套AI系统</li><li>单系统表现不错，但联合运行时结果常出错或偏离预期</li><li>根因是缺乏统一的业务上下文，模型不了解组织规则和数据口径</li><li>打通上下文与权限体系比继续采购工具更优先</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">这话说得对但太客气。多数企业买AI工具跟集邮似的，系统之间各说各话，最后把混乱自动化了一遍。真正的门槛是数据治理和组织规则，不是模型参数。别被厂商的智能体话术忽悠，先问问自家口径统一了没。</span></blockquote><div class="src">MIT Tech Review · <a href="https://www.technologyreview.com/2026/10/28/1147709/creating-ai-value-with-enterprise-context/" target="_blank" rel="noopener">原文</a></div></article>
+<div class="more"><button type="button">还有 1 条 · 展开</button></div>
+</section>
+<section data-dom="biz">
+<div class="sechead">
+<h2>商业财经</h2>
+<span class="n">03</span><span class="fill"></span>
+</div>
+<article class="" data-hit="0" data-ord="1" data-dom="biz"><h3><a href="http://www.xueqiu.com/4398460754/414538329" target="_blank" rel="noopener">Ai走到哪里了？（AI产业走到资本开支与现金流压力测试阶段）</a></h3><p class="lead">有观点把AI发展划为三个阶段：需求爆发期算力供不应求，存储、GPU、光链接、PCB及材料端订单爆满；随后进入资本开支与现金流压力测试期，投资规模远超收入增量，折旧和融资压力开始显现。以ChatGPT（聊天生成预训练变换器）为例，周活跃用户超9亿但付费占比极低，累计投入约7000至8000亿美元，年化收入预期还被下调，前两大客户收入占比过高。核心矛盾是投入巨大、收入太小、客户集中，可持续性存疑。</p><ul class="points"><li>第一阶段算力供不应求，存储、GPU、光链接、PCB及材料端业绩爆发</li><li>第二阶段投资规模远超收入增量，折旧与融资压力开始显现</li><li>ChatGPT周活跃用户超9亿，但付费用户占比极低</li><li>累计投入约7000至8000亿美元，年化收入预期下调约200亿美元</li><li>前两大客户收入占比偏高，收入集中度构成风险</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">这套三阶段划分有点意思，但别当成投资指南。需求爆发期那些电子厂确实接单接到手软，可它们本质还是普通工厂，周期一转就现原形。付费率低、客户集中这两个坑，头部大模型一个都躲不掉，烧钱换规模的老剧本，最后看谁先撑不住。</span></blockquote><div class="src">雪球 · <a href="http://www.xueqiu.com/4398460754/414538329" target="_blank" rel="noopener">原文</a></div></article>
+<article class="" data-hit="0" data-ord="2" data-dom="biz"><h3><a href="https://wallstreetcn.com/livenews/3191672" target="_blank" rel="noopener">埃克森美孚CEO：到2030年公司投资将超过1000亿美元。 预计未来约10%的投资将投向炼油业务。（埃克森美孚2030年前投资将超千亿美元）</a></h3><p class="lead">埃克森美孚（ExxonMobil）CEO表示，到2030年公司投资总额将超过1000亿美元，并预计未来约10%的投资投向炼油业务。这意味着这家石油巨头在能源转型讨论最热闹的时候，仍把大头押在上游油气和长期产能上，炼油只拿小份。千亿美元级别的资本开支说明其对化石能源需求的中长期判断没有动摇，但也意味着现金流和股东回报要接受考验，转型叙事和真金白银之间有明显落差。</p><ul class="points"><li>到2030年投资总额将超过1000亿美元</li><li>约10%的投资预计投向炼油业务</li><li>大头仍集中在上游油气及长期产能项目</li><li>资本开支规模对现金流和股东回报构成压力</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">嘴上谈转型，钱还是往油气里砸，炼油只分一成，态度很诚实。千亿美元砸下去，赌的是化石能源需求不会塌，这判断未必错，但股东得盯着现金流别绷断。别被绿色话术带偏，看钱往哪走最准。</span></blockquote><div class="src">华尔街见闻 · <a href="https://wallstreetcn.com/livenews/3191672" target="_blank" rel="noopener">原文</a></div></article>
+<article class="hidden" data-hit="0" data-ord="3" data-dom="biz"><h3><a href="https://stratechery.com/2026/meta-earnings-muse-and-the-frontier-musebook/" target="_blank" rel="noopener">Meta发布财报，Muse与前沿布局成焦点</a></h3><p class="orig">Meta Earnings, Muse and the Frontier, Musebook</p><p class="lead">Meta公布最新季度财报，市场关注点集中在CEO扎克伯格（Zuckerberg）能否兑现此前承诺，以及代号Muse的项目是否具备说服力。报道指出，若投资者认可Muse的价值，就应当支持Meta在算力（compute）上的持续投入，这意味着财报数字之外，资本开支的合理性成为判断公司前景的关键。对关注AI基础设施的人来说，这反映出一家巨头正把叙事重心从短期利润转向长期算力押注，财报的解读方式也随之改变。</p><ul class="points"><li>财报发布之际，扎克伯格正处在兑现承诺的检验期。</li><li>报道将Muse与Meta的算力投入直接挂钩，视作同一逻辑。</li><li>投资者态度被描述为二选一：认可Muse就得接受高额算力开支。</li><li>财报本身数据着墨不多，重心落在战略投入的正当性上。</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">这条更像观点而非新闻，信息量薄。Meta的账本好不好看另说，真正要盯的是算力投入换来什么，别被Muse这种代号唬住，项目名起得再玄，落不了地就是烧钱。</span></blockquote><div class="src">Stratechery · <a href="https://stratechery.com/2026/meta-earnings-muse-and-the-frontier-musebook/" target="_blank" rel="noopener">原文</a></div></article>
+<div class="more"><button type="button">还有 1 条 · 展开</button></div>
+</section>
+<section data-dom="society">
+<div class="sechead">
+<h2>社会热点</h2>
+<span class="n">03</span><span class="fill"></span>
+</div>
+<article class="" data-hit="0" data-ord="1" data-dom="society"><h3><a href="https://www.jiemian.com/article/15274341.html" target="_blank" rel="noopener">上交所向*ST航图下发监管工作函（上交所就退市风险向*ST航图下发监管工作函）</a></h3><p class="lead">10月30日，上交所针对*ST航图的退市风险及定期报告信息披露事项下发监管工作函，涉及对象包括上市公司本身、董事及高级管理人员。这意味着监管层已就公司持续经营能力和信披质量亮明态度，对持有该股的投资者而言，退市风险不再是纸面提示，而是进入实质问询阶段。定期报告披露问题叠加退市风险，通常预示公司基本面或治理层面存在需要解释的缺口。</p><ul class="points"><li>监管函同时指向退市风险与定期报告信息披露两类事项。</li><li>被问询对象覆盖上市公司、董事和高级管理人员三个层面。</li><li>下发时间为10月30日，由上海证券交易所发出。</li><li>函件性质为监管工作函，属于事中事后监管手段。</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">披星戴帽的票收到监管函，不新鲜，但退市风险和信披问题一起问，味道就不对了。这种公司的问题从来不是一纸函件，而是财报里说不清的那部分，看戏可以，别拿真金白银去赌重组。</span></blockquote><div class="src">界面新闻 · <a href="https://www.jiemian.com/article/15274341.html" target="_blank" rel="noopener">原文</a></div></article>
+<article class="" data-hit="0" data-ord="2" data-dom="society"><h3><a href="https://www.chinanews.com.cn/cj/2026/10-30/10723568.shtml" target="_blank" rel="noopener">上海首个航空前置货站出口货值突破十亿元</a></h3><p class="lead">上海海关所属松江海关10月30日发布数据，上海首个航空前置货站——松江综合保税区前置货站自2025年11月13日正式运行至今年10月29日，不到一年时间累计监管出口货物1.6万吨，总货值达10.4亿元。这一模式把航空货运的部分环节前移到综保区，缩短了通关与物流链条，货值和吨位的数据说明它已跑通实际业务，对长三角外向型制造企业而言，多了一条更快的出口通道。</p><ul class="points"><li>该货站是上海首个航空前置货站，落地松江综合保税区。</li><li>运行不足一年，累计监管出口货物1.6万吨。</li><li>同期出口总货值达到10.4亿元。</li><li>数据由松江海关发布，统计截至10月29日。</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">前置货站这概念听着虚，1.6万吨、10.4亿元的实绩摆出来才算数。门道在于把机场功能往综保区挪，省的是时间和堆存成本，受益的是周边做空运出口的厂子。别指望它解决运力瓶颈，它只是把流程捋顺了一点。</span></blockquote><div class="src">中新网 · <a href="https://www.chinanews.com.cn/cj/2026/10-30/10723568.shtml" target="_blank" rel="noopener">原文</a></div></article>
+<article class="hidden" data-hit="0" data-ord="3" data-dom="society"><h3><a href="https://www.solidot.org/story?sid=85743" target="_blank" rel="noopener">美国肯塔基男子成为首位以宗教理由豁免使用 AI 的人文主义者（美国肯塔基男子成首位以宗教理由豁免使用AI的人文主义者）</a></h3><p class="lead">45岁的David Durman是肯塔基大学的研究管理员，作为人文主义者（humanist），他坚持人在生活中的核心地位与自主决策。当学校要求员工在工作流程中使用AI工具，如Microsoft Teams Copilot、Claude或ChatGPT，他认为这等于把思考环节外包给机器，违背个人信念。在美国人文主义者协会（American Humanist Association）协助下，他以遵守宗教信仰为由申请工作调整，学校上月同意。该协会称这是首例人文主义者豁免使用AI的案例，把AI使用争议推进到信仰与劳动权利的交叉地带。</p><ul class="points"><li>当事人为肯塔基大学研究管理员，年龄45岁。</li><li>校方要求员工在流程中使用Copilot、Claude或ChatGPT等工具。</li><li>申请依据是宗教信仰，由美国人文主义者协会提供协助。</li><li>学校于上月同意调整要求，协会称属首例此类豁免。</li><li>争议核心是AI替代思考环节是否侵犯个人信念。</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">人文主义者拿宗教理由豁免AI，这操作挺妙，等于用制度的缝钻出个人空间。成色在于它开了先例，往后职场里拒绝AI的人有据可依。但也别捧太高，个案豁免改不了大趋势，真正的问题是学校把工具当命令下发，本身就懒。</span></blockquote><div class="src">Solidot · <a href="https://www.solidot.org/story?sid=85743" target="_blank" rel="noopener">原文</a></div></article>
+<div class="more"><button type="button">还有 1 条 · 展开</button></div>
+</section>
+<section data-dom="life">
+<div class="sechead">
+<h2>生活健康</h2>
+<span class="n">03</span><span class="fill"></span>
+</div>
+<article class="" data-hit="1" data-ord="1" data-dom="life"><div class="hit">关键词 · CRISPR<span class="pin">已置顶</span></div><h3><a href="https://www.nature.com/articles/s41587-026-03352-5" target="_blank" rel="noopener">工程化紧凑型 Cas12m 变体实现体内多重基因激活</a></h3><p class="orig">An engineered, compact Cas12m variant for multiplexed gene activation in vivo</p><p class="lead">smCRISPRa 是一种紧凑型平台，可在小鼠模型中实现高效的多重基因激活（multiplexed gene activation），为体内基因功能研究和潜在治疗应用提供更轻便的工具。</p><ul class="points"><li>smCRISPRa 是紧凑型多重基因激活平台</li><li>在小鼠模型中实现高效基因激活</li><li>Cas12m（一种 CRISPR 效应蛋白）变体经工程化改造</li><li>为体内基因功能研究提供轻便工具</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">设计小鼠体内多基因同时激活实验时，smCRISPRa 的紧凑尺寸便于装入常用病毒载体，降低递送难度。</span></blockquote><div class="src">Nature Biotechnology · <a href="https://www.nature.com/articles/s41587-026-03352-5" target="_blank" rel="noopener">原文</a></div></article>
+<article class="" data-hit="0" data-ord="2" data-dom="life"><h3><a href="https://www.nature.com/articles/s41586-026-11206-y" target="_blank" rel="noopener">跨祖先阿尔茨海默病遗传研究锁定小胶质细胞与神经元失调</a></h3><p class="orig">Alzheimer’s disease genetics converges on microglial and neuronal dysregulation</p><p class="lead">一项多祖先阿尔茨海默病（Alzheimer’s disease）遗传研究识别出新的风险位点和潜在药物靶点，将病因指向小胶质细胞（microglia）与神经元（neuron）的功能失调，并估计常见变异贡献比此前认为的更大。这意味着该病的遗传架构被低估，药物开发可从小胶质细胞通路切入。值得知道的是，多祖先样本能发现欧洲人群研究中遗漏的位点，对全球药物靶点验证有直接价值。</p><ul class="points"><li>多祖先设计发现此前未识别的风险位点</li><li>小胶质细胞与神经元被列为关键受累细胞类型</li><li>常见变异贡献估计高于以往研究</li><li>部分位点具备潜在药物靶点价值</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">阿尔茨海默病的遗传学研究终于不再只盯着欧洲人样本，这点进步实在。但“潜在药物靶点”这词听了二十年，真正走到临床的没几个。小胶质细胞这条线有戏，别又变成药企PPT里的素材。</span></blockquote><div class="src">Nature · <a href="https://www.nature.com/articles/s41586-026-11206-y" target="_blank" rel="noopener">原文</a></div></article>
+<article class="hidden" data-hit="0" data-ord="3" data-dom="life"><h3><a href="https://www.sciencedaily.com/releases/2026/10/261025222538.htm" target="_blank" rel="noopener">Scientists discover a surprising clue to why some brains resist Alzheimer’s（科学家发现部分大脑抵抗Alzheimer（阿尔茨海默病）的意外线索）</a></h3><p class="lead">荷兰科学家在一类罕见的未成熟脑细胞中发现重要线索：这些细胞在80岁以上人群中依然存在，但在是否患痴呆的人身上行为差异显著，或能解释部分人为何大脑有病理改变却仍保持认知健康。</p><ul class="points"><li>研究对象是一类罕见的未成熟脑细胞</li><li>这些细胞在80岁以上人群中仍然存在</li><li>患痴呆者与认知健康者中细胞行为差异明显</li><li>该线索或解释大脑对Alzheimer（阿尔茨海默病）的抵抗力</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">理解高龄人群认知保留的一种可能机制：脑内未成熟细胞的行为差异，可作为阅读阿尔茨海默病相关研究时的背景参照。</span></blockquote><div class="src">ScienceDaily 健康 · <a href="https://www.sciencedaily.com/releases/2026/10/261025222538.htm" target="_blank" rel="noopener">原文</a></div></article>
+<div class="more"><button type="button">还有 1 条 · 展开</button></div>
+</section>
+<section data-dom="digital">
+<div class="sechead">
+<h2>数码娱乐</h2>
+<span class="n">03</span><span class="fill"></span>
+</div>
+<article class="" data-hit="1" data-ord="1" data-dom="digital"><div class="hit">关键词 · Minecraft<span class="pin">已置顶</span></div><h3><a href="https://www.gamespot.com/articles/xbox-wants-to-be-more-profitable-than-playstation-and-nintendo-by-2030/" target="_blank" rel="noopener">Xbox计划2030年利润率超越索尼任天堂</a></h3><p class="orig">Xbox Wants To Be More Profitable Than PlayStation And Nintendo By 2030</p><p class="lead">Xbox新任CEO Asha Sharma（阿莎·夏尔马）在CNBC采访中提出，微软目标是在2030财年中期前让Xbox利润率超过索尼和任天堂两大对手。为此公司打算多押独占作品、抢占休闲游戏市场，并把<em class="kw">Minecraft</em>（我的世界）等大IP延伸到影视、消费品、赞助和线下体验，还明确要在中国等市场建新合作。按她的备忘录，营收增速预计在2028、2029财年加快，2030财年走到长期目标的一半。这话听着提气，但利润率不是喊出来的，Xbox长期靠订阅和硬件铺量，想反超两位现金牛，得看独占阵容和变现效率能不能真兑现。</p><ul class="points"><li>目标时间点定在2030财年中期，Sharma称已有多套方案并行推进</li><li>计划加大独占作品投入，并在休闲游戏市场争取更多份额</li><li>Minecraft被列为重点投资对象，将向影视、消费品、赞助等方向延伸</li><li>营收增长预期在2028和2029财年提速，中国等市场的新合作被点名</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">目标定得挺响，但利润率超索尼任天堂不是发个备忘录就能成。Xbox的坑在于订阅摊薄单价、硬件不赚钱，独占阵容又得靠真金白银砸。真受益的是Minecraft这条IP变现链，别被“2030”这种远期数字忽悠，先看2028财年营收能不能真提速。</span></blockquote><div class="src">GameSpot · <a href="https://www.gamespot.com/articles/xbox-wants-to-be-more-profitable-than-playstation-and-nintendo-by-2030/" target="_blank" rel="noopener">原文</a></div></article>
+<article class="" data-hit="0" data-ord="2" data-dom="digital"><h3><a href="https://www.ithome.com/1/020/326.htm" target="_blank" rel="noopener">畅享系列首款：华为畅享 100 Pro Max 手机确认支持 NearLink E2.0 星闪音频功能（华为畅享100 Pro Max确认支持星闪音频功能）</a></h3><p class="lead">华为在10月28日双十一焕新季全场景新品发布会上推出畅享100 Pro Max，搭载麒麟8020处理器、8800mAh电池，定价1999元起。官网页面随后更新，确认该机支持NearLink E2.0（星闪）音频功能，为畅享系列首次。星闪音频物理层传输速率可达16Mbps，能承载48kHz/24bit Hi-Fi音频无损传输。这意味着星闪音频正从高端机型向中低价位下放，对想用无损无线音频又不想多花钱的用户是个信号。</p><ul class="points"><li>畅享100 Pro Max定价1999元起，配8800mAh电池与麒麟8020处理器。</li><li>该机为畅享系列首款支持NearLink E2.0星闪音频的机型。</li><li>星闪音频物理层速率达16Mbps，支持48kHz/24bit无损传输。</li><li>现有支持星闪音频的耳机包括FreeClip 2典藏版、FreeClip 2、FreeBuds Pro 5等。</li><li>官网宣传页此前已标注星闪功能，此次为具体能力确认。</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">星闪音频下放到1999元的畅享，这步棋实在，比堆参数有诚意。门道在于传输速率和带宽确实压过传统蓝牙，但前提是配对的耳机也得支持，生态没跟上就是摆设。别被Pro Max的名头骗了，这是中端机，亮点是电池和星闪，不是性能。</span></blockquote><div class="src">IT之家 · <a href="https://www.ithome.com/1/020/326.htm" target="_blank" rel="noopener">原文</a></div></article>
+<article class="hidden" data-hit="0" data-ord="3" data-dom="digital"><h3><a href="https://www.yystv.cn/p/14569" target="_blank" rel="noopener">传奇谢幕：再见，X教授（帕特里克·斯图尔特逝世享年86岁）</a></h3><p class="lead">英国演员帕特里克·斯图尔特爵士（Sir Patrick Stewart）于2026年10月28日在洛杉矶家中安详辞世，享年86岁，发言人证实他生前经历了一段短暂的阿尔茨海默病（Alzheimer）及路易体痴呆症（Lewy body dementia）抗争。他以《星际迷航》企业号舰长皮卡德和《X战警》X教授两个角色横跨科幻与超英两大银幕宇宙，晚年仍高产，2023年完成《星际迷航：皮卡德》第三季并出版回忆录《Making It So》。他参演的《复仇者联盟5：毁灭日》已完成拍摄，将在其离世约七周后上映，成为最后银幕作品。</p><ul class="points"><li>发言人声明称其离世时妻子桑妮·奥泽尔陪伴在侧，病程短暂</li><li>2023年《星际迷航：皮卡德》第三季让“下一代”老船员重聚企业号舰桥</li><li>同年出版回忆录《Making It So》，讲述从约克郡工人家庭走向好莱坞</li><li>2022年在《奇异博士2：疯狂多元宇宙》中再演X教授，致敬90年代动画版</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">两位角色的分量摆在那，这条该看，但别只当讣闻刷过去。真正值得留意的是他晚年那股高产劲，八十多岁还在补完皮卡德和X教授两条线。阿尔茨海默病和路易体痴呆症被写进声明，比那些含糊其辞的“长期患病”实在。最后一部《复仇者联盟5》上映时，影院里怕是安静得厉害。</span></blockquote><div class="src">游研社 · <a href="https://www.yystv.cn/p/14569" target="_blank" rel="noopener">原文</a></div></article>
+<div class="more"><button type="button">还有 1 条 · 展开</button></div>
+</section>
+<footer>生成于 2026-10-30 20:20 · 大肥鱼简报 v2 · 本次未取到：CNBC（TimeoutError） · 每天 06:00 自动更新</footer>
+</div>
+<script>window.PRESETS_HASH={"paper": {"--bg": "#f6f4ef", "--surface": "#fffefb", "--fg": "#1c1a17", "--muted": "#8a847a", "--line": "rgba(28,26,23,.10)", "--accent": "#a8452a"}, "ink": {"--bg": "#f2f4f6", "--surface": "#fbfcfd", "--fg": "#16202a", "--muted": "#7d8894", "--line": "rgba(22,32,42,.10)", "--accent": "#2f5d8a"}, "moss": {"--bg": "#f3f4ee", "--surface": "#fcfdf8", "--fg": "#1d2118", "--muted": "#828777", "--line": "rgba(29,33,24,.10)", "--accent": "#4d6141"}, "night": {"--bg": "#15161a", "--surface": "#1c1e23", "--fg": "#e8e6e1", "--muted": "#8b8a86", "--line": "rgba(232,230,225,.12)", "--accent": "#d98b5f"}};</script>
+<script>
+(function(){
+  var root=document.documentElement, KEY='fyb-share-theme';
+  var sw=document.querySelectorAll('.swatch');
+  var sz=document.querySelectorAll('.sizewrap button');
+  var saved=null;
+  try{saved=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){}
+  function apply(cfg){
+    if(!cfg) return;
+    if(cfg.vars){for(var k in cfg.vars){root.style.setProperty(k,cfg.vars[k])}}
+    if(cfg.fs){root.style.setProperty('--fs',cfg.fs)}
+    sw.forEach(function(b){b.dataset.active = (b.dataset.p===cfg.p)?'1':'0'});
+    sz.forEach(function(b){b.dataset.active = (b.dataset.fs===cfg.fs)?'1':'0'});
+  }
+  function save(cfg){try{localStorage.setItem(KEY,JSON.stringify(cfg))}catch(e){}}
+  sw.forEach(function(b){
+    b.addEventListener('click',function(){
+      var vars=JSON.parse(b.dataset.vars);
+      var cur={p:b.dataset.p,vars:vars,fs:(saved&&saved.fs)||''};
+      Object.keys(vars).forEach(function(k){root.style.setProperty(k,vars[k])});
+      apply(cur);save(cur);
+    });
+  });
+  sz.forEach(function(b){
+    b.addEventListener('click',function(){
+      var fs=b.dataset.fs, vars=saved?saved.vars:null, p=saved?saved.p:'paper';
+      var cur={p:p,vars:vars,fs:fs};
+      apply(cur);save(cur);
+    });
+  });
+  var t=document.getElementById('tbtn'), panel=document.getElementById('panel');
+  // #night 这类链接可直接指定配色；#panel 展开外观面板
+  (function(){
+    var h=(location.hash||'').replace('#','');
+    if(h && window.PRESETS_HASH && PRESETS_HASH[h]){
+      var v=PRESETS_HASH[h];
+      Object.keys(v).forEach(function(k){root.style.setProperty(k,v[k])});
+      var c={p:h,vars:v,fs:(saved&&saved.fs)||''}; save(c); apply(c);
+    }
+  })();
+  if(t){t.addEventListener('click',function(){panel.classList.toggle('open')})}
+  if((location.hash||'').indexOf('panel')>=0 && panel){panel.classList.add('open')}
+
+  // 条数密度：每个板块只露前 N 条，其余折叠进「还有 N 条」
+  var DKEY='fyb-share-density';
+  var dens=localStorage.getItem(DKEY)||document.body.getAttribute('data-limit')||'2';
+  if(['1','2','3'].indexOf(dens)<0){dens='2'}
+  var dn=document.querySelectorAll('.panel button[data-den]');
+  var VIEW='all';
+  function layout(){
+    var total=0;
+    Array.prototype.forEach.call(document.querySelectorAll('section'),function(s){
+      var inView=(VIEW==='all')||(s.getAttribute('data-dom')===VIEW);
+      s.classList.toggle('hidden-sec',!inView);
+      if(!inView){return}
+      var open=s.classList.contains('open');
+      var arts=s.querySelectorAll('article'), shown=0;
+      Array.prototype.forEach.call(arts,function(a){
+        var ord=parseInt(a.getAttribute('data-ord'),10)||0;
+        var hide=!open && ord>parseInt(dens,10);
+        a.classList.toggle('hidden',hide);
+        if(!hide){shown++}
+      });
+      total+=shown;
+      var btn=s.querySelector('.more button');      if(btn){
+        var rest=arts.length-shown;
+        if(rest>0){btn.style.display='';btn.textContent='还有 '+rest+' 条 · 展开'}
+        else{btn.style.display='none'}
+      }
+    });
+    var cnt=document.getElementById('cnt');
+    if(cnt){cnt.textContent=total+' 条'}
+    var mins=document.getElementById('mins');
+    if(mins){
+      var chars=0;
+      Array.prototype.forEach.call(document.querySelectorAll('article:not(.hidden)'),function(a){
+        if(a.closest('section.hidden-sec')){return}
+        chars+=a.textContent.length;
+      });
+      mins.textContent=Math.max(1,Math.round(chars/480));
+    }
+    Array.prototype.forEach.call(dn,function(b){b.dataset.active=(b.dataset.den===dens)?'1':'0'});
+  }
+  Array.prototype.forEach.call(dn,function(b){
+    b.addEventListener('click',function(){
+      dens=b.dataset.den;
+      try{localStorage.setItem(DKEY,dens)}catch(e){}
+      layout();
+    });
+  });
+  document.addEventListener('click',function(e){
+    var b=e.target.closest?e.target.closest('.more button'):null;
+    if(!b){return}
+    var s=b.closest('section');
+    if(s){s.classList.add('open');layout()}
+  });
+
+  // 领域切换：全部 / 科技AI / 商业财经 / 社会热点 / 生活健康 / 数码娱乐
+  var tabs=document.querySelectorAll('.tabs button');
+  function setView(v){
+    VIEW=v;
+    Array.prototype.forEach.call(tabs,function(x){
+      x.setAttribute('data-active',x.getAttribute('data-view')===v?'1':'0')
+    });
+    layout();
+  }
+  Array.prototype.forEach.call(tabs,function(b){
+    b.addEventListener('click',function(){
+      setView(b.getAttribute('data-view'));
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+  });
+  // #tech / #life 这类链接可直接打开某个领域
+  (function(){
+    var h=(location.hash||'').replace('#','');
+    if(!h){return}
+    Array.prototype.forEach.call(tabs,function(b){
+      if(b.getAttribute('data-view')===h){setView(h)}
+    });
+  })();
+
+  // 自定义背景色：按亮度自动配前景色，保证可读
+  var pick=document.getElementById('bgpick'), reset=document.getElementById('bgreset');
+  function lum(hex){
+    var m=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex||'');
+    if(!m){return 1}
+    var r=parseInt(m[1],16)/255,g=parseInt(m[2],16)/255,b=parseInt(m[3],16)/255;
+    return 0.2126*r+0.7152*g+0.0722*b;
+  }
+  function applyBg(hex){
+    var dark=lum(hex)<0.45;
+    var v= dark
+      ? {'--bg':hex,'--surface':'rgba(255,255,255,.05)','--fg':'#f2ede4','--muted':'#9d968c','--line':'rgba(255,255,255,.14)','--accent':'#d98b5f'}
+      : {'--bg':hex,'--surface':'rgba(0,0,0,.03)','--fg':'#1d1b18','--muted':'#7d776d','--line':'rgba(0,0,0,.13)','--accent':'#a8452a'};
+    Object.keys(v).forEach(function(k){root.style.setProperty(k,v[k])});
+    try{localStorage.setItem(KEY+'-bg',hex)}catch(e){}
+  }
+  if(pick){
+    var savedBg=null;
+    try{savedBg=localStorage.getItem(KEY+'-bg')}catch(e){}
+    if(savedBg){pick.value=savedBg;applyBg(savedBg)}
+    pick.addEventListener('input',function(){applyBg(pick.value)});
+  }
+  if(reset){
+    reset.addEventListener('click',function(){
+      try{localStorage.removeItem(KEY+'-bg');localStorage.removeItem(KEY)}catch(e){}
+      location.reload();
+    });
+  }
+  layout();
+  // 阅读进度
+  var bar=document.getElementById('progress');
+  function onScroll(){
+    var h=document.documentElement.scrollHeight-window.innerHeight;
+    bar.style.width=(h>0?(window.scrollY/h*100):0)+'%';
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});onScroll();
+})();
+</script>
+</body></html>

@@ -1,0 +1,401 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>肥鱼晨报 · 2026-10-29</title>
+<style>
+:root{
+  --bg:#f6f4ef; --surface:#fffefb; --fg:#1c1a17; --muted:#8a847a;
+  --line:rgba(28,26,23,.10); --accent:#a8452a;
+  --serif: "Noto Serif SC","Source Han Serif SC","Songti SC","SimSun",Georgia,serif;
+  --sans: -apple-system,"Segoe UI","Microsoft YaHei UI","PingFang SC","Hiragino Sans GB",sans-serif;
+  --fs: 16px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--bg); color:var(--fg);
+  font-family:var(--sans); font-size:var(--fs); line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+  transition:background .35s ease,color .35s ease;
+}
+#progress{position:fixed;top:0;left:0;height:2px;width:0;background:var(--accent);
+  z-index:50;transition:width .1s linear;opacity:.85}
+.wrap{max-width:728px;margin:0 auto;padding:72px 28px 96px}
+
+/* 顶栏 */
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:44px}
+.brand{font-family:var(--serif);font-size:15px;letter-spacing:.18em;color:var(--muted)}
+.tools{display:flex;gap:6px}
+.tools button{
+  border:1px solid var(--line);background:transparent;color:var(--muted);
+  font-family:var(--sans);font-size:12px;letter-spacing:.08em;
+  padding:5px 10px;border-radius:999px;cursor:pointer;transition:.2s;
+}
+.tools button:hover{color:var(--fg);border-color:var(--muted)}
+.panel{
+  display:none;margin:0 0 40px;padding:16px 18px;border:1px solid var(--line);
+  border-radius:14px;background:var(--surface);
+}
+.panel.open{display:block}
+.panel .row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.panel .row > span{font-size:12px;color:var(--muted);letter-spacing:.1em;min-width:52px}
+.swatch{width:26px;height:26px;border-radius:50%;border:1px solid var(--line);cursor:pointer;
+  position:relative;transition:.2s;display:flex;align-items:center;justify-content:center;padding:0}
+.swatch i{display:block;width:9px;height:9px;border-radius:50%}
+.swatch:hover{transform:scale(1.08)}
+.swatch[data-active="1"]{box-shadow:0 0 0 2px var(--bg),0 0 0 3px var(--accent)}
+.sizewrap button{font-size:12px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);
+  background:transparent;color:var(--muted);cursor:pointer;margin-right:4px}
+.sizewrap button[data-active="1"]{color:var(--accent);border-color:var(--accent)}
+.bgwrap{display:flex;align-items:center;gap:10px}
+.bgwrap input[type=color]{width:26px;height:26px;padding:0;border:1px solid var(--line);
+  border-radius:50%;background:transparent;cursor:pointer;-webkit-appearance:none;appearance:none}
+.bgwrap input[type=color]::-webkit-color-swatch-wrapper{padding:2px}
+.bgwrap input[type=color]::-webkit-color-swatch{border:none;border-radius:50%}
+.bgwrap button{font-size:12px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);
+  background:transparent;color:var(--muted);cursor:pointer}
+
+/* 领域切换 */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:0 0 40px;
+  position:sticky;top:0;z-index:30;padding:10px 0 12px;
+  background:linear-gradient(var(--bg) 72%,transparent)}
+.tabs::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
+  background:var(--line);opacity:.5}
+.tabs button{
+  border:1px solid transparent;background:transparent;color:var(--muted);cursor:pointer;
+  font-family:var(--sans);font-size:12.5px;letter-spacing:.1em;padding:5px 11px;border-radius:999px;
+  transition:.2s;
+}
+.tabs button:hover{color:var(--fg)}
+.tabs button[data-active="1"]{color:var(--accent);border-color:var(--line);background:var(--surface)}
+
+/* 头图区 */
+header{text-align:center;margin-bottom:44px;position:relative}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(30px,5vw,42px);
+  line-height:1.3;margin:0 0 14px;letter-spacing:.01em}
+.date{font-size:13px;letter-spacing:.3em;color:var(--muted);text-transform:uppercase}
+.tagline{margin-top:18px;font-family:var(--serif);font-size:15px;color:var(--muted);letter-spacing:.06em}
+.rule{width:36px;height:1px;background:var(--accent);margin:26px auto 0;opacity:.7}
+
+/* 板块 */
+section{margin:0 0 52px}
+.sechead{display:flex;align-items:baseline;gap:12px;margin-bottom:22px}
+.sechead h2{font-family:var(--serif);font-size:17px;font-weight:600;margin:0;letter-spacing:.12em}
+.sechead h2::before{content:"";display:inline-block;width:5px;height:5px;margin-right:11px;
+  border:1px solid var(--accent);transform:rotate(45deg) translateY(-3px);opacity:.75}
+.sechead .n{font-size:11px;color:var(--muted);letter-spacing:.2em}
+.sechead .fill{flex:1;height:1px;background:var(--line);transform:translateY(-4px)}
+
+/* 条目 */
+article{padding:26px 0;border-top:1px solid var(--line)}
+article:first-of-type{border-top:none;padding-top:0}
+.hit{display:inline-flex;align-items:center;gap:5px;font-size:11px;letter-spacing:.16em;
+  color:var(--accent);margin-bottom:9px}
+.hit::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--accent)}
+.hit .pin{font-size:10px;letter-spacing:.06em;color:var(--muted);margin-left:4px}
+h3{font-family:var(--serif);font-weight:600;font-size:21px;line-height:1.5;margin:0 0 12px;
+  letter-spacing:.005em}
+h3 a{color:inherit;text-decoration:none}
+h3 a:hover{color:var(--accent)}
+.orig{font-family:var(--sans);font-size:12.5px;line-height:1.65;color:var(--muted);
+  letter-spacing:.01em;margin:-6px 0 12px}
+.lead{margin:0 0 16px;color:var(--fg);opacity:.92;font-size:15.5px;line-height:1.9;
+  letter-spacing:.005em}
+.points{margin:0 0 4px;padding:0;list-style:none;font-size:14.5px;color:var(--fg);opacity:.78;
+  line-height:1.85}
+.points li{position:relative;padding-left:16px;margin:5px 0}
+.points li::before{content:"";position:absolute;left:2px;top:.72em;width:4px;height:4px;
+  border-radius:50%;background:var(--accent);opacity:.55}
+em.kw{font-style:normal;background:rgba(168,69,42,.16);border-radius:3px;padding:0 3px;
+  box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.verdict{margin:18px 0 0;padding:12px 0 12px 16px;border-left:2px solid var(--line);
+  font-size:14.5px;color:var(--fg);opacity:.88;line-height:1.85}
+.verdict .who{font-family:var(--serif);color:var(--accent);letter-spacing:.18em;margin-right:10px;
+  font-size:12.5px;white-space:nowrap}
+.verdict .said{display:inline}
+details{margin-top:14px}
+details summary{cursor:pointer;font-size:12.5px;color:var(--muted);letter-spacing:.12em;
+  list-style:none;display:inline-flex;align-items:center;gap:6px;user-select:none}
+details summary::-webkit-details-marker{display:none}
+details summary::before{content:"＋";font-size:11px;transition:transform .2s;color:var(--accent)}
+details[open] summary::before{content:"－"}
+details ul{margin:12px 0 0;padding-left:18px;font-size:14.5px;color:var(--muted);line-height:1.9}
+details ul li{margin:3px 0}
+.src{margin-top:16px;font-size:12px;color:var(--muted);letter-spacing:.06em}
+.src a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line)}
+.src a:hover{color:var(--accent);border-color:var(--accent)}
+.more{margin-top:18px}
+.more button{background:transparent;border:none;padding:0;color:var(--muted);font-size:12.5px;
+  letter-spacing:.1em;cursor:pointer;border-bottom:1px dashed var(--line);font-family:var(--sans)}
+.more button:hover{color:var(--accent);border-color:var(--accent)}
+.hidden{display:none}
+.hidden-sec{display:none}
+.empty{font-size:13px;color:var(--muted);font-style:normal;padding:4px 0}
+
+/* 小公告栏 */
+.tips{border-top:1px solid var(--line);padding-top:34px;margin-top:8px}
+.tips h2{font-family:var(--serif);font-size:15px;font-weight:600;letter-spacing:.16em;
+  color:var(--muted);margin:0 0 20px}
+.tip{padding:14px 0;border-top:1px dashed var(--line)}
+.tip:first-of-type{border-top:none}
+.tip .cat{font-size:11px;letter-spacing:.2em;color:var(--accent);margin-bottom:6px}
+.tip .txt{font-size:15px}
+.tip .cm{margin-top:9px;font-size:13.5px;color:var(--muted);line-height:1.8}
+
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--line);
+  text-align:center;font-size:11.5px;color:var(--muted);letter-spacing:.1em;line-height:2}
+footer::before{content:"◦ ◦ ◦";display:block;margin-bottom:14px;font-size:9px;
+  letter-spacing:.5em;color:var(--accent);opacity:.5}
+
+@media (max-width:640px){
+  .wrap{padding:48px 20px 72px}
+  h3{font-size:19px}
+  .lead{font-size:15px}
+  .tabs{gap:4px;margin-bottom:34px}
+}
+@media print{
+  #progress,.tools,.panel,.more{display:none!important}
+  body{background:#fff}
+  article{break-inside:avoid}
+}
+</style>
+</head><body data-limit="2">
+<div id="progress"></div><div class="wrap">
+<div class="top">
+<div class="brand">肥鱼晨报</div>
+<div class="tools"><button id="tbtn" type="button">外观</button></div>
+</div>
+<div class="panel" id="panel">
+<div class="row"><span>配色</span><div style="display:flex;gap:10px"><button class="swatch" type="button" data-p="paper" data-vars="{&quot;--bg&quot;: &quot;#f6f4ef&quot;, &quot;--surface&quot;: &quot;#fffefb&quot;, &quot;--fg&quot;: &quot;#1c1a17&quot;, &quot;--muted&quot;: &quot;#8a847a&quot;, &quot;--line&quot;: &quot;rgba(28,26,23,.10)&quot;, &quot;--accent&quot;: &quot;#a8452a&quot;}" style="background:#f6f4ef;border-color:rgba(28,26,23,.10)" title="纸"><i style="background:#a8452a"></i></button><button class="swatch" type="button" data-p="ink" data-vars="{&quot;--bg&quot;: &quot;#f2f4f6&quot;, &quot;--surface&quot;: &quot;#fbfcfd&quot;, &quot;--fg&quot;: &quot;#16202a&quot;, &quot;--muted&quot;: &quot;#7d8894&quot;, &quot;--line&quot;: &quot;rgba(22,32,42,.10)&quot;, &quot;--accent&quot;: &quot;#2f5d8a&quot;}" style="background:#f2f4f6;border-color:rgba(22,32,42,.10)" title="墨"><i style="background:#2f5d8a"></i></button><button class="swatch" type="button" data-p="moss" data-vars="{&quot;--bg&quot;: &quot;#f3f4ee&quot;, &quot;--surface&quot;: &quot;#fcfdf8&quot;, &quot;--fg&quot;: &quot;#1d2118&quot;, &quot;--muted&quot;: &quot;#828777&quot;, &quot;--line&quot;: &quot;rgba(29,33,24,.10)&quot;, &quot;--accent&quot;: &quot;#4d6141&quot;}" style="background:#f3f4ee;border-color:rgba(29,33,24,.10)" title="苔"><i style="background:#4d6141"></i></button><button class="swatch" type="button" data-p="night" data-vars="{&quot;--bg&quot;: &quot;#15161a&quot;, &quot;--surface&quot;: &quot;#1c1e23&quot;, &quot;--fg&quot;: &quot;#e8e6e1&quot;, &quot;--muted&quot;: &quot;#8b8a86&quot;, &quot;--line&quot;: &quot;rgba(232,230,225,.12)&quot;, &quot;--accent&quot;: &quot;#d98b5f&quot;}" style="background:#15161a;border-color:rgba(232,230,225,.12)" title="夜"><i style="background:#d98b5f"></i></button></div></div>
+<div class="row"><span>背景</span><div class="bgwrap"><input type="color" id="bgpick" value="#f6f4ef" aria-label="自定义背景色"><button type="button" id="bgreset">恢复</button></div></div>
+<div class="row"><span>字号</span><div class="sizewrap"><button type="button" data-fs="15px">小</button><button type="button" data-fs="16px">中</button><button type="button" data-fs="17.5px">大</button></div></div>
+<div class="row"><span>条数</span><div class="sizewrap"><button type="button" data-den="1">少</button><button type="button" data-den="2">标准</button><button type="button" data-den="3">全</button></div></div>
+</div>
+<header>
+<h1>10 月 29 日</h1>
+<div class="date">2026-10-29 · 周四 · 约 <span id="mins">6</span> 分钟 · <span id="cnt">12 条</span></div>
+<div class="tagline">十分钟，过一遍今天</div>
+<div class="rule"></div>
+</header>
+<nav class="tabs" id="tabs"><button type="button" data-view="all" data-active="1">全部</button><button type="button" data-view="tech">科技 AI</button><button type="button" data-view="biz">商业财经</button><button type="button" data-view="society">社会热点</button><button type="button" data-view="life">生活健康</button><button type="button" data-view="digital">数码娱乐</button></nav>
+<section data-dom="tech">
+<div class="sechead">
+<h2>AI 前沿</h2>
+<span class="n">03</span><span class="fill"></span>
+</div>
+<article class="" data-hit="1" data-ord="1" data-dom="tech"><div class="hit">关键词 · 开源<span class="pin">已置顶</span></div><h3><a href="https://www.solidot.org/story?sid=85722" target="_blank" rel="noopener">Reddit <em class="kw">开源</em>社区争议是否禁止 AI</a></h3><p class="lead"><em class="kw">开源</em>社区围绕AI政策产生争议：Reddit的r/opensource社群发布政策禁止AI相关内容，要求<em class="kw">开源</em>项目至少存在一年、有多名贡献者，发帖须用英语而非AI翻译。政策引发激烈争论，有人另建允许AI的社群。版主称未来会调整，主要针对AI生成的个人项目而非Linux内核等知名项目。Linus Torvalds则公开支持AI。</p><ul class="points"><li>r/opensource 禁止 AI 政策要求项目存续一年以上且有多名贡献者</li><li>争议后出现 r/OpenSourceAIAllowed 等允许 AI 的新社群</li><li>版主澄清主要针对 AI 生成的个人项目，不涉及 Linux 内核等成熟项目</li><li>Linus Torvalds 公开支持 AI，内核不再强制标注 AI 生成代码</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">在开源社区发项目或找项目时，先看目标社群是否限制AI辅助内容及项目存续和贡献者门槛，避免帖子被删或白费推广。</span></blockquote><div class="src">Solidot · <a href="https://www.solidot.org/story?sid=85722" target="_blank" rel="noopener">原文</a></div></article>
+<article class="" data-hit="1" data-ord="2" data-dom="tech"><div class="hit">关键词 · 开源<span class="pin">已置顶</span></div><h3><a href="https://techcrunch.com/2026/10/28/voice-ai-in-vogue-nvidia-releases-new-open-transcription-model/" target="_blank" rel="noopener">语音 AI 走红：Nvidia 发布新<em class="kw">开源</em>转写模型</a></h3><p class="orig">Voice AI in vogue: Nvidia releases new open transcription model</p><p class="lead">语音转写领域迎来新模型：Nvidia发布免费语音转文字模型，支持多达40种语言，但只能处理录音而非实时音频。这对会议和医疗转写工具是重大进展，实时场景仍留给ElevenLabs等对手。</p><ul class="points"><li>Nvidia 发布免费开源语音转文字模型，支持 40 种语言</li><li>仅能处理录音文件，不支持实时音频转写</li><li>对会议记录和医疗转写工具是明显利好</li><li>实时语音转写市场仍由 ElevenLabs 等占据</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">手头有会议录音或问诊录音要转成文字时，可先拿它试跑，40种语言覆盖能省下按分钟计费的转写服务开销；但需要边开会边出字幕的场合，它用不上，得另找实时方案。</span></blockquote><div class="src">TechCrunch AI · <a href="https://techcrunch.com/2026/10/28/voice-ai-in-vogue-nvidia-releases-new-open-transcription-model/" target="_blank" rel="noopener">原文</a></div></article>
+<article class="hidden" data-hit="0" data-ord="3" data-dom="tech"><h3><a href="https://www.solidot.org/story?sid=85727" target="_blank" rel="noopener">维基百科如何清理 AI 生成文本</a></h3><p class="lead">维基百科志愿者 2023 年发起 WikiProject AI Cleanup 项目清理 AI 生成文本。早期 AI 文本特征明显，如今更隐蔽、更具结构性，虚假引用减少但曲解问题仍普遍。</p><ul class="points"><li>2023 年志愿者发起 WikiProject AI Cleanup 专门清理 AI 生成文本</li><li>早期 AI 爱用 stands as a testament 等怪句和总结性段落</li><li>2025 年 AI 文本更隐蔽，偏好三法则和否定式平行结构</li><li>检索增强生成减少了假引用，但曲解内容仍常见</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">查维基条目时留意三法则式排比和否定式平行结构，这类写法常是AI生成痕迹，可据此回头核对引文是否被曲解。</span></blockquote><div class="src">Solidot · <a href="https://www.solidot.org/story?sid=85727" target="_blank" rel="noopener">原文</a></div></article>
+<div class="more"><button type="button">还有 1 条 · 展开</button></div>
+</section>
+<section data-dom="biz">
+<div class="sechead">
+<h2>财经快报</h2>
+<span class="n">03</span><span class="fill"></span>
+</div>
+<article class="" data-hit="0" data-ord="1" data-dom="biz"><h3><a href="https://wallstreetcn.com/livenews/3189956" target="_blank" rel="noopener">陕西发行5年期土储专项地方债，规模0.8600亿元，发行利率1.4000%，边际倍数2.09倍，倍数预期1.40； 陕西</a></h3><p class="lead">陕西集中发行多期地方债：5 年期土储专项债 0.86 亿元，利率 1.4%；7 年期其他专项债 3.25 亿元；20 年期其他专项债 20.38 亿元；10 年期一般债 2 亿元；10 年期普通专项债 75.53 亿元。</p><ul class="points"><li>5 年期土储专项债 0.86 亿元，利率 1.4%，边际倍数 2.09 倍</li><li>7 年期其他专项债 3.25 亿元，利率 1.51%</li><li>20 年期其他专项债 20.38 亿元，利率 2.1%</li><li>10 年期普通专项债 75.53 亿元，边际倍数高达 38.57 倍</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">持有陕西城投债或关注地方债的投资者，可对照5年期土储债1.4%与10年期普通专项债38.57倍边际倍数的差异，判断哪类券种被机构抢购、哪类需求偏冷。</span></blockquote><div class="src">华尔街见闻 · <a href="https://wallstreetcn.com/livenews/3189956" target="_blank" rel="noopener">原文</a></div></article>
+<article class="" data-hit="0" data-ord="2" data-dom="biz"><h3><a href="https://www.cnbc.com/2026/10/28/bond-investor-jeff-gundlach-talks-feds-rate-pause-with-cnbc.html" target="_blank" rel="noopener">债券投资人Jeff Gundlach质疑美联储暂停加息：你还在等什么</a></h3><p class="orig">Bond investor Jeff Gundlach on Fed&#x27;s rate pause: &#x27;What are you waiting for?&#x27;</p><p class="lead">债券投资人、DoubleLine创始人Jeff Gundlach在美联储维持利率不变后接受CNBC采访，直言对美联储按兵不动的做法不满，认为其犹豫不决，质疑其等待的理由。</p><ul class="points"><li>Gundlach是DoubleLine创始人，被称为债券之王</li><li>美联储周三决定维持利率不变</li><li>Gundlach在CNBC节目上公开质疑美联储的观望态度</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">跟踪美联储政策路径的债券投资者，可把Gundlach的公开质疑当作华尔街内部对降息时点分歧的一个样本，用来对照自己持仓的久期假设是否过于一致。</span></blockquote><div class="src">CNBC · <a href="https://www.cnbc.com/2026/10/28/bond-investor-jeff-gundlach-talks-feds-rate-pause-with-cnbc.html" target="_blank" rel="noopener">原文</a></div></article>
+<article class="hidden" data-hit="0" data-ord="3" data-dom="biz"><h3><a href="https://wallstreetcn.com/livenews/3189986" target="_blank" rel="noopener">交通运输部：前三季度我国跨区域人员流动量超512亿人次</a></h3><p class="lead">交通运输部数据显示，前三季度跨区域人员流动量512.2亿人次，同比增长1.2%；营业性货运量430.4亿吨，港口货物吞吐量136.4亿吨，交通固定资产投资2.4万亿元，总体运行平稳。</p><ul class="points"><li>跨区域人员流动量512.2亿人次，同比增长1.2%</li><li>营业性货运量430.4亿吨，同比增长2.3%</li><li>城市轨道交通客运量254.6亿人次，增长3.4%</li><li>交通固定资产投资完成2.4万亿元</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">做区域消费或物流生意的人，可用512.2亿人次和货运量2.3%的增速，估算前三季度客流与货流哪个恢复更快，据此调整备货和运力安排。</span></blockquote><div class="src">华尔街见闻 · <a href="https://wallstreetcn.com/livenews/3189986" target="_blank" rel="noopener">原文</a></div></article>
+<div class="more"><button type="button">还有 1 条 · 展开</button></div>
+</section>
+<section data-dom="society">
+<div class="sechead">
+<h2>中国教育</h2>
+<span class="n">02</span><span class="fill"></span>
+</div>
+<article class="" data-hit="0" data-ord="1" data-dom="society"><h3><a href="https://www.moe.gov.cn/jyb_xwfb/s5147/202610/t20261029_1456335.html" target="_blank" rel="noopener">全国大中小学生同上一堂思政大课 做伟大长征精神的传承者弘扬者践行者</a></h3><p class="lead">教育部等主办的“一代人有一代人的长征”思政大课面向全国学生开讲，分小学到大学四个篇章。截至 10 月 28 日校园学习人数达 1.15 亿，人民日报客户端播放量超 2600 万。</p><ul class="points"><li>课程由教育部、中央网信办、人民日报社主办</li><li>分小学、初中、高中、大学四个篇章授课</li><li>校园学习人数 1.15 亿，客户端播放量超 2600 万</li><li>课堂用飞夺泸定桥等史实讲述长征精神</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">家里有中小学生或自己带课的，可以按学段找对应篇章当班会或课堂素材；1.15亿人的学习规模和飞夺泸定桥等具体史实，方便判断内容深浅是否适合对应年龄段。</span></blockquote><div class="src">教育部 · <a href="https://www.moe.gov.cn/jyb_xwfb/s5147/202610/t20261029_1456335.html" target="_blank" rel="noopener">原文</a></div></article>
+<article class="" data-hit="0" data-ord="2" data-dom="society"><h3><a href="https://www.moe.gov.cn/jyb_xwfb/s5147/202610/t20261026_1456002.html" target="_blank" rel="noopener">研究生党员标兵代表走进粤港澳大湾区</a></h3><p class="lead">第四批研究生党建双百入选代表在广东开展向党致敬·湾区行主题党日活动，30名标兵代表走访广州深圳多家科技企业与红色场馆，感悟初心使命，校准奋斗方向。</p><ul class="points"><li>30名研究生党员标兵代表赴广州深圳开展主题党日活动</li><li>参访小鹏、华为、散裂中子源等科技企业与科研设施</li><li>走访中共三大会址、改革开放展览馆等红色场馆</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">打算进湾区科技企业求职的研究生，可以从这30人的参访路线看出哪些企业愿意接待高校党建团组，判断自己投简历时该优先联系哪些公司。</span></blockquote><div class="src">教育部 · <a href="https://www.moe.gov.cn/jyb_xwfb/s5147/202610/t20261026_1456002.html" target="_blank" rel="noopener">原文</a></div></article>
+<div class="more"><button type="button">还有 0 条 · 展开</button></div>
+</section>
+<section data-dom="life">
+<div class="sechead">
+<h2>心理与认知</h2>
+<span class="n">03</span><span class="fill"></span>
+</div>
+<article class="" data-hit="0" data-ord="1" data-dom="life"><h3><a href="https://www.sciencedaily.com/releases/2026/10/261025222538.htm" target="_blank" rel="noopener">Scientists discover a surprising clue to why some brains resist Alzheimer’s（科学家发现部分大脑抵抗Alzheimer（阿尔茨海默病）的意外线索）</a></h3><p class="lead">荷兰科学家在一类罕见的未成熟脑细胞中发现重要线索：这些细胞在80岁以上人群中依然存在，但在是否患痴呆的人身上行为差异显著，或能解释部分人为何大脑有病理改变却仍保持认知健康。</p><ul class="points"><li>研究对象是一类罕见的未成熟脑细胞</li><li>这些细胞在80岁以上人群中仍然存在</li><li>患痴呆者与认知健康者中细胞行为差异明显</li><li>该线索或解释大脑对Alzheimer（阿尔茨海默病）的抵抗力</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">理解高龄人群认知保留的一种可能机制：脑内未成熟细胞的行为差异，可作为阅读阿尔茨海默病相关研究时的背景参照。</span></blockquote><div class="src">ScienceDaily 脑与行为 · <a href="https://www.sciencedaily.com/releases/2026/10/261025222538.htm" target="_blank" rel="noopener">原文</a></div></article>
+<article class="" data-hit="0" data-ord="2" data-dom="life"><h3><a href="https://www.sciencedaily.com/releases/2026/10/261027063824.htm" target="_blank" rel="noopener">自闭症大脑处理面孔的方式与科学家此前认知不同</a></h3><p class="orig">The autistic brain processes faces differently than scientists thought</p><p class="lead">一项大型新研究发现，自闭症儿童大脑处理面孔的方式不同，且差异可能比此前认为的出现得更早。典型发育儿童随年龄增长，面孔识别相关脑信号日益专门化，而自闭症儿童变化明显较少。</p><ul class="points"><li>自闭症儿童大脑处理面孔的方式存在差异</li><li>差异出现时间可能早于此前估计</li><li>典型发育儿童的面孔识别脑信号随年龄更专门化</li><li>自闭症儿童该专门化变化明显较少</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">看待自闭症儿童面孔识别差异时，可参考差异出现时间可能更早这一点，用于理解早期筛查与干预研究的讨论方向。</span></blockquote><div class="src">ScienceDaily 脑与行为 · <a href="https://www.sciencedaily.com/releases/2026/10/261027063824.htm" target="_blank" rel="noopener">原文</a></div></article>
+<article class="hidden" data-hit="0" data-ord="3" data-dom="life"><h3><a href="https://www.sciencedaily.com/releases/2026/10/261027063814.htm" target="_blank" rel="noopener">血压读数正常，也可能暗藏危险</a></h3><p class="orig">Your blood pressure could be dangerous even when your numbers look normal</p><p class="lead">研究人员发现一小群脑细胞能防止血压剧烈波动，即便平均读数看似正常。这一发现揭示了隐藏的心血管风险来源，有望开辟保护心脏和大脑的新疗法。</p><ul class="points"><li>发现一小群脑细胞负责防止血压剧烈波动</li><li>平均血压读数正常不代表没有心血管风险</li><li>血压波动是此前被忽视的隐藏风险来源</li><li>该发现可能推动保护心脑的新疗法研发</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">体检血压读数正常时，仍可留意波动情况；这条发现提示平均数值之外还有被忽视的风险来源，可作与医生沟通的切入点。</span></blockquote><div class="src">ScienceDaily 脑与行为 · <a href="https://www.sciencedaily.com/releases/2026/10/261027063814.htm" target="_blank" rel="noopener">原文</a></div></article>
+<div class="more"><button type="button">还有 1 条 · 展开</button></div>
+</section>
+<section data-dom="digital">
+<div class="sechead">
+<h2>我的世界</h2>
+<span class="n">03</span><span class="fill"></span>
+</div>
+<article class="" data-hit="1" data-ord="1" data-dom="digital"><div class="hit">关键词 · Minecraft<span class="pin">已置顶</span></div><h3><a href="https://launchercontent.mojang.com/v2/javaPatchNotes/26-4-snapshot-6.json" target="_blank" rel="noopener"><em class="kw">Minecraft</em> 26.4 Snapshot 6（<em class="kw">Minecraft</em>（我的世界）26.4快照第6版发布）</a></h3><p class="lead">游戏快照更新：Java版<em class="kw">Minecraft</em>（我的世界）26.4-snapshot-6（快照第6版）已推送，具体改动内容需查看官方补丁说明。</p><ul class="points"><li>Java版26.4快照第6版已推送</li><li>具体改动见官方补丁说明</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">玩Java版且想提前试新内容的，装这个快照就能在正式版前跑一遍；具体改了什么官方补丁说明里才有，装完先对照说明看，避免旧存档或模组出问题。</span></blockquote><div class="src">Minecraft 快照 · <a href="https://launchercontent.mojang.com/v2/javaPatchNotes/26-4-snapshot-6.json" target="_blank" rel="noopener">原文</a></div></article>
+<article class="" data-hit="1" data-ord="2" data-dom="digital"><div class="hit">关键词 · Minecraft、模组<span class="pin">已置顶</span></div><h3><a href="https://modrinth.com/mod/bettertitlescreen" target="_blank" rel="noopener"><em class="kw">模组</em>更新｜Better Title Screen（708,399 次下载）</a></h3><p class="lead">客户端<em class="kw">模组</em>获关注：Better Title Screen是一款客户端<em class="kw">模组</em>，为<em class="kw">Minecraft</em>的标题界面提供自定义选项，累计下载约70万次。</p><ul class="points"><li>Better Title Screen 是 Minecraft 客户端模组</li><li>主要功能是自定义游戏标题界面</li><li>累计下载量达 708399 次</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">嫌原版标题界面单调的，装这个客户端模组就能改标题画面；它只动界面不动游戏内容，联机进别人服务器也不影响，下载量七十万说明兼容性踩坑的人不少，装前先看版本对应。</span></blockquote><div class="src">Modrinth 模组更新 · <a href="https://modrinth.com/mod/bettertitlescreen" target="_blank" rel="noopener">原文</a></div></article>
+<article class="hidden" data-hit="1" data-ord="3" data-dom="digital"><div class="hit">关键词 · Minecraft<span class="pin">已置顶</span></div><h3><a href="https://www.minecraft.net/article/dominos-minecraft-dungeons-ii?OCID=Launcher" target="_blank" rel="noopener">Domino’s x <em class="kw">Minecraft</em> Dungeons II（Domino&#x27;s（达美乐）联动<em class="kw">Minecraft</em> Dungeons II（我的世界：地下城2））</a></h3><p class="lead">达美乐与<em class="kw">Minecraft</em> Dungeons II（我的世界：地下城2）展开联动，订购新品披萨可获得3款独家游戏内道具之一，为玩家提供游戏补给与装备。</p><ul class="points"><li>达美乐与Minecraft Dungeons II（我的世界：地下城2）联动</li><li>订购指定披萨可得3款独家游戏内道具之一</li><li>活动配合游戏上线同步推出</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">常点达美乐又玩地下城2的，下单前先确认活动门店和指定披萨，能顺带拿到三款游戏道具中的一款；不玩这游戏的话，为道具多花披萨钱不划算。</span></blockquote><div class="src">Mojang 官方 · <a href="https://www.minecraft.net/article/dominos-minecraft-dungeons-ii?OCID=Launcher" target="_blank" rel="noopener">原文</a></div></article>
+<div class="more"><button type="button">还有 1 条 · 展开</button></div>
+</section>
+<section data-dom="体育 · 电竞">
+<div class="sechead">
+<h2>体育 · 电竞</h2>
+<span class="n">03</span><span class="fill"></span>
+</div>
+<article class="" data-hit="0" data-ord="1" data-dom="体育 · 电竞"><h3><a href="https://www.gcores.com/articles/221631" target="_blank" rel="noopener">《鬼灭之刃 火之神血风谭2 NS2版+ 角色通行证》今日发售</a></h3><p class="lead">世嘉宣布《鬼灭之刃 火之神血风谭2 Nintendo Switch 2 Edition + 角色通行证》今日发售，利用NS2性能实现高分辨率和60帧流畅画面，含54名可用角色，支持与NS版在线对战。</p><ul class="points"><li>NS2版相较NS版分辨率和帧率均有提升，达到60帧</li><li>含角色通行证DLC，共54名角色可使用</li><li>支持与Nintendo Switch版进行在线对战</li><li>可体验灶门炭治郎故事模式和离线/在线对战</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">准备买这款游戏的玩家，可先确认自己是否已有NS版：有的话能跨平台对战，不必为联机重买；在意帧率的则需注意只有NS2版才到60帧。</span></blockquote><div class="src">机核 · <a href="https://www.gcores.com/articles/221631" target="_blank" rel="noopener">原文</a></div></article>
+<article class="" data-hit="0" data-ord="2" data-dom="体育 · 电竞"><h3><a href="https://www.gcores.com/articles/221603" target="_blank" rel="noopener">《无人深空》现已实装“遗落”大型更新</a></h3><p class="lead">《无人深空》推出“遗落”更新，玩家可深入废弃飞船和感染前哨搜寻有机纪念物，与神秘商人交换生物机械模块，改造护卫舰或打造惊悚飞船，还新增幼虫主题装备和多项功能。</p><ul class="points"><li>新增太空废船与受感染前哨基地探索内容</li><li>可用有机纪念物与商人交换护卫舰模块</li><li>新增幼虫培养罐头盔和幼虫大炮多功能工具</li><li>加入极简HUD、轮盘武器选择和恒星无缝跃迁</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">判断是否值得回坑：更新加入太空废船探索、护卫舰模块交易和幼虫主题装备，可对照清单看新内容是否对得上自己的玩法偏好。</span></blockquote><div class="src">机核 · <a href="https://www.gcores.com/articles/221603" target="_blank" rel="noopener">原文</a></div></article>
+<article class="hidden" data-hit="0" data-ord="3" data-dom="体育 · 电竞"><h3><a href="https://www.skysports.com/rugby-league/news/12040/13604915/how-england-must-harness-their-underdog-spirit-to-reach-the-rugby-league-world-cup-semi-finals" target="_blank" rel="noopener">英格兰的逆袭精神能否助推橄榄球世界杯半决赛希望</a></h3><p class="orig">How England’s underdog spirit can fuel RL World Cup semi-final hopes</p><p class="lead">英格兰男子橄榄球队处境微妙：小组赛末战对巴布亚新几内亚是热门，但要从B组和C组合并排名中突围进半决赛却是冷门，文章探讨其逆袭精神能否发挥作用。</p><ul class="points"><li>英格兰末轮对巴布亚新几内亚被看好取胜</li><li>但要从合并小组突围进半决赛处于劣势</li><li>文章讨论英格兰的underdog精神能否转化为动力</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">看半决赛前景时，先分清哪场英格兰是热门、哪场是冷门，避免把小组末战的胜算误当成突围概率。</span></blockquote><div class="src">Sky Sports · <a href="https://www.skysports.com/rugby-league/news/12040/13604915/how-england-must-harness-their-underdog-spirit-to-reach-the-rugby-league-world-cup-semi-finals" target="_blank" rel="noopener">原文</a></div></article>
+<div class="more"><button type="button">还有 1 条 · 展开</button></div>
+</section>
+<footer>生成于 2026-10-29 17:07 · 大肥鱼简报 v2 · 每天 06:00 自动更新</footer>
+</div>
+<script>window.PRESETS_HASH={"paper": {"--bg": "#f6f4ef", "--surface": "#fffefb", "--fg": "#1c1a17", "--muted": "#8a847a", "--line": "rgba(28,26,23,.10)", "--accent": "#a8452a"}, "ink": {"--bg": "#f2f4f6", "--surface": "#fbfcfd", "--fg": "#16202a", "--muted": "#7d8894", "--line": "rgba(22,32,42,.10)", "--accent": "#2f5d8a"}, "moss": {"--bg": "#f3f4ee", "--surface": "#fcfdf8", "--fg": "#1d2118", "--muted": "#828777", "--line": "rgba(29,33,24,.10)", "--accent": "#4d6141"}, "night": {"--bg": "#15161a", "--surface": "#1c1e23", "--fg": "#e8e6e1", "--muted": "#8b8a86", "--line": "rgba(232,230,225,.12)", "--accent": "#d98b5f"}};</script>
+<script>
+(function(){
+  var root=document.documentElement, KEY='fyb-share-theme';
+  var sw=document.querySelectorAll('.swatch');
+  var sz=document.querySelectorAll('.sizewrap button');
+  var saved=null;
+  try{saved=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){}
+  function apply(cfg){
+    if(!cfg) return;
+    if(cfg.vars){for(var k in cfg.vars){root.style.setProperty(k,cfg.vars[k])}}
+    if(cfg.fs){root.style.setProperty('--fs',cfg.fs)}
+    sw.forEach(function(b){b.dataset.active = (b.dataset.p===cfg.p)?'1':'0'});
+    sz.forEach(function(b){b.dataset.active = (b.dataset.fs===cfg.fs)?'1':'0'});
+  }
+  function save(cfg){try{localStorage.setItem(KEY,JSON.stringify(cfg))}catch(e){}}
+  sw.forEach(function(b){
+    b.addEventListener('click',function(){
+      var vars=JSON.parse(b.dataset.vars);
+      var cur={p:b.dataset.p,vars:vars,fs:(saved&&saved.fs)||''};
+      Object.keys(vars).forEach(function(k){root.style.setProperty(k,vars[k])});
+      apply(cur);save(cur);
+    });
+  });
+  sz.forEach(function(b){
+    b.addEventListener('click',function(){
+      var fs=b.dataset.fs, vars=saved?saved.vars:null, p=saved?saved.p:'paper';
+      var cur={p:p,vars:vars,fs:fs};
+      apply(cur);save(cur);
+    });
+  });
+  var t=document.getElementById('tbtn'), panel=document.getElementById('panel');
+  // #night 这类链接可直接指定配色；#panel 展开外观面板
+  (function(){
+    var h=(location.hash||'').replace('#','');
+    if(h && window.PRESETS_HASH && PRESETS_HASH[h]){
+      var v=PRESETS_HASH[h];
+      Object.keys(v).forEach(function(k){root.style.setProperty(k,v[k])});
+      var c={p:h,vars:v,fs:(saved&&saved.fs)||''}; save(c); apply(c);
+    }
+  })();
+  if(t){t.addEventListener('click',function(){panel.classList.toggle('open')})}
+  if((location.hash||'').indexOf('panel')>=0 && panel){panel.classList.add('open')}
+
+  // 条数密度：每个板块只露前 N 条，其余折叠进「还有 N 条」
+  var DKEY='fyb-share-density';
+  var dens=localStorage.getItem(DKEY)||document.body.getAttribute('data-limit')||'2';
+  if(['1','2','3'].indexOf(dens)<0){dens='2'}
+  var dn=document.querySelectorAll('.panel button[data-den]');
+  var VIEW='all';
+  function layout(){
+    var total=0;
+    Array.prototype.forEach.call(document.querySelectorAll('section'),function(s){
+      var inView=(VIEW==='all')||(s.getAttribute('data-dom')===VIEW);
+      s.classList.toggle('hidden-sec',!inView);
+      if(!inView){return}
+      var open=s.classList.contains('open');
+      var arts=s.querySelectorAll('article'), shown=0;
+      Array.prototype.forEach.call(arts,function(a){
+        var ord=parseInt(a.getAttribute('data-ord'),10)||0;
+        var hide=!open && ord>parseInt(dens,10);
+        a.classList.toggle('hidden',hide);
+        if(!hide){shown++}
+      });
+      total+=shown;
+      var btn=s.querySelector('.more button');      if(btn){
+        var rest=arts.length-shown;
+        if(rest>0){btn.style.display='';btn.textContent='还有 '+rest+' 条 · 展开'}
+        else{btn.style.display='none'}
+      }
+    });
+    var cnt=document.getElementById('cnt');
+    if(cnt){cnt.textContent=total+' 条'}
+    var mins=document.getElementById('mins');
+    if(mins){
+      var chars=0;
+      Array.prototype.forEach.call(document.querySelectorAll('article:not(.hidden)'),function(a){
+        if(a.closest('section.hidden-sec')){return}
+        chars+=a.textContent.length;
+      });
+      mins.textContent=Math.max(1,Math.round(chars/480));
+    }
+    Array.prototype.forEach.call(dn,function(b){b.dataset.active=(b.dataset.den===dens)?'1':'0'});
+  }
+  Array.prototype.forEach.call(dn,function(b){
+    b.addEventListener('click',function(){
+      dens=b.dataset.den;
+      try{localStorage.setItem(DKEY,dens)}catch(e){}
+      layout();
+    });
+  });
+  document.addEventListener('click',function(e){
+    var b=e.target.closest?e.target.closest('.more button'):null;
+    if(!b){return}
+    var s=b.closest('section');
+    if(s){s.classList.add('open');layout()}
+  });
+
+  // 领域切换：全部 / 科技AI / 商业财经 / 社会热点 / 生活健康 / 数码娱乐
+  var tabs=document.querySelectorAll('.tabs button');
+  function setView(v){
+    VIEW=v;
+    Array.prototype.forEach.call(tabs,function(x){
+      x.setAttribute('data-active',x.getAttribute('data-view')===v?'1':'0')
+    });
+    layout();
+  }
+  Array.prototype.forEach.call(tabs,function(b){
+    b.addEventListener('click',function(){
+      setView(b.getAttribute('data-view'));
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+  });
+  // #tech / #life 这类链接可直接打开某个领域
+  (function(){
+    var h=(location.hash||'').replace('#','');
+    if(!h){return}
+    Array.prototype.forEach.call(tabs,function(b){
+      if(b.getAttribute('data-view')===h){setView(h)}
+    });
+  })();
+
+  // 自定义背景色：按亮度自动配前景色，保证可读
+  var pick=document.getElementById('bgpick'), reset=document.getElementById('bgreset');
+  function lum(hex){
+    var m=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex||'');
+    if(!m){return 1}
+    var r=parseInt(m[1],16)/255,g=parseInt(m[2],16)/255,b=parseInt(m[3],16)/255;
+    return 0.2126*r+0.7152*g+0.0722*b;
+  }
+  function applyBg(hex){
+    var dark=lum(hex)<0.45;
+    var v= dark
+      ? {'--bg':hex,'--surface':'rgba(255,255,255,.05)','--fg':'#f2ede4','--muted':'#9d968c','--line':'rgba(255,255,255,.14)','--accent':'#d98b5f'}
+      : {'--bg':hex,'--surface':'rgba(0,0,0,.03)','--fg':'#1d1b18','--muted':'#7d776d','--line':'rgba(0,0,0,.13)','--accent':'#a8452a'};
+    Object.keys(v).forEach(function(k){root.style.setProperty(k,v[k])});
+    try{localStorage.setItem(KEY+'-bg',hex)}catch(e){}
+  }
+  if(pick){
+    var savedBg=null;
+    try{savedBg=localStorage.getItem(KEY+'-bg')}catch(e){}
+    if(savedBg){pick.value=savedBg;applyBg(savedBg)}
+    pick.addEventListener('input',function(){applyBg(pick.value)});
+  }
+  if(reset){
+    reset.addEventListener('click',function(){
+      try{localStorage.removeItem(KEY+'-bg');localStorage.removeItem(KEY)}catch(e){}
+      location.reload();
+    });
+  }
+  layout();
+  // 阅读进度
+  var bar=document.getElementById('progress');
+  function onScroll(){
+    var h=document.documentElement.scrollHeight-window.innerHeight;
+    bar.style.width=(h>0?(window.scrollY/h*100):0)+'%';
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});onScroll();
+})();
+</script>
+</body></html>

@@ -1,0 +1,17 @@
+{
+  "site_title": "肥鱼晨报",
+  "tagline": "十分钟，过一遍今天",
+  "sections": [
+    {"id": "tech", "enabled": true, "limit": 2},
+    {"id": "biz", "enabled": true, "limit": 2},
+    {"id": "society", "enabled": true, "limit": 2},
+    {"id": "life", "enabled": true, "limit": 2},
+    {"id": "digital", "enabled": true, "limit": 2}
+  ],
+  "keywords": ["DeepSeek", "芯片", "半导体", "Minecraft", "模组", "开源", "CRISPR", "量子", "机器人"],
+  "show_tips": false,
+  "show_points": true,
+  "summary_sentences": 0,
+  "items_per_section": 2,
+  "theme": "paper"
+}

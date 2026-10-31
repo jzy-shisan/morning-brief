@@ -1,0 +1,11 @@
+# 本地私有：API key 与各种缓存，别传上去
+config.json
+.summary_cache.json
+.trans_cache.json
+__pycache__/
+*.pyc
+_site/
+
+# 只有 Windows 才用的东西
+morning_brief_watchdog.py
+run_briefing.bat
