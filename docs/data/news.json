@@ -249,31 +249,6 @@
      "badge": ""
     }
    ]
-  },
-  {
-   "name": "💡 今日小公告栏",
-   "items": [
-    {
-     "title": "category · tip",
-     "summary": "",
-     "points": [],
-     "comment": "comment",
-     "source": "",
-     "link": "",
-     "badge": "",
-     "small": true
-    },
-    {
-     "title": "category · tip",
-     "summary": "",
-     "points": [],
-     "comment": "comment",
-     "source": "",
-     "link": "",
-     "badge": "",
-     "small": true
-    }
-   ]
   }
  ]
 }

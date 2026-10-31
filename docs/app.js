@@ -10,36 +10,40 @@ function go(g) { location.hash = "#/" + g; }
 function splash() {
   app.innerHTML = `
   <div class="splash">
-    <div class="logo">🐟</div>
-    <h1>大肥鱼 · 每日简报</h1>
-    <p>每天 06:00 自动整理 · 你挑一个进去</p>
+    <div class="logo">肥鱼简报</div>
+    <h1>十分钟，过一遍今天</h1>
+    <p class="sub">每天北京时间 06:00 自动整理 · 挑一个进去</p>
     <div class="choices">
       ${Object.entries(GROUPS).map(([k, v]) => `
         <button class="choice" onclick="go('${k}')">
           <span class="ico">${v.icon}</span>
           <span class="txt"><strong>${v.name}</strong><span>${v.desc}</span></span>
+          <span class="go">→</span>
         </button>`).join("")}
     </div>
   </div>`;
 }
 
 function card(it) {
-  const link = it.link ? `<a href="${esc(it.link)}" target="_blank" rel="noopener">${esc(it.title)} ↗</a>` : esc(it.title);
+  const title = esc(it.title);
   const orig = it.orig ? `<div class="orig">${esc(it.orig)}</div>` : "";
   const points = (it.points || []).length
     ? `<ul>${it.points.map(p => `<li>${esc(p)}</li>`).join("")}</ul>` : "";
   const qa = it.question ? `
-    <div class="qbox"><b>题目</b><br>${esc(it.question)}</div>
+    <div class="qbox"><b>题目</b>${esc(it.question)}</div>
     <button class="btn-answer" onclick="this.nextElementSibling.classList.toggle('show')">看答案</button>
     <div class="answer">${esc(it.answer || "")}${it.point ? `\n\n考点：${esc(it.point)}` : ""}</div>` : "";
-  const comment = it.comment ? `<div class="comment"><b>🐟 大肥鱼</b>：${esc(it.comment)}</div>` : "";
+  const comment = it.comment ? `<div class="comment"><b>🐟 大肥鱼</b>${esc(it.comment)}</div>` : "";
   const tip = it.tip ? `<div class="tip">本鱼的建议：${esc(it.tip)}</div>` : "";
+  const meta = it.badge ? `<div class="meta"><span>${esc(it.badge)}</span></div>` : "";
+  const src = (it.source || it.link)
+    ? `<p class="src">${it.source ? esc(it.source) : ""}${it.source && it.link ? '<span class="sp">·</span>' : ""}${it.link ? `<a href="${esc(it.link)}" target="_blank" rel="noopener">原文 ↗</a>` : ""}</p>`
+    : "";
   return `<article class="card ${it.small ? "small" : ""}">
-    <h4>${link}</h4>
-    ${orig}
-    <div class="meta">${it.source ? `<span>${esc(it.source)}</span>` : ""}${it.badge ? `<span>${esc(it.badge)}</span>` : ""}</div>
+    <h4>${title}</h4>
+    ${orig}${meta}
     ${it.summary ? `<p class="summary">${esc(it.summary)}</p>` : ""}
-    ${points}${qa}${comment}${tip}
+    ${points}${qa}${comment}${tip}${src}
   </article>`;
 }
 

@@ -40,6 +40,8 @@ UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like 
 
 # 合规：这些词一票否决，宁缺毋滥
 BAD_WORDS = re.compile(r"网传|传言|疑似|爆料|塌房|绯闻|私生活|去世|自杀|血腥|赌博|裸|色情")
+# 段子、测试、追更连载这类不算「谈资」，直接排除
+NOISE_WORDS = re.compile(r"【第.{1,3}[集话期]】|选一条路|测一测|测测|你适合|MBTI|性格测试|血型|塔罗|周公解梦")
 # 学生区尽量避开时政硬新闻，有别的就换别的
 SOFT_AVOID = re.compile(r"台湾|外交|政治局|军演|制裁|领导人|两会|美方|日方|坦克|导弹|战机|航母|军工")
 
@@ -144,6 +146,8 @@ def pick_candidates(*lists: list[dict], limit: int = 8) -> list[dict]:
                 continue
             it = lst[i]
             if BAD_WORDS.search(it["title"]) or BAD_WORDS.search(it["text"][:120]):
+                continue
+            if NOISE_WORDS.search(it["title"]):
                 continue
             key = re.sub(r"\W+", "", it["title"])[:20]
             if key in seen:
@@ -268,10 +272,12 @@ def build_quiz(now: dt.datetime, cfg: dict | None) -> dict | None:
 # ---------------- 渲染 ----------------
 def render(talk: dict, quiz: dict | None, now: dt.datetime, mode: str) -> str:
     d = now.strftime("%Y-%m-%d")
+    n_alt = len([x for x in talk.get("others") or [] if x.get("title")])
+    shape = f"1 梗 + {n_alt} 备选 + 1 题" if n_alt else "1 梗 + 1 题"
     lines = [
         f"# 🐟 学生简报 · {d}",
         "",
-        f"> 大肥鱼出品 · 1 梗 + 1 题 · 整理方式：{mode}",
+        f"> 大肥鱼出品 · {shape} · 整理方式：{mode}",
         "",
         "## 🗣️ 今日谈资",
         "",
@@ -280,7 +286,7 @@ def render(talk: dict, quiz: dict | None, now: dt.datetime, mode: str) -> str:
     ]
     t = talk["main"]
     if t.get("text"):
-        lines += ["**发生了什么**", "", f"- {t['text'][:200]}", ""]
+        lines += ["**发生了什么**", "", f"- {clip_summary(t['text'])}", ""]
     lines += [
         f"> 🐟 **大肥鱼**：{t.get('comment', '')}",
         "",
@@ -319,9 +325,13 @@ def clip_summary(text: str, limit: int = 200) -> str:
     if len(t) <= limit:
         return t
     cut = max(t.rfind(ch, 0, limit) for ch in "。！？")
-    if cut < int(limit * 0.55):
-        return t[:limit].rstrip("，,、；;") + "…"
-    return t[: cut + 1]
+    if cut >= int(limit * 0.55):
+        return t[: cut + 1]
+    # 没有句末标点就退到最近的逗号，别切出半句话
+    soft = max(t.rfind(ch, 0, limit) for ch in "，、；")
+    if soft >= int(limit * 0.5):
+        return t[:soft].rstrip("，、；") + "…"
+    return t[:limit].rstrip("，,、；;") + "…"
 
 
 def to_json(talk: dict, quiz: dict | None, now: dt.datetime) -> dict:

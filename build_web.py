@@ -87,21 +87,8 @@ def news_from_md(md: Path) -> dict | None:
                 "badge": "",
             })
         sections.append({"name": sec["name"], "items": items})
-    if doc.get("tips"):
-        sections.append({
-            "name": "💡 今日小公告栏",
-            "items": [{
-                "title": f"{cat} · {tip}",
-                "summary": "",
-                "points": [],
-                "comment": note,
-                "source": "",
-                "link": "",
-                "badge": "",
-                "small": True,
-            } for cat, tip, note in doc["tips"]],
-        })
-    total = sum(len(s["items"]) for s in sections if not s["name"].startswith("💡"))
+    # 小公告栏是给本人看的生活随笔，网页端不放（与分享版 show_tips=false 一致）
+    total = sum(len(s["items"]) for s in sections)
     y, mo, d = doc["date"].split("-")
     return {
         "group": "news",
@@ -145,11 +132,12 @@ def student_from_md(md: Path) -> dict | None:
                 item["link"] = (src.group(3) or "").strip()
             if item["title"]:
                 talk_items.append(item)
-        # 今天还可以聊
+        # 今天还可以聊：知乎热榜条目不单独给链接，来源统一标注
         for line in re.findall(r"^- \*\*(.+?)\*\*[^\n]*?——\s*(.+)$", body, re.M):
             it = _blank_item(_trim_title(line[0].strip()))
             it["comment"] = line[1].strip()
             it["small"] = True
+            it["source"] = "知乎热榜"
             talk_items.append(it)
 
     quiz_block = re.search(r"^## ✏️ 一道小题\s*$(.*?)(?=^## |\Z)", text, re.M | re.S)
@@ -188,7 +176,7 @@ def student_from_md(md: Path) -> dict | None:
     if talk_items:
         sections.append({"name": "🗣️ 今日谈资", "items": talk_items})
     if quiz_items:
-        subject = quiz_items[0]["source"] or "综合"
+        subject = (quiz_items[0]["title"].split("·")[0] or "").strip() or "综合"
         sections.append({"name": f"✏️ 一道小题 · {subject}", "items": quiz_items})
     return {
         "group": "student",
