@@ -2,7 +2,7 @@
  "group": "news",
  "date": "2026-11-01",
  "title": "新闻简报",
- "subtitle": "2026年11月01日 · 共 15 条",
+ "subtitle": "2026年11月1日 · 共 15 条",
  "sections": [
   {
    "name": "科技 AI",
@@ -254,20 +254,20 @@
    "name": "💡 今日小公告栏",
    "items": [
     {
-     "title": "电脑 · 建项目先 python -m venv .venv，别把包装进系统 Python。",
+     "title": "category · tip",
      "summary": "",
      "points": [],
-     "comment": "污染全局环境的家伙，迟早要重装系统。",
+     "comment": "comment",
      "source": "",
      "link": "",
      "badge": "",
      "small": true
     },
     {
-     "title": "认知 · 主动回忆：合上书默写，比反复划重点强得多。",
+     "title": "category · tip",
      "summary": "",
      "points": [],
-     "comment": "荧光笔划满整页，脑子一片空白。",
+     "comment": "comment",
      "source": "",
      "link": "",
      "badge": "",
