@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 把已经生成好的 Markdown 回填成网页数据（不联网、不调模型）。
 
@@ -122,7 +122,7 @@ def student_from_md(md: Path) -> dict | None:
                 continue
             sm = re.search(r"^\s*- (.+)$", rest, re.M)
             if sm:
-                it["summary"] = _clip(sm.group(1).strip(), 350 if not small else 200)
+                it["summary"] = _clip(sm.group(1).strip(), 350 if not small else 320)
             cm = re.search(r"> 🐟 \*\*大肥鱼\*\*：(.+)", rest)
             if cm:
                 it["comment"] = cm.group(1).strip()
@@ -168,7 +168,7 @@ def student_from_md(md: Path) -> dict | None:
                 it["source"] = "知乎热榜"
                 alt_items.append(it)
 
-    quiz_block = re.search(r"^## ✏️ 一道小题\s*$(.*?)(?=^## |\Z)", text, re.M | re.S)
+    quiz_block = re.search(r"^## ✏️ (?:一道小题|小试鱼刀)\s*$(.*?)(?=^## |\Z)", text, re.M | re.S)
     if quiz_block:
         body = quiz_block.group(1)
         for chunk in re.split(r"^### ", body, flags=re.M)[1:]:
@@ -177,6 +177,9 @@ def student_from_md(md: Path) -> dict | None:
             qm = re.search(r"\*\*题目\*\*：(.+)", rest)
             if qm:
                 it["question"] = qm.group(1).strip()
+            solm = re.search(r"\*\*解析\*\*：\s*\n+\s*(.+?)\n\s*\n", rest, re.S)
+            if solm:
+                it["solution"] = solm.group(1).strip()
             am = re.search(r"\*\*答案\*\*：\s*\n+\s*(.+?)\n\s*\n", rest, re.S)
             if am:
                 it["answer"] = am.group(1).strip()
@@ -209,7 +212,7 @@ def student_from_md(md: Path) -> dict | None:
         sections.append({"name": "🐟 大肥鱼解忧铺", "items": comfort_items})
     if quiz_items:
         subject = (quiz_items[0]["title"].split("·")[0] or "").strip() or "综合"
-        sections.append({"name": f"✏️ 一道小题 · {subject}", "items": quiz_items})
+        sections.append({"name": f"✏️ 小试鱼刀 · {subject}", "items": quiz_items})
     d_obj = dt.date.fromisoformat(date)
     pretty = f"{d_obj.year}年{d_obj.month}月{d_obj.day}日"
     return {

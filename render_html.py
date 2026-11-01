@@ -942,7 +942,7 @@ def build_index(cfg: dict) -> Path:
     html = f"""<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>肥鱼晨报 · 往期</title>
+<title>肥鱼晨报 · 查看往期晨报</title>
 <style>
 :root{{--bg:{t['bg']};--fg:{t['fg']};--muted:{t['muted']};--line:{t['line']};--accent:{t['accent']}}}
 *{{box-sizing:border-box}}
@@ -972,7 +972,7 @@ li a:hover .d{{color:var(--accent)}}
 footer{{margin-top:44px;font-size:12px;color:var(--muted);text-align:center}}
 </style></head><body><div class="wrap">
 <div class="brand">肥鱼晨报</div>
-<h1>往期</h1>
+<h1>往期晨报</h1>
 <p class="lead">每天早上自动更新，最新一期排在最前。</p>
 <a class="latest" href="share/{quote(latest_file)}">
   <div class="k">最新一期</div>

@@ -1,6 +1,6 @@
 const GROUPS = {
-  news:    { icon: "🌊", name: "新闻简报", desc: "前沿 · 世界 · 财经 · 体育" },
-  student: { icon: "🎒", name: "学生简报", desc: "肥鱼主推 + 小鱼的碎碎念 + 一道小题" },
+  news:    { name: "新闻简报", desc: "前沿 · 世界 · 财经 · 体育" },
+  student: { name: "学生简报", desc: "肥鱼主推 · 碎碎念 · 解忧铺 · 小试鱼刀" },
 };
 const app = document.getElementById("app");
 const esc = (s = "") => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -12,11 +12,9 @@ function splash() {
   <div class="splash">
     <div class="logo">肥鱼简报</div>
     <h1>十分钟，过一遍今天</h1>
-    <p class="sub">每天北京时间 06:00 自动整理 · 挑一个进去</p>
     <div class="choices">
       ${Object.entries(GROUPS).map(([k, v]) => `
         <button class="choice" onclick="go('${k}')">
-          <span class="ico">${v.icon}</span>
           <span class="txt"><strong>${v.name}</strong><span>${v.desc}</span></span>
           <span class="go">→</span>
         </button>`).join("")}
@@ -31,8 +29,8 @@ function card(it) {
     ? `<ul>${it.points.map(p => `<li>${esc(p)}</li>`).join("")}</ul>` : "";
   const qa = it.question ? `
     <div class="qbox"><b>题目</b>${esc(it.question)}</div>
-    <button class="btn-answer" onclick="this.nextElementSibling.classList.toggle('show')">看答案</button>
-    <div class="answer">${esc(it.answer || "")}${it.point ? `\n\n考点：${esc(it.point)}` : ""}</div>` : "";
+    <button class="btn-answer" onclick="this.nextElementSibling.classList.toggle('show')">看解析</button>
+    <div class="answer">${it.solution ? `${esc(it.solution)}\n\n` : ""}${esc(it.answer || "")}${it.point ? `\n\n考点：${esc(it.point)}` : ""}</div>` : "";
   const comment = it.comment ? `<div class="comment"><b>🐟 大肥鱼</b>${esc(it.comment)}</div>` : "";
   const tip = it.tip ? `<div class="tip">本鱼的建议：${esc(it.tip)}</div>` : "";
   const meta = it.badge ? `<div class="meta"><span>${esc(it.badge)}</span></div>` : "";
@@ -81,10 +79,10 @@ async function load(group) {
     const body = document.getElementById("body");
     if (!data.sections || !data.sections.length) throw new Error("empty");
     body.innerHTML = `
-      <div class="intro"><h2>${esc(data.title || g.name)}</h2>
-        ${group === "news" ? `<p class="arch"><a href="archive.html">往期存档 →</a></p>` : ""}</div>
+      <div class="intro"><h2>${esc(data.title || g.name)}</h2></div>
       ${data.sections.map(s => `<section class="sec"><h3>${esc(s.name)}</h3>
-        ${itemsHtml(s.items || [])}</section>`).join("")}`;
+        ${itemsHtml(s.items || [])}</section>`).join("")}
+      <p class="past"><a href="archive.html">查看往期晨报 →</a></p>`;
   } catch (e) {
     document.getElementById("body").innerHTML = `
       <div class="state"><div class="big">🫧</div><h3>今天的内容还没生成</h3>

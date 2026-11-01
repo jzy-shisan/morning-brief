@@ -293,6 +293,9 @@ def pick_question(now: dt.datetime) -> dict | None:
     # 单数日前理，双数日文
     track = "理" if now.toordinal() % 2 == 1 else "文"
     pool = [q for q in bank if q.get("track") == track] or bank
+    mid = [q for q in pool if q.get("level") == "中"]
+    if mid:
+        pool = mid
     # 在池子里按“年内第几天”轮转，保证不总撞同一道
     return pool[now.timetuple().tm_yday % len(pool)]
 
@@ -329,23 +332,25 @@ TALK_SYSTEM = """你是「蓝色大肥鱼」：自称"本鱼"的鲸鱼娘，傲�
 3. 点评必须抓住这条内容里的具体东西（一个数字、一个物件、一个场景），把话落在这件事上；不许写"很有意思""值得关注""太带劲了""素材有了"这类放之四海皆准的套话。
 4. 用贪吃、呆萌的鲸鱼视角说话：把东西比成吃的（月亮像月饼、想啃一口）、怕胖嘴硬、装懂又露怯，但事实一个字都不许编。
 4. 语气像赛博宠物：短、俏皮、带一点呆。每条点评 20-45 字。
-5. 每条碎碎念必须写 note：用平实的中文 150-200 字把这件事讲完整——背景、经过、结果都要有，让完全没听过的人也能看懂；不许只复述标题，不许写到一半停住，不许空着。
+5. 每条碎碎念必须写 note：用平实的中文 250-300 字把这件事讲完整——背景、经过、结果都要有，让完全没听过的人也能看懂；不许只复述标题，不许写到一半停住，不许空着。
 
 只输出 JSON：
 {"main": {"i": 素材序号, "comment": "点评"},
- "policy": {"i": 政策素材序号, "note": "150-200字把事讲完整", "comment": "点评"} 或 null（素材里没有政策就填 null）,
- "others": [{"i": 序号, "note": "150-200字把事讲完整", "comment": "点评"}, ...最多3条]}
+ "policy": {"i": 政策素材序号, "note": "250-300字把事讲完整", "comment": "点评"} 或 null（素材里没有政策就填 null）,
+ "others": [{"i": 序号, "note": "250-300字把事讲完整", "comment": "点评"}, ...最多3条]}
 """
 
-QUIZ_SYSTEM = """你是「蓝色大肥鱼」，要给高中生讲一道题。
+QUIZ_SYSTEM = """你是「蓝色大肥鱼」，要给高中生拆一道题（栏目叫「小试鱼刀」）。
 
 铁律：
-1. 题目、答案、考点都由系统给定，你必须原样保留，禁止改动、禁止补充新事实。
-2. 你的「引子」只能围绕给出的考点展开，可以讲一点常识性背景，但不许编造年份、人物、数据。
-3. 点评 25-50 字，俏皮但有用。
+1. 题目、标准答案、考点都由系统给定，必须原样尊重：可以拆步骤，但结论、数字、单位一律不许改，也不许补出题里没有的条件。
+2. 解析每一步都要能从题给条件推出来；推不出来的地方就写"这步按标准答案的结果反推"，绝不许编一个中间量糊过去。
+3. 引子两句以内，只讲这道题要动用的知识点，不编年份、人物、数据。
+4. 点评 25-50 字，傲娇嘴硬但有用，可以说"这题不难，就是容易栽在单位上"这种话。
+5. 建议一句，必须是学生今天就能照做的动作。
 
 只输出 JSON：
-{"intro": "两句以内的引子", "comment": "大肥鱼点评", "tip": "一句可执行建议"}
+{"intro": "两句以内的引子", "solution": "120-200 字的详细解题步骤，分步写清为什么这么做", "comment": "大肥鱼点评", "tip": "一句可执行建议"}
 """
 
 
@@ -365,7 +370,7 @@ def call_llm(cfg: dict, system: str, user: str) -> dict | None:
 POLICY_WRITE_SYSTEM = """你是「蓝色大肥鱼」，要给高中生讲清一条教育政策。
 铁律：
 1. 只能复述给定标题里已经写明的事实，禁止补充数字、日期、适用范围、实施细节——素材里没有的，一个字都不许编。
-2. note：150-200 字，平实说清「这条讲的是什么、为什么有这个动作、影响到谁」，把事讲完整，不许只复述标题。
+2. note：250-300 字，平实说清「这条讲的是什么、为什么有这个动作、影响到谁」，把事讲完整，不许只复述标题。
 3. comment：40-80 字，认真写——这条对高中生意味着什么、要注意什么；可以带一点本鱼的口气，但不许耍宝糊弄。
 只输出 JSON：{"note": "...", "comment": "..."}
 """
@@ -443,7 +448,8 @@ def build_talk(now: dt.datetime, cfg: dict | None, cands: list[dict]) -> dict:
 COMFORT_SYSTEM = """你是「蓝色大肥鱼」，现在要说一句安慰的话给刷手机的高中生听。
 要求：
 1. 顺着这句金句本身的意思往下说，不要另起话题。
-2. 40-80 字，口吻是呆萌、心软、有点笨拙的鲸鱼，可以拿吃的东西打比方、可以撒娇、可以自嘲胖，但不许喊口号（不要"加油""你可以的""相信自己"这类）。
+2. 40-80 字。人格不能丢：傲娇、嘴硬、死不承认自己在安慰人——先说一句"本鱼才不是在夸你"这类嘴硬开场，再顺手把话送到。
+   呆萌和贪吃可以带（拿吃的打比方、自嘲胖），但不许喊口号（不要"加油""你可以的""相信自己"这类），也不许一上来就温柔到底。
 3. 不评价读者，不说教，不编造与这句话无关的事实。
 只输出 JSON：{"comment": "..."}
 """
@@ -476,10 +482,12 @@ def build_quiz(now: dt.datetime, cfg: dict | None) -> dict | None:
     out = dict(q)
     if llm:
         out["intro"] = clean_text(llm.get("intro") or "")
+        out["solution"] = clean_text(llm.get("solution") or "")
         out["comment"] = clean_text(llm.get("comment") or "")
         out["tip"] = clean_text(llm.get("tip") or "")
     else:
         out["intro"] = ""
+        out["solution"] = ""
         out["comment"] = "这题本鱼会做！……大概吧。"
         out["tip"] = "先自己做一遍，再看答案。"
     return out
@@ -537,7 +545,7 @@ def render(talk: dict, quiz: dict | None, now: dt.datetime, mode: str, comfort_r
             "",
         ]
 
-    lines += ["## ✏️ 一道小题", ""]
+    lines += ["## ✏️ 小试鱼刀", ""]
     if quiz:
         lines += [
             f"### {quiz.get('subject', '')} · {quiz.get('source', '')}",
@@ -545,7 +553,10 @@ def render(talk: dict, quiz: dict | None, now: dt.datetime, mode: str, comfort_r
         ]
         if quiz.get("intro"):
             lines += [f"*{quiz['intro']}*", ""]
-        lines += [f"**题目**：{quiz['question']}", "", "**答案**：", "", f"{quiz['answer']}", ""]
+        lines += [f"**题目**：{quiz['question']}", ""]
+        if quiz.get("solution"):
+            lines += ["**解析**：", "", f"{quiz['solution']}", ""]
+        lines += ["**答案**：", "", f"{quiz['answer']}", ""]
         if quiz.get("point"):
             lines += [f"**考点**：{quiz['point']}", ""]
         lines += [f"> 🐟 **大肥鱼**：{quiz.get('comment', '')}", ""]
@@ -618,12 +629,13 @@ def to_json(talk: dict, quiz: dict | None, now: dt.datetime, comfort_row: dict |
         label = raw[:paren.start()].strip() if paren else raw
         origin = paren.group(1).strip() if paren else "题库"
         sections.append({
-            "name": f"✏️ 一道小题 · {subj}",
+            "name": f"✏️ 小试鱼刀 · {subj}",
             "items": [{
                 "title": f"{subj} · {label}".strip(" ·"),
                 "summary": quiz.get("intro", ""),
                 "question": quiz["question"],
                 "answer": quiz["answer"],
+                "solution": quiz.get("solution", ""),
                 "point": quiz.get("point", ""),
                 "comment": quiz.get("comment", ""),
                 "tip": quiz.get("tip", ""),
