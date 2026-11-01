@@ -87,6 +87,13 @@ def news_from_md(md: Path) -> dict | None:
                 "badge": "",
             })
         sections.append({"name": sec["name"], "items": items})
+    # 「今天三句话」：从 Markdown 里那行 blockquote 抠出来
+    digest = []
+    for line in md.read_text("utf-8").splitlines():
+        if "今天三句话" in line:
+            body = line.split("：", 1)[-1]
+            digest = [x.strip(" ①②③·") for x in re.split(r"[①②③]", body) if x.strip(" ①②③·")]
+            break
     # 小公告栏是给本人看的生活随笔，网页端不放（与分享版 show_tips=false 一致）
     total = sum(len(s["items"]) for s in sections)
     y, mo, d = doc["date"].split("-")
@@ -95,6 +102,7 @@ def news_from_md(md: Path) -> dict | None:
         "date": doc["date"],
         "title": "新闻简报",
         "subtitle": f"{y}年{int(mo)}月{int(d)}日 · 共 {total} 条",
+        "digest": digest,
         "sections": sections,
     }
 

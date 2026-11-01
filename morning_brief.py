@@ -827,7 +827,7 @@ def llm_summaries(cfg: dict, items: list[dict]) -> dict[int, dict]:
             "4) p 是 3-5 条内容摘要，每条 20-50 字，分点讲清细节（数据、对比、影响），不要和 s 重复；\n"
             "5) c 是「大肥鱼点评」，70-120 字，用大肥鱼的口气：先给判断（值不值得看、成色如何），"
             "再说门道（坑在哪、谁受益、别被什么词忽悠），可以损两句但不刻薄；"
-            "禁止「值得关注」「意义重大」「不容错过」这类空话，禁止称呼读者，不用「你/我」；\n"
+            "禁止「值得关注」「意义重大」「不容错过」这类空话；禁止用「成色」「门道」「这波」「忽悠」「有一说一」「不吹不黑」「说到底」这些用滥的说法；禁止称呼读者，不用「你/我」；\n"
             "6) 不要出现 markdown 符号。\n\n"
             + listing
         )
@@ -852,6 +852,109 @@ def llm_summaries(cfg: dict, items: list[dict]) -> dict[int, dict]:
                 log("→ API Key 无效或没权限，剩下的批次不再尝试")
                 break
     return results
+
+
+BANNED_WORDS = ["成色", "门道", "这波", "忽悠", "有一说一", "不吹不黑", "说到底",
+                "值得一提的是", "话说回来", "总的来说", "换句话说", "值得关注", "意义重大", "不容错过"]
+BANNED_MAP = {"成色": "底子", "门道": "关键", "这波": "这次", "忽悠": "糊弄",
+              "有一说一": "直说", "不吹不黑": "客观说", "说到底": "归根到底",
+              "值得一提的是": "另外", "话说回来": "退一步说", "总的来说": "整体看",
+              "换句话说": "也就是说", "值得关注": "可以留意", "意义重大": "影响不小",
+              "不容错过": "别漏了"}
+
+
+def style_fix(cfg: dict, selected: dict[str, list[dict]]) -> int:
+    """把点评里用滥的口头禅换掉：先让模型重写，失败就本地替换。返回改了几条。"""
+    targets = []
+    for domain, items in selected.items():
+        for it in items:
+            c = it.get("comment") or ""
+            if any(w in c for w in BANNED_WORDS):
+                targets.append(it)
+    if not targets:
+        return 0
+    fixed = 0
+    for start in range(0, len(targets), 6):
+        chunk = targets[start:start + 6]
+        listing = "\n\n".join(f"[{i}] {it['comment']}" for i, it in enumerate(chunk))
+        user = ("下面每条是新闻短评。请在不改变观点和信息的前提下改写，"
+                "去掉这些用滥的说法：成色、门道、这波、忽悠、有一说一、不吹不黑、说到底、"
+                "值得一提的是、话说回来、总的来说、换句话说。保持原来的口气和长度（70-120 字），"
+                "每条换成具体的说法。严格输出 JSON 数组：[{\"i\":序号,\"c\":\"改写后\"}]\n\n" + listing)
+        try:
+            raw = llm_request(cfg, [{"role": "system", "content": "你是中文编辑，只做改写，不添加事实。"},
+                                    {"role": "user", "content": user}], timeout=60)
+            raw = raw.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
+            left, right = raw.find("["), raw.rfind("]")
+            for row in json.loads(raw[left:right + 1]):
+                idx = int(row.get("i", -1))
+                new = clean(row.get("c", ""))
+                if 0 <= idx < len(chunk) and new and len(new) >= 40:
+                    chunk[idx]["comment"] = new
+                    fixed += 1
+        except Exception as exc:  # noqa: BLE001
+            log(f"⚠ 点评改写失败，改用本地替换：{str(exc)[:60]}")
+    for it in targets:
+        c = it.get("comment") or ""
+        if any(w in c for w in BANNED_WORDS):
+            for bad, good in BANNED_MAP.items():
+                c = c.replace(bad, good)
+            it["comment"] = c
+            fixed += 1
+    return fixed
+
+
+def verify_numbers(item: dict) -> int:
+    """标题/要点里的数字必须能在原文里找到，对不上的点直接删掉。返回删了几条。"""
+    src = (item.get("text") or "") + " " + (item.get("title") or "")
+    src_nums = set(re.findall(r"\d+(?:\.\d+)?", src))
+    if not src_nums:
+        return 0
+    dropped = 0
+    kept = []
+    for point in item.get("points") or []:
+        nums = re.findall(r"\d+(?:\.\d+)?", point)
+        bad = [n for n in nums if n not in src_nums and len(n) > 1]
+        if bad:
+            dropped += 1
+            continue
+        kept.append(point)
+    item["points"] = kept
+    return dropped
+
+
+def build_digest(cfg: dict, selected: dict[str, list[dict]], fallback: bool = True) -> list[str]:
+    """今天最值得知道的三件事。模型失败就用每条的核心观点第一句兜底。"""
+    heads = []
+    for domain in DOMAIN_ORDER:
+        for it in selected.get(domain, [])[:2]:
+            heads.append(f"- {DOMAIN_TITLES[domain]}｜{it.get('title_zh') or it['title']}｜{(it.get('summary') or '')[:80]}")
+    if not heads:
+        return []
+    user = ("下面是今天的新闻清单。请挑出最值得普通读者知道的 3 条，写成三句中文提示，"
+            "每句 20-40 字，直接说是什么事、为什么重要，不要编号，不要「值得关注」这类空话，"
+            "严格输出 JSON 数组：[] 里三个字符串。\n\n" + "\n".join(heads))
+    try:
+        raw = llm_request(cfg, [{"role": "system", "content": "你是中文新闻编辑，只做挑选和概括。"},
+                                {"role": "user", "content": user}], timeout=60)
+        raw = raw.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
+        left, right = raw.find("["), raw.rfind("]")
+        data = [clean(x) for x in json.loads(raw[left:right + 1]) if clean(x)]
+        if len(data) >= 2:
+            return data[:3]
+    except Exception as exc:  # noqa: BLE001
+        log(f"⚠ 三句话生成失败：{str(exc)[:60]}")
+    if not fallback:
+        return []
+    out = []
+    for domain in DOMAIN_ORDER:
+        for it in selected.get(domain, []):
+            first = re.split(r"[。！？]", it.get("summary") or "")
+            if first and len(first[0]) >= 10:
+                out.append(first[0][:40])
+            if len(out) == 3:
+                return out
+    return out
 
 
 def fallback_comment(item: dict) -> str:
@@ -1026,7 +1129,8 @@ def pick_tips(day: str, count: int = 2) -> list[tuple[str, str, str]]:
     return rng.sample(TIPS, count)
 
 
-def render(selected: dict[str, list[dict]], stats: dict, tips, now: dt.datetime, mode: str) -> str:
+def render(selected: dict[str, list[dict]], stats: dict, tips, now: dt.datetime, mode: str,
+           digest: list[str] | None = None) -> str:
     total = sum(len(v) for v in selected.values())
     weekday = "一二三四五六日"[now.weekday()]
     lines = [
@@ -1036,6 +1140,12 @@ def render(selected: dict[str, list[dict]], stats: dict, tips, now: dt.datetime,
         f"{'全中文整理' if mode in ('模型', '缓存', '机器翻译') else '部分原文'}",
         "",
     ]
+
+    if digest:
+        nums = "①②③"
+        lines.append("> 🎯 **今天三句话**：" + " ".join(
+            f"{nums[i] if i < 3 else '·'} {d}" for i, d in enumerate(digest)))
+        lines.append("")
 
     for domain in DOMAIN_ORDER:
         items = selected[domain]
@@ -1090,7 +1200,52 @@ def render(selected: dict[str, list[dict]], stats: dict, tips, now: dt.datetime,
 DOCS_DATA = BASE_DIR / "docs" / "data"
 
 
-def write_web(selected: dict[str, list[dict]], tips, now: dt.datetime) -> Path:
+def write_state(ok: bool, now: dt.datetime, extra: dict | None = None) -> None:
+    """给网页端看的运行状态：今天到底更新没有、为什么没更新。"""
+    DOCS_DATA.mkdir(parents=True, exist_ok=True)
+    path = DOCS_DATA / "state.json"
+    old = {}
+    try:
+        old = json.loads(path.read_text("utf-8"))
+    except Exception:  # noqa: BLE001
+        old = {}
+    old.update({
+        "ok": bool(ok),
+        "at": now.strftime("%Y-%m-%d %H:%M"),
+        "date": now.strftime("%Y-%m-%d"),
+        **(extra or {}),
+    })
+    path.write_text(json.dumps(old, ensure_ascii=False, indent=1), "utf-8")
+
+
+def drop_repeats(selected: dict[str, list[dict]], now: dt.datetime, days: int = 3) -> int:
+    """同一件事前几天上过，今天就不再占位（跨源转载很常见）。"""
+    path = BASE_DIR / ".seen_titles.json"
+    try:
+        seen = json.loads(path.read_text("utf-8"))
+    except Exception:  # noqa: BLE001
+        seen = {}
+    today = now.strftime("%Y-%m-%d")
+    keep_after = (now - dt.timedelta(days=days)).strftime("%Y-%m-%d")
+    seen = {k: v for k, v in seen.items() if v >= keep_after}
+    dropped = 0
+    for domain, items in selected.items():
+        kept = []
+        for it in items:
+            key = normalize_key(it["title"])[:32]
+            if key and key in seen:
+                dropped += 1
+                continue
+            kept.append(it)
+        selected[domain] = kept
+    for items in selected.values():
+        for it in items:
+            seen[normalize_key(it["title"])[:32]] = today
+    path.write_text(json.dumps(seen, ensure_ascii=False, indent=0), "utf-8")
+    return dropped
+
+
+def write_web(selected: dict[str, list[dict]], tips, now: dt.datetime, digest=None) -> Path:
     """给网页端（docs/）用的精简数据，字段和 app.js 对齐。"""
     try:
         from render_html import split_title
@@ -1133,6 +1288,7 @@ def write_web(selected: dict[str, list[dict]], tips, now: dt.datetime) -> Path:
         "date": now.strftime("%Y-%m-%d"),
         "title": "新闻简报",
         "subtitle": f"{now:%Y年%m月%d日} · 共 {sum(len(v) for v in selected.values())} 条",
+        "digest": digest or [],
         "sections": sections,
     }
     DOCS_DATA.mkdir(parents=True, exist_ok=True)
@@ -1189,6 +1345,10 @@ def main() -> int:
             log(f"✗ 只抓到 {total} 条，判断为网络异常，保留上一次的简报，不覆盖")
             return 1
 
+        dropped_rep = drop_repeats(selected, now)
+        if dropped_rep:
+            log(f"跨期去重：{dropped_rep} 条是前几天的同一件事，已跳过")
+
         fill_missing_text(selected)
 
         use_llm = not args.no_llm
@@ -1196,7 +1356,14 @@ def main() -> int:
         log(f"整理方式：{mode}")
 
         tips = pick_tips(now.strftime("%Y-%m-%d"))
-        text = render(selected, stats, tips, now, mode)
+        digest = build_digest(cfg, selected)
+        fixed = style_fix(cfg, selected)
+        if fixed:
+            log(f"点评去口头禅：改写 {fixed} 条")
+        dropped = sum(verify_numbers(it) for items in selected.values() for it in items)
+        if dropped:
+            log(f"数字核对：删掉 {dropped} 条对不上原文的要点")
+        text = render(selected, stats, tips, now, mode, digest)
 
         out = Path(args.out)
         out.parent.mkdir(parents=True, exist_ok=True)
@@ -1206,7 +1373,7 @@ def main() -> int:
         (HIST_DIR / f"{now:%Y-%m-%d}.md").write_text(text, encoding="utf-8")
 
         try:
-            log(f"✅ 网页数据：{write_web(selected, tips, now).name}")
+            log(f"✅ 网页数据：{write_web(selected, tips, now, digest).name}")
         except Exception as exc:  # noqa: BLE001
             log(f"⚠ 网页数据写出失败：{exc}")
 
@@ -1230,6 +1397,7 @@ def main() -> int:
                     recent_links[link] = now.strftime("%Y-%m-%d")
         save_seen(recent_links, now)
 
+        write_state(True, now, {"news": sum(len(v) for v in selected.values()), "mode": mode})
         log(f"✅ 已生成：{out}（{len(text)} 字）")
         return 0
     finally:
@@ -1245,4 +1413,8 @@ if __name__ == "__main__":
         import traceback
 
         log("✗ 运行失败：\n" + traceback.format_exc())
+        try:
+            write_state(False, dt.datetime.now(), {"error": traceback.format_exc().strip().splitlines()[-1][:160]})
+        except Exception:  # noqa: BLE001
+            pass
         raise SystemExit(1)

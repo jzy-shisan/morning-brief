@@ -655,6 +655,23 @@ def to_json(talk: dict, quiz: dict | None, now: dt.datetime, comfort_row: dict |
     }
 
 
+def write_state(ok: bool, now, extra=None) -> None:
+    """给网页端看的运行状态（学生版）。"""
+    import json as _json
+    from morning_brief import BASE_DIR as _B
+    d = _B / "docs" / "data"
+    d.mkdir(parents=True, exist_ok=True)
+    path = d / "state.json"
+    old = {}
+    try:
+        old = _json.loads(path.read_text("utf-8"))
+    except Exception:
+        old = {}
+    old.update({"student_ok": bool(ok), "student_at": now.strftime("%Y-%m-%d %H:%M"),
+                **(extra or {})})
+    path.write_text(_json.dumps(old, ensure_ascii=False, indent=1), "utf-8")
+
+
 def main() -> int:
     try:
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -727,9 +744,21 @@ def main() -> int:
     DOCS_DATA.mkdir(parents=True, exist_ok=True)
     STUDENT_JSON.write_text(json.dumps(to_json(talk, quiz, now, comfort_row), ensure_ascii=False, indent=1), "utf-8")
 
+    write_state(True, now, {"student_items": len(talk.get("main") or []) + len(talk.get("others") or [])})
     log(f"✅ 学生简报已生成（{len(text)} 字，{mode}）")
     return 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    import datetime as _dt
+    try:
+        raise SystemExit(main())
+    except SystemExit:
+        raise
+    except Exception:
+        import traceback
+        try:
+            write_state(False, _dt.datetime.now(), {"student_error": traceback.format_exc().strip().splitlines()[-1][:160]})
+        except Exception:
+            pass
+        raise

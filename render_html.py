@@ -88,7 +88,8 @@ EMOJI_RE = re.compile(r"[\U0001F000-\U0001FAFF\u2600-\u27BF\uFE0F]+\s*")
 # --------------------------------------------------------------------------- #
 def parse_markdown(text: str) -> dict:
     lines = text.replace("\r\n", "\n").split("\n")
-    doc = {"date": "", "weekday": "", "meta": "", "sections": [], "tips": [], "footer": ""}
+    doc = {"date": "", "weekday": "", "meta": "", "sections": [], "tips": [],
+        "digest": [], "footer": ""}
     cur_section = None
     cur_item = None
     in_points = False
@@ -167,6 +168,11 @@ def parse_markdown(text: str) -> dict:
 
         if stripped.startswith("*生成于"):
             doc["footer"] = stripped.strip("*").strip()
+            continue
+
+        if "今天三句话" in stripped:
+            body = stripped.split("：", 1)[-1]
+            doc["digest"] = [x.strip(" ①②③·…") for x in re.split(r"[①②③]", body) if x.strip(" ①②③·…")]
             continue
 
         if cur_item is None:
@@ -406,6 +412,11 @@ h1{font-family:var(--serif);font-weight:600;font-size:clamp(30px,5vw,42px);
   line-height:1.3;margin:0 0 14px;letter-spacing:.01em}
 .date{font-size:13px;letter-spacing:.3em;color:var(--muted);text-transform:uppercase}
 .tagline{margin-top:18px;font-family:var(--serif);font-size:15px;color:var(--muted);letter-spacing:.06em}
+.digest{margin:34px 0 6px;padding:18px 20px;border-left:2px solid var(--accent);background:color-mix(in srgb,var(--accent) 5%,transparent)}
+.digest .lb{display:block;font:600 11px/1 -apple-system,"PingFang SC",sans-serif;letter-spacing:.22em;color:var(--accent);margin-bottom:10px}
+.digest ol{margin:0;padding-left:1.35em}
+.digest li{margin:6px 0;font-size:15px;line-height:1.75}
+.digest li::marker{color:var(--muted);font-size:13px}
 .rule{width:36px;height:1px;background:var(--accent);margin:26px auto 0;opacity:.7}
 
 /* 板块 */
@@ -720,6 +731,15 @@ def split_title(raw: str) -> tuple[str, str]:
         # 两边都是中文、括号里只是把标题又说了一遍 → 丢掉括号内容
         if head_cjk and tail_cjk and _same_saying(head, tail):
             return head, ""
+    # 中文译名里还带括号（嵌套），TITLE_PAREN 匹配不到：退一步按第一个左括号切
+    idx = text.find("（")
+    if idx < 0:
+        idx = text.find("(")
+    if idx > 0 and text.rstrip().endswith(("）", ")")):
+        head = text[:idx].strip()
+        tail = text[idx:].strip()[1:-1].strip()
+        if head and not re.search(r"[\u4e00-\u9fff]", head) and re.search(r"[\u4e00-\u9fff]", tail):
+            return tail, head
     return text, ""
 
 
@@ -861,6 +881,10 @@ def render_html(doc: dict, cfg: dict, *, nav: str = "") -> str:
     parts.append('<div class="rule"></div>')
     parts.append("</header>")
 
+    if doc.get("digest"):
+        lis = "".join(f"<li>{html.escape(x)}</li>" for x in doc["digest"][:3])
+        parts.append(f'<div class="digest"><span class="lb">今天三句话</span><ol>{lis}</ol></div>')
+
     # 领域切换（全部 + 各领域）
     secs = enabled_sections(doc, cfg)
     present = {s["id"] for s in secs}
@@ -944,12 +968,22 @@ def build_index(cfg: dict) -> Path:
     t = {k.lstrip('-'): v for k, v in theme_vars(cfg.get("theme", "paper")).items()}
     latest_date, latest_label, latest_week, latest_count, _, latest_file = rows[0]
     items = []
+    cur_month = None
     for date, label, week, count, fields, fname in rows:
         sub = " · ".join(x for x in (week, count, fields) if x)
+        month = date[:7]
+        if month != cur_month:
+            cur_month = month
+            if items:
+                items.append("</ul>")
+            y_m = f"{month[:4]} 年 {int(month[5:7])} 月" if month else "更早"
+            items.append(f'<h2 class="month">{y_m}</h2><ul class="list">')
         items.append(
-            f'<li><a href="share/{quote(fname)}"><span class="d">{label}</span>'
+            f'<li data-s="{label} {sub}"><a href="share/{quote(fname)}"><span class="d">{label}</span>'
             f'<span class="m">{sub}</span></a></li>'
         )
+    if rows and rows[0][0]:
+        items.append("</ul>")
 
     html = f"""<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8">
@@ -982,6 +1016,12 @@ li a:hover .d{{color:var(--accent)}}
 .m{{color:var(--muted);font-size:12.5px;text-align:right;flex:1 1 auto;min-width:0;
  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
 footer{{margin-top:44px;font-size:12px;color:var(--muted);text-align:center}}
+.search{{margin:0 0 8px}}
+.search input{{width:100%;font:inherit;font-size:14px;padding:10px 14px;border-radius:999px;
+ border:1px solid var(--line);background:transparent;color:var(--fg);outline:none}}
+.search input:focus{{border-color:var(--accent)}}
+h2.month{{margin-top:30px}}
+li.hide{{display:none}}
 </style></head><body><div class="wrap">
 <div class="brand">肥鱼晨报</div>
 <h1>往期晨报</h1>
@@ -991,12 +1031,25 @@ footer{{margin-top:44px;font-size:12px;color:var(--muted);text-align:center}}
   <div class="n">{latest_label} {latest_week}</div>
   <div class="s">{latest_count or '点开看看'} · 点击阅读</div>
 </a>
-<h2>全部</h2>
-<ul>
+<div class="search"><input id="q" type="search" placeholder="搜日期或板块，比如「科技」「11 月」" aria-label="搜索往期"></div>
 {chr(10).join(items)}
-</ul>
 <footer><a href="./" style="color:inherit;text-decoration:none;border-bottom:1px solid currentColor;opacity:.7">← 返回首页</a> · 十分钟，过一遍今天</footer>
-</div></body></html>
+</div>
+<script>
+var q=document.getElementById("q");
+q&&q.addEventListener("input",function(){{
+  var v=q.value.trim().toLowerCase();
+  document.querySelectorAll(".list li").forEach(function(li){{
+    li.classList.toggle("hide", !!v && li.dataset.s.toLowerCase().indexOf(v)<0);
+  }});
+  document.querySelectorAll("h2.month").forEach(function(h){{
+    var n=h.nextElementSibling, any=false;
+    while(n&&n.tagName==="UL"){{ if(n.querySelector("li:not(.hide)")) any=true; n=n.nextElementSibling; }}
+    h.classList.toggle("hide", !any);
+  }});
+}});
+</script>
+</body></html>
 """
     out = BASE_DIR / "docs" / "archive.html"
     out.parent.mkdir(parents=True, exist_ok=True)

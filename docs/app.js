@@ -12,6 +12,12 @@ const safeUrl = (u) => (/^https?:\/\//i.test(u || "") ? u : "");
 const cacheKey = (g) => `fyb-last-${g}`;
 const PAST = `<p class="past"><a href="archive.html">查看往期晨报 →</a></p>`;
 
+function digestHtml(d) {
+  if (!d || !d.length) return "";
+  return `<div class="digest"><span class="lb">今天三句话</span>
+    <ol>${d.map(x => `<li>${esc(x)}</li>`).join("")}</ol></div>`;
+}
+
 function splash() {
   app.innerHTML = `
   <div class="splash">
@@ -110,6 +116,7 @@ function shell(data, group, notice) {
       <div class="tagline">${esc(data.tagline || "十分钟，过一遍今天")}</div>
       <div class="rule"></div>
     </header>
+    ${digestHtml(data.digest)}
     ${tabs}
     <main id="body">
       ${notice ? `<p class="notice">${esc(notice)}</p>` : ""}
@@ -166,6 +173,7 @@ async function load(group) {
   app.innerHTML = shell(data, group, kind ? "离线 · 显示上次缓存的这一期" : "");
   if (window.FybTheme) window.FybTheme.init();
   window.scrollTo(0, 0);
+  stateBanner();
 }
 
 function route() {
@@ -188,6 +196,21 @@ document.addEventListener("click", (e) => {
     btn.setAttribute("aria-expanded", open ? "true" : "false");
   }
 });
+
+async function stateBanner() {
+  try {
+    const r = await fetch("data/state.json", { cache: "no-store" });
+    if (!r.ok) return;
+    const st = await r.json();
+    if (st.ok !== false) return;
+    const el = document.querySelector("main#body");
+    if (!el) return;
+    const box = document.createElement("p");
+    box.className = "banner";
+    box.textContent = `⚠️ 今天的简报没生成成功（${st.at || ""}）：${st.error || "原因未知"}，先看昨天的。`;
+    el.prepend(box);
+  } catch (e) {}
+}
 
 window.addEventListener("hashchange", route);
 route();
