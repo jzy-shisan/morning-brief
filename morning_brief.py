@@ -1188,7 +1188,7 @@ def render(selected: dict[str, list[dict]], stats: dict, tips, now: dt.datetime,
     lines.append("")
     lines.append("---")
     lines.append("")
-    meta = f"*生成于 {now:%Y-%m-%d %H:%M} · 大肥鱼简报 v2"
+    meta = f"*生成于 {now:%Y-%m-%d %H:%M} · 大肥鱼晨报 v2"
     if stats["failed"]:
         meta += f" · 本次未取到：{'、'.join(stats['failed'])}"
     meta += " · 每天 06:00 自动更新*"
@@ -1310,7 +1310,7 @@ def main() -> int:
     args = parser.parse_args()
 
     now = dt.datetime.now()
-    log("大肥鱼简报启动……")
+    log("大肥鱼晨报启动……")
 
     # 开机补跑/登录补跑时会重复触发：今天已经生成过就跳过，省 token
     today_hist = HIST_DIR / f"{now:%Y-%m-%d}.md"

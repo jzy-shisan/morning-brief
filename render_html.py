@@ -931,7 +931,7 @@ def render_html(doc: dict, cfg: dict, *, nav: str = "") -> str:
             parts.append("</div>")
         parts.append("</div>")
 
-    parts.append(f"<footer>{html.escape(doc.get('footer') or '大肥鱼简报')}</footer>")
+    parts.append(f"<footer>{html.escape(doc.get('footer') or '大肥鱼晨报')}</footer>")
     parts.append("</div>")
     theme_map = {k: theme_vars(k) for k in PRESETS}
     parts.append(

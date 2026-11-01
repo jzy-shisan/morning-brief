@@ -11,6 +11,8 @@ const esc = (s = "") => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<":
 const safeUrl = (u) => (/^https?:\/\//i.test(u || "") ? u : "");
 const cacheKey = (g) => `fyb-last-${g}`;
 const PAST = `<p class="past"><a href="archive.html">查看往期晨报 →</a></p>`;
+const BOOT_KEY = "fyb-boot";
+const BOOT_MS = 3000;
 
 function digestHtml(d) {
   if (!d || !d.length) return "";
@@ -18,10 +20,29 @@ function digestHtml(d) {
     <ol>${d.map(x => `<li>${esc(x)}</li>`).join("")}</ol></div>`;
 }
 
+function boot() {
+  // 开头这张封面图停留 3 秒，点一下或按任意键也能直接进去
+  app.innerHTML = `<div class="boot" id="boot"><img src="og.png" alt="肥鱼晨报"></div>`;
+  document.documentElement.style.background = "#d1eaf9";
+  const node = document.getElementById("boot");
+  let done = false;
+  const finish = () => {
+    if (done) return;
+    done = true;
+    try { sessionStorage.setItem(BOOT_KEY, "1"); } catch (e) {}
+    document.documentElement.style.background = "";
+    if (node) node.classList.add("out");
+    setTimeout(() => splash(), 260);
+  };
+  setTimeout(finish, BOOT_MS);
+  node && node.addEventListener("click", finish, { once: true });
+  document.addEventListener("keydown", finish, { once: true });
+}
+
 function splash() {
   app.innerHTML = `
   <div class="splash">
-    <div class="logo">肥鱼简报</div>
+    <div class="logo">肥鱼晨报</div>
     <h1>十分钟，过一遍今天</h1>
     <div class="choices">
       ${Object.entries(GROUPS).map(([k, v]) => `
@@ -106,7 +127,7 @@ function shell(data, group, notice) {
   return `<div id="progress"></div>
   <div class="wrap">
     <div class="topbar">
-      <div class="brand"><a href="#/">🐟 肥鱼简报</a></div>
+      <div class="brand"><a href="#/">🐟 肥鱼晨报</a></div>
       <div class="tools"><button type="button" id="tbtn" aria-expanded="false">外观</button></div>
     </div>
     ${panelHtml()}
@@ -131,7 +152,7 @@ function loadingShell(group) {
   const other = group === "news" ? "student" : "news";
   return `<div class="wrap">
     <div class="topbar">
-      <div class="brand"><a href="#/">🐟 肥鱼简报</a></div>
+      <div class="brand"><a href="#/">🐟 肥鱼晨报</a></div>
       <div class="tools"><a href="#/${other}" style="border:0">${GROUPS[other].name}</a></div>
     </div>
     <div id="body" role="status" aria-busy="true">
@@ -182,6 +203,9 @@ function route() {
   if (location.hash && location.hash !== "#/" && location.hash !== "#") {
     history.replaceState(null, "", "#/");
   }
+  let seen = "";
+  try { seen = sessionStorage.getItem(BOOT_KEY) || ""; } catch (e) {}
+  if (!seen && !/noboot/.test(location.search)) { boot(); return; }
   splash();
 }
 
