@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 大肥鱼 · 高中生简报
 ================================
@@ -552,9 +552,14 @@ def render(talk: dict, quiz: dict | None, now: dt.datetime, mode: str, comfort_r
         if quiz.get("intro"):
             lines += [f"*{quiz['intro']}*", ""]
         lines += [f"**题目**：{quiz['question']}", ""]
+        ans = (quiz.get("answer") or "").strip()
         if quiz.get("solution"):
             lines += ["**解析**：", "", f"{quiz['solution']}", ""]
-        lines += ["**答案**：", "", f"{quiz['answer']}", ""]
+            # 解析已把结论算完，答案只在不长的时候补一句，避免两段重复
+            if ans and len(ans) <= 24:
+                lines += ["**答案**：", "", ans, ""]
+        elif ans:
+            lines += ["**答案**：", "", ans, ""]
         if quiz.get("point"):
             lines += [f"**考点**：{quiz['point']}", ""]
         lines += [f"> 🐟 **大肥鱼**：{quiz.get('comment', '')}", ""]
@@ -632,7 +637,7 @@ def to_json(talk: dict, quiz: dict | None, now: dt.datetime, comfort_row: dict |
                 "title": f"{subj} · {label}".strip(" ·"),
                 "summary": quiz.get("intro", ""),
                 "question": quiz["question"],
-                "answer": quiz["answer"],
+                "answer": (quiz["answer"] if len((quiz.get("answer") or "").strip()) <= 24 else ""),
                 "solution": quiz.get("solution", ""),
                 "point": quiz.get("point", ""),
                 "comment": quiz.get("comment", ""),

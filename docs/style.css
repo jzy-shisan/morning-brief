@@ -1,6 +1,6 @@
 /* 肥鱼简报 · 纸感极简风（与分享版 HTML 同一套视觉语言） */
 :root{
-  --bg:#f6f4ef; --surface:#fffefb; --fg:#1c1a17; --muted:#8a847a;
+  --bg:#f6f4ef; --surface:#fffefb; --fg:#1c1a17; --muted:#6e6960;
   --line:rgba(28,26,23,.10); --accent:#a8452a;
   --serif:"Noto Serif SC","Source Han Serif SC","Songti SC","SimSun",Georgia,serif;
   --sans:-apple-system,"Segoe UI","Microsoft YaHei UI","PingFang SC","Hiragino Sans GB",sans-serif;
@@ -48,8 +48,7 @@ header.top{position:sticky; top:0; z-index:9; background:var(--bg); border-botto
 
 /* ---------- 正文 ---------- */
 .intro{padding:44px 0 6px}
-.intro h2{font:600 34px/1.3 var(--serif); letter-spacing:.02em; margin:0 0 .28em}
-.intro p{color:var(--muted); font-size:13px; margin:0; letter-spacing:.06em}
+.intro h1{font:600 34px/1.3 var(--serif); letter-spacing:.02em; margin:0 0 .28em}
 .past{margin:56px 0 0; padding-top:22px; border-top:1px solid var(--line); text-align:center}
 .past a{color:var(--muted); font-size:13.5px}
 
@@ -64,7 +63,6 @@ header.top{position:sticky; top:0; z-index:9; background:var(--bg); border-botto
 .card h4 a:hover{color:var(--accent)}
 .card .orig{font-size:12.5px; color:var(--muted); margin:2px 0 14px; line-height:1.6}
 .card .meta{display:flex; gap:10px; font-size:11.5px; color:var(--muted); letter-spacing:.1em; margin:0 0 14px}
-.card .meta span+span::before{content:"·"; margin-right:10px; opacity:.6}
 .card .summary{margin:0; font-size:16px; line-height:1.9}
 .card ul{list-style:none; margin:16px 0 0; padding:0}
 .card ul li{position:relative; padding-left:16px; margin:7px 0; font-size:14.5px; color:var(--muted)}
@@ -106,12 +104,32 @@ header.top{position:sticky; top:0; z-index:9; background:var(--bg); border-botto
   background:linear-gradient(90deg,var(--line),transparent,var(--line));
   background-size:200% 100%; animation:sk 1.4s infinite}
 @keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
-footer{color:var(--muted); font-size:11.5px; letter-spacing:.14em; text-align:center; padding:44px 0 0}
+footer{color:var(--muted); font-size:11.5px; letter-spacing:.14em; text-align:center;
+  padding:44px 0 calc(36px + env(safe-area-inset-bottom))}
 
 @media(max-width:560px){
-  .intro h2{font-size:28px}
+  .intro h1{font-size:26px}
   .card h4{font-size:18.5px}
-  .top .date{display:none}
+  .top .date{display:block; font-size:11px; letter-spacing:.02em}
   .splash .logo{font-size:34px} .splash h1{font-size:12.5px}
   .card ul li{font-size:14px}
+}
+
+/* 离线提示 */
+.notice{margin:22px 0 0; padding:8px 12px; font-size:12.5px; color:var(--muted);
+  border-left:2px solid var(--line); background:color-mix(in srgb,var(--fg) 3%,transparent)}
+
+/* 打印：去掉交互件，正文收紧 */
+@media print{
+  header.top,.past,footer,.notice{display:none}
+  body{background:#fff; color:#000; font-size:11.5pt}
+  .wrap{max-width:none; padding:0}
+  .card{break-inside:avoid; border-bottom:1px solid #ddd}
+  @page{margin:18mm 16mm}
+}
+
+/* 少动效偏好 */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms!important; animation-iteration-count:1!important;
+    transition-duration:.01ms!important}
 }

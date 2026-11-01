@@ -717,7 +717,19 @@ def split_title(raw: str) -> tuple[str, str]:
             return tail, head
         if head_cjk and not tail_cjk:
             return head, tail
+        # 两边都是中文、括号里只是把标题又说了一遍 → 丢掉括号内容
+        if head_cjk and tail_cjk and _same_saying(head, tail):
+            return head, ""
     return text, ""
+
+
+def _same_saying(head: str, tail: str, ratio: float = 0.6) -> bool:
+    """括号里是否只是把前半句复读一遍（字符集重合率超过 ratio 就算）。"""
+    a = {c for c in re.sub(r"[\s，。、：；！？|·\-—（）()]", "", head)[:40] if re.match(r"\w", c)}
+    b = {c for c in re.sub(r"[\s，。、：；！？|·\-—（）()]", "", tail) if re.match(r"\w", c)}
+    if not a or not b:
+        return False
+    return len(a & b) / len(b) >= ratio
 
 
 def render_item(it: dict, kws: list[str], cfg: dict, hidden: bool, ord_: int = 0,
@@ -989,7 +1001,50 @@ footer{{margin-top:44px;font-size:12px;color:var(--muted);text-align:center}}
     out = BASE_DIR / "docs" / "archive.html"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(html, "utf-8")
+    write_sitemap_and_feed(rows)
     return out
+
+
+SITE = "https://jzy-shisan.github.io/morning-brief"
+
+
+def write_sitemap_and_feed(rows: list) -> None:
+    """顺手写 sitemap.xml 与 feed.xml（都是静态站该有的分发文件）。"""
+    docs = BASE_DIR / "docs"
+    urls = [f"{SITE}/", f"{SITE}/archive.html"]
+    urls += [f"{SITE}/share/{quote(r[5])}" for r in rows if r[5]]
+    sm = ['<?xml version="1.0" encoding="UTF-8"?>',
+          '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+    for u in urls:
+        sm.append(f"  <url><loc>{u}</loc></url>")
+    sm.append("</urlset>")
+    (docs / "sitemap.xml").write_text("\n".join(sm), "utf-8")
+
+    def tag(s: str) -> str:
+        return (s or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+    feed = ['<?xml version="1.0" encoding="UTF-8"?>', '<rss version="2.0"><channel>',
+            "<title>肥鱼晨报</title>", f"<link>{SITE}/</link>",
+            "<description>十分钟，过一遍今天。新闻、财经、健康、数码，附大肥鱼点评。</description>",
+            "<language>zh-CN</language>"]
+    for date, label, week, count, fields, fname in rows[:20]:
+        link = f"{SITE}/share/{quote(fname)}"
+        head = " · ".join(x for x in (week, count, fields) if x)
+        feed += [
+            "<item>",
+            f"<title>{tag(f'{label} {week} · 肥鱼晨报')}</title>",
+            f"<link>{link}</link>",
+            f"<guid>{link}</guid>",
+            f"<description>{tag(head)}</description>",
+        ]
+        try:
+            dt.datetime.fromisoformat(date + "T06:00:00+08:00")
+            feed.append(f"<pubDate>{dt.datetime.fromisoformat(date + 'T06:00:00+08:00').strftime('%a, %d %b %Y %H:%M:%S %z')}</pubDate>")
+        except ValueError:
+            pass
+        feed.append("</item>")
+    feed.append("</channel></rss>")
+    (docs / "feed.xml").write_text("\n".join(feed), "utf-8")
 
 
 def save_outputs(doc: dict, cfg: dict) -> list[Path]:
