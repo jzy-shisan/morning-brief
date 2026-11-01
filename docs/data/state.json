@@ -1,7 +1,10 @@
 {
  "ok": true,
- "at": "2026-11-01 20:36",
+ "at": "2026-11-01 21:17",
  "date": "2026-11-01",
  "news": 15,
- "mode": "模型"
+ "mode": "模型",
+ "student_ok": true,
+ "student_at": "2026-11-01 21:18",
+ "student_items": 9
 }
