@@ -71,10 +71,128 @@ SUBJECTS = {
 
 
 # ---------------- 抓取 ----------------
+# 教育政策类：命中这些词才算「跟高中生有关的政策」
+POLICY_HINT = re.compile(
+    r"教育部|教育厅|教育局|国务院|政策|通知|意见|办法|方案|改革|试点|推广|招生|考试|高考|中考|"
+    r"课标|教材|课程|假期|寒假|暑假|校历|学期|开学|减负|收费|学籍|升学|录取|专业|学位|"
+    r"职业教育|民办|双减|课后服务|劳动教育|心理健康"
+)
+FUN_HINT = re.compile(r"电影|上映|新书|小说|杂志|剧集|动画|游戏|唱片|专辑|演唱会|展览|漫画|综艺|新番|番剧")
+# 教育部网站上的会议/巡视/礼节性新闻，跟学生没关系
+MOE_NOISE = re.compile(
+    r"巡视|巡视组|党组|党建|动员会|座谈|会见|调研|出席|致辞|讲话|贺信|致信|看望|慰问|视察|"
+    r"教师节|表彰|开幕式|闭幕式|研究生|博士|学位委员会|驻外|大使"
+)
+
+
 def _get(url: str, timeout: int = 15) -> bytes:
     req = urllib.request.Request(url, headers={"User-Agent": UA, "Referer": "https://www.bilibili.com/"})
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         return resp.read()
+
+
+def fetch_moe(limit: int = 6, days: int = 12) -> list[dict]:
+    """教育部官网新闻/工作动态：只留与高中生直接相关、且是全国层面的。"""
+    from urllib.parse import urljoin
+
+    html = _get("https://www.moe.gov.cn/jyb_xwfb/", timeout=20).decode("utf-8", "ignore")
+    pat = re.compile(r'href="([^"]*?/t(20\d{6})_\d+\.html)"[^>]*>\s*([^<]{6,80})\s*<')
+    out, seen = [], set()
+    today = dt.date.today()
+    for href, day, title in pat.findall(html):
+        title = clean_text(title)
+        if len(title) < 8 or title in seen or MOE_NOISE.search(title):
+            continue
+        if not POLICY_HINT.search(title):
+            continue
+        try:
+            d = dt.date(int(day[:4]), int(day[4:6]), int(day[6:]))
+        except ValueError:
+            continue
+        if (today - d).days > days:
+            continue
+        seen.add(title)
+        out.append({
+            "title": title,
+            "text": "",
+            "link": urljoin("https://www.moe.gov.cn/jyb_xwfb/", href.replace("./", "")),
+            "heat": f"{d.month}月{d.day}日",
+            "origin": "教育部",
+            "policy": True,
+        })
+    return out[:limit]
+
+
+def fetch_douban(limit: int = 5) -> list[dict]:
+    """豆瓣正在热映：只取片名 + 评分 + 主演，够写一句「有什么新片」了。"""
+    html = _get("https://movie.douban.com/cinema/nowplaying/beijing/", timeout=20).decode("utf-8", "ignore")
+    out = []
+    pat = re.compile(r'<li[^>]*data-title="([^"]{2,30})"[^>]*data-score="([^"]*)"[^>]*data-actors="([^"]*)"')
+    for name, score, actors in pat.findall(html):
+        name = clean_text(name)
+        if not name:
+            continue
+        bits = []
+        if score and score.strip():
+            bits.append(f"豆瓣 {score.strip()} 分")
+        if actors:
+            bits.append(f"主演 {clean_text(actors).split('/')[0].strip()}")
+        note = "正在院线上映" + ("，" + "，".join(bits) if bits else "")
+        out.append({
+            "title": f"新片上映：《{name}》",
+            "text": note + "。",
+            "link": "",
+            "heat": "豆瓣电影",
+            "origin": "豆瓣电影",
+            "fun": True,
+        })
+        if len(out) >= limit:
+            break
+    return out
+
+
+def fetch_jiemodui(limit: int = 4) -> list[dict]:
+    """芥末堆：教育行业的变动，用来看有没有「影响学生」的政策/行业消息。"""
+    import xml.etree.ElementTree as ET
+
+    raw = _get("https://www.jiemodui.com/rss", timeout=20)
+    root = ET.fromstring(raw)
+    out = []
+    for it in root.iter("item"):
+        title = clean_text((it.findtext("title") or "").strip())
+        desc = clean_text((it.findtext("description") or "").strip())
+        link = (it.findtext("link") or "").strip()
+        if not title:
+            continue
+        out.append({
+            "title": title,
+            "text": desc,
+            "link": link,
+            "heat": "",
+            "origin": "芥末堆",
+            "policy": bool(POLICY_HINT.search(title)),
+            "industry": True,
+        })
+        if len(out) >= limit:
+            break
+    return out
+
+
+def tidy_excerpt(text: str, title: str = "") -> str:
+    """知乎摘要常把来源站点的标题尾巴一起带过来，清掉再给人看。"""
+    t = clean_text(text or "")
+    t = re.sub(r"_[^_\s]{2,12}$", "", t).strip()          # xxx_腾讯新闻
+    t = re.sub(r"\s*[-—－]{1,2}\s*[^-—－]{2,12}$", "", t).strip()  # xxx - 某媒体
+    if title:
+        core = re.sub(r"\W+", "", title)
+        if core and re.sub(r"\W+", "", t).startswith(core):
+            t = t[len(title):].lstrip(" ，。、")
+    # 末尾没有句末标点的半句，多半是转载标题，砍掉
+    if t and t[-1] not in "。！？…”）":
+        cut = max(t.rfind(ch) for ch in "。！？")
+        if cut >= 20:
+            t = t[: cut + 1]
+    return t
 
 
 def fetch_zhihu(limit: int = 20) -> list[dict]:
@@ -87,7 +205,7 @@ def fetch_zhihu(limit: int = 20) -> list[dict]:
             continue
         out.append({
             "title": title,
-            "text": clean_text(t.get("excerpt") or ""),
+            "text": tidy_excerpt(t.get("excerpt") or "", title),
             "link": f"https://www.zhihu.com/question/{t.get('id')}" if t.get("id") else "",
             "heat": clean_text(row.get("detail_text") or ""),
             "origin": "知乎热榜",
@@ -182,15 +300,27 @@ def pick_question(now: dt.datetime) -> dict | None:
 TALK_SYSTEM = """你是「蓝色大肥鱼」：自称"本鱼"的鲸鱼娘，傲娇、呆萌、嘴硬心软，绝不承认自己胖。
 任务：从给定素材里挑 1 条当「肥鱼主推」，再挑 3 条当「小鱼的碎碎念」。
 
+选「小鱼的碎碎念」的标准，按权重从高到低：
+1. **教育政策/教育改革**（最高权重）：教育部等发布的、影响高中生的政策、假期安排、考试招生调整、试点改革。只要有，必须选 1 条，放在碎碎念第一条。
+2. **玩乐**：新电影上映、新书/新杂志发布、游戏动画、行业大变动。
+3. **其他对高中生有用的**：学习、校园、生活、健康、就业、身边事。
+
+关于政策类的硬规矩：
+- 素材里没有政策，就一条都不要提，绝对不许自己编政策、假期安排或改革方案。
+- 只写全国性的、或意义重大的（试点、推广、改革模式）；地方性的小事不要。
+- note 只能复述标题里已经写明的事实，不许补充具体数字、生效日期、适用范围等素材里没有的细节。
+- 政策类的点评要认真写：说清这条对高中生意味着什么、要注意什么，别卖萌混过去。
+
 选「肥鱼主推」的标准（三条都要满足）：
 1. 有热度：大家都在讨论的，不是小众自嗨。
 2. 好传播：一句话能讲清楚，适合转发给同学、群里能聊起来。
 3. 零门槛：不需要专业背景就能听懂，越"啊？还有这种事"越好。
+主推之间还要比一比：对多数高中生「有信息价值」的（科学发现、技术进展、社会大事、升学相关）优先于纯赛事和娱乐八卦；
+只有当纯赛事/娱乐的热度明显更高（大约 1.5 倍以上）时，才让它当主推，否则放到碎碎念里。
 
-选「小鱼的碎碎念」的标准：
-1. 贴近高中生：学习、校园、考试、生活、健康、就业、身边事、有趣的科技。
-2. 必须是"能读懂的事"——有具体事件或结论，不能是纯音乐、纯视频、纯标题帖（比如某首歌的纯享版）。
-3. 三条尽量分散在不同话题上，别都挤在财经或都挤在娱乐。
+其余碎碎念要求：
+- 必须是"能读懂的事"——有具体事件或结论，不能是纯音乐、纯视频、纯标题帖。
+- 三条尽量分散在不同话题上。
 
 铁律：
 1. 只能使用素材里出现过的事实（人名、数字、事件），一个字都不许编。
@@ -200,7 +330,9 @@ TALK_SYSTEM = """你是「蓝色大肥鱼」：自称"本鱼"的鲸鱼娘，傲�
 5. 每条碎碎念必须写 note：用平实的中文 40-70 字说清"这是什么、发生了什么"，让没听过的人也能明白；不许复述标题，不许空着。
 
 只输出 JSON：
-{"main": {"i": 素材序号, "comment": "点评"}, "others": [{"i": 序号, "note": "40-70字说清是什么", "comment": "点评"}, ...3条]}
+{"main": {"i": 素材序号, "comment": "点评"},
+ "policy": {"i": 政策素材序号, "note": "40-70字说清是什么", "comment": "点评"} 或 null（素材里没有政策就填 null）,
+ "others": [{"i": 序号, "note": "40-70字说清是什么", "comment": "点评"}, ...最多3条]}
 """
 
 QUIZ_SYSTEM = """你是「蓝色大肥鱼」，要给高中生讲一道题。
@@ -228,9 +360,33 @@ def call_llm(cfg: dict, system: str, user: str) -> dict | None:
         return None
 
 
+POLICY_WRITE_SYSTEM = """你是「蓝色大肥鱼」，要给高中生讲清一条教育政策。
+铁律：
+1. 只能复述给定标题里已经写明的事实，禁止补充数字、日期、适用范围、实施细节——素材里没有的，一个字都不许编。
+2. note：40-70 字，平实说清「这条讲的是什么、跟谁有关」。
+3. comment：40-80 字，认真写——这条对高中生意味着什么、要注意什么；可以带一点本鱼的口气，但不许耍宝糊弄。
+只输出 JSON：{"note": "...", "comment": "..."}
+"""
+
+
+def annotate_policy(cfg: dict | None, item: dict) -> dict:
+    """模型没选中政策条目时，单独补一次，写 note 与点评。"""
+    it = dict(item)
+    ctx = f"来源：{it.get('origin', '')}｜日期：{it.get('heat', '')}\n标题：{it['title']}"
+    llm = call_llm(cfg, POLICY_WRITE_SYSTEM, ctx) if cfg else None
+    if llm and llm.get("note"):
+        it["note"] = clean_text(llm.get("note") or "")
+        it["comment"] = clean_text(llm.get("comment") or "")
+    else:
+        it["note"] = f"{it['title']}（{it.get('origin', '')} {it.get('heat', '')}）".strip()
+        it["comment"] = "这条跟上学直接相关，本鱼先替主人记一笔。"
+    return it
+
+
 def build_talk(now: dt.datetime, cfg: dict | None, cands: list[dict]) -> dict:
     llm = call_llm(cfg, TALK_SYSTEM, "\n".join(
-        f"{i}. [{c['origin']}] {c['title']}｜{c['text'][:200]}｜{c['heat']}" for i, c in enumerate(cands)
+        f"{i}. [{c['origin']}]{'[政策]' if c.get('policy') else ''} {c['title']}｜{c['text'][:200]}｜{c['heat']}"
+        for i, c in enumerate(cands)
     )) if cfg and cands else None
 
     if llm and isinstance(llm.get("main"), dict) and llm["main"].get("i") is not None:
@@ -248,6 +404,25 @@ def build_talk(now: dt.datetime, cfg: dict | None, cands: list[dict]) -> dict:
                 it["note"] = clean_text(row.get("note") or "")
                 it["comment"] = clean_text(row.get("comment") or "")
                 others.append(it)
+
+        # 政策位：素材里有政策就必须有一条，模型漏了就补一次
+        policy_row = llm.get("policy")
+        policy_item = None
+        if isinstance(policy_row, dict) and policy_row.get("i") is not None:
+            try:
+                k = int(policy_row["i"])
+            except (TypeError, ValueError):
+                k = -1
+            if 0 <= k < len(cands) and cands[k].get("policy"):
+                policy_item = dict(cands[k])
+                policy_item["note"] = clean_text(policy_row.get("note") or "")
+                policy_item["comment"] = clean_text(policy_row.get("comment") or "")
+        if policy_item is None:
+            pool = [c for c in cands if c.get("policy")]
+            if pool:
+                policy_item = annotate_policy(cfg, pool[0])
+        if policy_item:
+            others = [policy_item] + [o for o in others if o["title"] != policy_item["title"]][:2]
         if others:
             return {"main": main, "others": others[:3]}
 
@@ -435,7 +610,7 @@ def main() -> int:
     if cfg and not cfg_ok(cfg):
         cfg = None
 
-    zh, bl = [], []
+    zh, bl, moe, db, jm = [], [], [], [], []
     try:
         zh = fetch_zhihu()
     except Exception as exc:  # noqa: BLE001
@@ -444,8 +619,29 @@ def main() -> int:
         bl = fetch_bili()
     except Exception as exc:  # noqa: BLE001
         log(f"✗ B站抓取失败：{exc}")
-    cands = pick_candidates(zh, bl)
-    log(f"候选 {len(cands)} 条（知乎 {len(zh)} / B站 {len(bl)}）")
+    try:
+        moe = fetch_moe()
+    except Exception as exc:  # noqa: BLE001
+        log(f"✗ 教育部抓取失败：{exc}")
+    try:
+        db = fetch_douban()
+    except Exception as exc:  # noqa: BLE001
+        log(f"✗ 豆瓣抓取失败：{exc}")
+    try:
+        jm = [c for c in fetch_jiemodui() if c.get("policy")]
+    except Exception as exc:  # noqa: BLE001
+        log(f"✗ 芥末堆抓取失败：{exc}")
+
+    base = pick_candidates(zh, bl)
+    pool = moe[:2] + [c for c in jm if c["title"] not in {x["title"] for x in moe}][:1] + db[:2] + base
+    seen_t, cands = set(), []
+    for c in pool:
+        if c["title"] in seen_t:
+            continue
+        seen_t.add(c["title"])
+        cands.append(c)
+    cands = cands[:12]
+    log(f"候选 {len(cands)} 条（知乎 {len(zh)} / B站 {len(bl)} / 教育部 {len(moe)} / 豆瓣 {len(db)}）")
 
     if len(cands) < 3 and OUT_MD.exists():
         log("✗ 候选太少，判定网络异常，保留上一份")
