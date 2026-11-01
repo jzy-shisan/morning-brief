@@ -809,6 +809,11 @@ def render_html(doc: dict, cfg: dict, *, nav: str = "") -> str:
     parts.append('<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">')
     parts.append('<meta name="viewport" content="width=device-width,initial-scale=1">')
     parts.append(f"<title>{html.escape(title)}{(' · ' + date) if date else ''}</title>")
+    parts.append('<meta property="og:type" content="article">')
+    parts.append(f'<meta property="og:title" content="{html.escape(title)}">')
+    parts.append(f'<meta property="og:image" content="{SITE}/og.png">')
+    parts.append(f'<meta name="twitter:card" content="summary_large_image">')
+    parts.append(f'<meta name="twitter:image" content="{SITE}/og.png">')
     parts.append(f"<style>{build_css(cfg.get('theme', 'paper'))}</style>")
     limit_default = max([s["limit"] for s in enabled_sections(doc, cfg)] or [2])
     parts.append(f'</head><body data-limit="{limit_default}">')
@@ -989,6 +994,12 @@ def build_index(cfg: dict) -> Path:
 <html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>肥鱼晨报 · 查看往期晨报</title>
+<meta property="og:type" content="website">
+<meta property="og:title" content="肥鱼晨报 · 往期">
+<meta property="og:image" content="{SITE}/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="{SITE}/og.png">
+<link rel="apple-touch-icon" href="og.png">
 <style>
 :root{{--bg:{t['bg']};--fg:{t['fg']};--muted:{t['muted']};--line:{t['line']};--accent:{t['accent']}}}
 *{{box-sizing:border-box}}
