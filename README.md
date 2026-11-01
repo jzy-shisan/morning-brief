@@ -25,6 +25,7 @@
 | `student_brief.py` | 学生版：知乎热榜 + 教育部 + 豆瓣 → 选 1 条主推 + 3 条碎碎念 + 1 句解忧 + 1 道小题 → 写点评 |
 | `questions.json` | 小题题库（九门经典题，可自己加） |
 | `comfort.py` | 解忧铺的句子库（古诗文/诸子/谚语，公有领域，34 条，按日期轮换） |
+| `docs/theme.js` | 首页与往期页共用的外观面板/密度折叠/领域筛选/阅读进度 |
 | `build_web.py` | 把当天 Markdown 转成 `docs/data/*.json`（不联网、不调模型） |
 | `render_html.py` | 单文件 HTML 分享版 + `docs/archive.html` 往期存档 |
 | `docs/` | 网页端：`index.html` 选择页、`app.js`、`style.css`、`data/` |

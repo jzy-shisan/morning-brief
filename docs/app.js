@@ -2,10 +2,15 @@ const GROUPS = {
   news:    { name: "新闻简报", desc: "前沿 · 世界 · 财经 · 体育" },
   student: { name: "学生简报", desc: "肥鱼主推 · 碎碎念 · 解忧铺 · 小试鱼刀" },
 };
+const DOMS = {
+  "科技 AI": "tech", "商业财经": "biz", "社会热点": "society",
+  "生活健康": "life", "数码娱乐": "digital",
+};
 const app = document.getElementById("app");
 const esc = (s = "") => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const safeUrl = (u) => (/^https?:\/\//i.test(u || "") ? u : "");
 const cacheKey = (g) => `fyb-last-${g}`;
+const PAST = `<p class="past"><a href="archive.html">查看往期晨报 →</a></p>`;
 
 function splash() {
   app.innerHTML = `
@@ -22,61 +27,110 @@ function splash() {
   </div>`;
 }
 
-function card(it, idx) {
+function panelHtml() {
+  const sw = [["paper", "#f6f4ef", "#a8452a"], ["ink", "#f2f4f6", "#2f5d8a"],
+              ["moss", "#f3f4ee", "#4d6141"], ["night", "#15161a", "#d98b5f"]]
+    .map(([p, bg, ac]) => `<button class="swatch" type="button" data-p="${p}"
+        style="background:${bg};border-color:rgba(0,0,0,.12)" aria-label="配色 ${p}"><i style="background:${ac}"></i></button>`)
+    .join("");
+  return `<div class="panel" id="panel">
+    <div class="row"><span>配色</span><div>${sw}</div></div>
+    <div class="row"><span>背景</span><div class="bgwrap">
+      <input type="color" id="bgpick" value="#f6f4ef" aria-label="自定义背景色">
+      <button type="button" id="bgreset">恢复默认</button></div></div>
+    <div class="row"><span>字号</span><div class="sizewrap">
+      <button type="button" data-fs="15px">小</button>
+      <button type="button" data-fs="16px">中</button>
+      <button type="button" data-fs="17.5px">大</button></div></div>
+    <div class="row"><span>条数</span><div class="denwrap">
+      <button type="button" data-den="1">少</button>
+      <button type="button" data-den="2">标准</button>
+      <button type="button" data-den="3">全</button></div></div>
+  </div>`;
+}
+
+function card(it, idx, ord) {
   const url = safeUrl(it.link);
   const title = esc(it.title);
   const heading = url
     ? `<a href="${esc(url)}" target="_blank" rel="noopener">${title}</a>`
     : title;
   const orig = it.orig ? `<div class="orig">${esc(it.orig)}</div>` : "";
+  const lead = it.summary ? `<p class="lead">${esc(it.summary)}</p>` : "";
   const points = (it.points || []).length
-    ? `<ul>${it.points.map(p => `<li>${esc(p)}</li>`).join("")}</ul>` : "";
+    ? `<ul class="points">${it.points.map(p => `<li>${esc(p)}</li>`).join("")}</ul>` : "";
   const qa = it.question ? `
     <div class="qbox"><b>题目</b>${esc(it.question)}</div>
     <button class="btn-answer" type="button" aria-expanded="false" aria-controls="ans-${idx}">看解析</button>
     <div class="answer" id="ans-${idx}">${it.solution ? `${esc(it.solution)}\n\n` : ""}${esc(it.answer || "")}${it.point ? `\n\n考点：${esc(it.point)}` : ""}</div>` : "";
-  const comment = it.comment ? `<div class="comment"><b>🐟 大肥鱼</b>${esc(it.comment)}</div>` : "";
-  const tip = it.tip ? `<div class="tip">本鱼的建议：${esc(it.tip)}</div>` : "";
-  const meta = it.badge ? `<div class="meta"><span>${esc(it.badge)}</span></div>` : "";
+  const comment = it.comment
+    ? `<blockquote class="verdict"><span class="who">🐟 大肥鱼</span><span class="said">${esc(it.comment)}</span></blockquote>` : "";
+  const tip = it.tip ? `<p class="tip">本鱼的建议：${esc(it.tip)}</p>` : "";
   const src = (it.source || url)
     ? `<p class="src">${it.source ? esc(it.source) : ""}${it.source && url ? '<span class="sp">·</span>' : ""}${url ? `<a href="${esc(url)}" target="_blank" rel="noopener">原文 ↗</a>` : ""}</p>`
     : "";
-  return `<article class="card ${it.small ? "small" : ""}">
-    <h4>${heading}</h4>
-    ${orig}${meta}
-    ${it.summary ? `<p class="summary">${esc(it.summary)}</p>` : ""}
-    ${points}${qa}${comment}${tip}${src}
+  return `<article class="${it.small ? "small" : ""}" data-ord="${ord}">
+    <h3>${heading}</h3>
+    ${orig}${lead}${points}${qa}${comment}${tip}${src}
   </article>`;
 }
 
-// 同一板块里既有主条又有小条时，中间插一条分隔标签
-function itemsHtml(items) {
-  const mixed = items.some(i => i.small) && items.some(i => !i.small);
-  let html = "";
-  let marked = false;
-  let idx = 0;
-  for (const it of items) {
-    if (mixed && it.small && !marked) {
-      html += `<div class="divider"><span>还可以看看</span></div>`;
-      marked = true;
-    }
-    html += card(it, idx++);
-  }
-  return html;
+function sectionHtml(s, idx0) {
+  const items = s.items || [];
+  const dom = DOMS[s.name] || "";
+  const plain = /^[^\u4e00-\u9fffA-Za-z0-9]/.test(s.name) ? " plain" : "";
+  const body = items.map((it, i) => card(it, idx0 + i, i + 1)).join("");
+  return `<section class="sec${plain}" data-dom="${dom}">
+    <div class="sechead"><h2>${esc(s.name)}</h2>
+      <span class="n">${String(items.length).padStart(2, "0")}</span><span class="fill"></span></div>
+    ${body}
+    ${items.length > 2 ? `<div class="more"><button type="button">还有 ${items.length - 2} 条 · 展开</button></div>` : ""}
+  </section>`;
 }
 
-const PAST = `<p class="past"><a href="archive.html">查看往期晨报 →</a></p>`;
-
-function render(data, group, notice) {
+function shell(data, group, notice) {
   const g = GROUPS[group];
-  const dateEl = document.getElementById("date");
-  if (dateEl) dateEl.textContent = (data.date || "").replace(/-/g, "·");
-  document.getElementById("body").innerHTML = `
-    ${notice ? `<p class="notice">${esc(notice)}</p>` : ""}
-    <div class="intro"><h1>${esc(data.title || g.name)}</h1></div>
-    ${(data.sections || []).map(s => `<section class="sec"><h3>${esc(s.name)}</h3>
-      ${itemsHtml(s.items || [])}</section>`).join("")}
-    ${PAST}`;
+  const d = (data.date || "").split("-");
+  const dateText = d.length === 3 ? `${d[0]} 年 ${+d[1]} 月 ${+d[2]} 日` : (data.date || "");
+  const doms = (data.sections || []).map(s => [DOMS[s.name], s.name]).filter(p => p[0]);
+  const tabs = doms.length > 1
+    ? `<nav class="tabs"><button type="button" data-view="all" data-active="1">全部</button>${
+        doms.map(([k, n]) => `<button type="button" data-view="${k}">${esc(n)}</button>`).join("")}</nav>`
+    : "";
+  return `<div id="progress"></div>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand"><a href="#/">🐟 肥鱼简报</a></div>
+      <div class="tools"><button type="button" id="tbtn" aria-expanded="false">外观</button></div>
+    </div>
+    ${panelHtml()}
+    <header class="hd">
+      <h1>${esc(data.title || g.name)}</h1>
+      <div class="date">${dateText} · <span id="cnt">…</span> · 约 <span id="mins">…</span> 分钟</div>
+      <div class="tagline">${esc(data.tagline || "十分钟，过一遍今天")}</div>
+      <div class="rule"></div>
+    </header>
+    ${tabs}
+    <main id="body">
+      ${notice ? `<p class="notice">${esc(notice)}</p>` : ""}
+      ${(data.sections || []).map((s) => sectionHtml(s, 0)).join("")}
+    </main>
+    ${PAST}
+    <footer>本地生成 · GitHub Pages 托管 · 离线可看最近一期</footer>
+  </div>`;
+}
+
+function loadingShell(group) {
+  const other = group === "news" ? "student" : "news";
+  return `<div class="wrap">
+    <div class="topbar">
+      <div class="brand"><a href="#/">🐟 肥鱼简报</a></div>
+      <div class="tools"><a href="#/${other}" style="border:0">${GROUPS[other].name}</a></div>
+    </div>
+    <div id="body" role="status" aria-busy="true">
+      <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+    </div>
+  </div>`;
 }
 
 function renderState(kind) {
@@ -85,29 +139,15 @@ function renderState(kind) {
     notfound: ["🫧", "这一期还没生成", "等一会儿再刷新，或者去翻翻往期。"],
     broken: ["🫧", "数据格式坏了", "生成脚本那边出了问题，去翻一下日志。"],
   }[kind] || ["🫧", "出了点小状况", "刷新一下试试。"];
-  document.getElementById("body").innerHTML = `
-    <div class="state" role="alert"><div class="big">${msg[0]}</div><h3>${msg[1]}</h3>
-    <p>${msg[2]}</p>
-    <p><a href="#/">← 回到选择页</a></p></div>
-    ${PAST}`;
+  app.innerHTML = `<div class="wrap">
+    <div class="state" role="alert"><div class="big">${msg[0]}</div><h1>${msg[1]}</h1>
+    <p>${msg[2]}</p><p><a href="#/">← 回到选择页</a></p></div>
+    ${PAST}</div>`;
 }
 
 async function load(group) {
-  const g = GROUPS[group];
-  app.innerHTML = `
-    <header class="top"><div class="inner">
-      <div class="brand">🐟 大肥鱼</div>
-      <nav class="tabs">${Object.entries(GROUPS).map(([k, v]) =>
-        `<button class="${k === group ? "on" : ""}" data-go="${k}">${v.name}</button>`).join("")}</nav>
-      <span class="date" id="date"></span>
-    </div></header>
-    <main class="wrap"><div id="body" role="status" aria-busy="true">
-      <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
-    </div></main>
-    <footer>本地生成 · GitHub Pages 托管 · 离线可看最近一期</footer>`;
-
-  let data = null;
-  let kind = null;
+  app.innerHTML = loadingShell(group);
+  let data = null, kind = null;
   try {
     const r = await fetch(`data/${group}.json`);
     if (!r.ok) throw new Error(`HTTP_${r.status}`);
@@ -122,12 +162,10 @@ async function load(group) {
     } catch (e) {}
     if (!data) { renderState(kind); return; }
   }
-
-  const body = document.getElementById("body");
-  body.removeAttribute("aria-busy");
   if (!data.sections || !data.sections.length) { renderState("notfound"); return; }
-  render(data, group, kind ? "离线 · 显示上次缓存的这一期" : "");
-  body.removeAttribute("role");
+  app.innerHTML = shell(data, group, kind ? "离线 · 显示上次缓存的这一期" : "");
+  if (window.FybTheme) window.FybTheme.init();
+  window.scrollTo(0, 0);
 }
 
 function route() {
