@@ -111,6 +111,7 @@ def student_from_md(md: Path) -> dict | None:
     talk_items = []
     alt_items = []
     quiz_items = []
+    comfort_items = []
 
     def parse_items(block: str, small: bool) -> list[dict]:
         out = []
@@ -121,7 +122,7 @@ def student_from_md(md: Path) -> dict | None:
                 continue
             sm = re.search(r"^\s*- (.+)$", rest, re.M)
             if sm:
-                it["summary"] = _clip(sm.group(1).strip(), 350 if not small else 90)
+                it["summary"] = _clip(sm.group(1).strip(), 350 if not small else 200)
             cm = re.search(r"> 🐟 \*\*大肥鱼\*\*：(.+)", rest)
             if cm:
                 it["comment"] = cm.group(1).strip()
@@ -140,6 +141,13 @@ def student_from_md(md: Path) -> dict | None:
             it["small"] = small
             out.append(it)
         return out
+
+    cmf_block = re.search(r"^## 🐟 大肥鱼解忧铺\s*$(.*?)(?=^## |\Z)", text, re.M | re.S)
+    if cmf_block:
+        comfort_items = parse_items(cmf_block.group(1), small=False)
+        for it in comfort_items:
+            it["small"] = False
+            it["points"] = []
 
     main_block = re.search(r"^## 🐟 肥鱼主推\s*$(.*?)(?=^## |\Z)", text, re.M | re.S)
     if main_block:
@@ -197,6 +205,8 @@ def student_from_md(md: Path) -> dict | None:
         sections.append({"name": "🐟 肥鱼主推", "items": talk_items})
     if alt_items:
         sections.append({"name": "🐟 小鱼的碎碎念", "items": alt_items})
+    if comfort_items:
+        sections.append({"name": "🐟 大肥鱼解忧铺", "items": comfort_items})
     if quiz_items:
         subject = (quiz_items[0]["title"].split("·")[0] or "").strip() or "综合"
         sections.append({"name": f"✏️ 一道小题 · {subject}", "items": quiz_items})

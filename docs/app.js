@@ -81,7 +81,7 @@ async function load(group) {
     const body = document.getElementById("body");
     if (!data.sections || !data.sections.length) throw new Error("empty");
     body.innerHTML = `
-      <div class="intro"><h2>${esc(data.title || g.name)}</h2><p>${esc(data.subtitle || "")}</p>
+      <div class="intro"><h2>${esc(data.title || g.name)}</h2>
         ${group === "news" ? `<p class="arch"><a href="archive.html">往期存档 →</a></p>` : ""}</div>
       ${data.sections.map(s => `<section class="sec"><h3>${esc(s.name)}</h3>
         ${itemsHtml(s.items || [])}</section>`).join("")}`;

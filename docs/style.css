@@ -55,8 +55,8 @@ header.top{position:sticky; top:0; z-index:9; background:var(--bg); border-botto
 .intro .arch a{color:var(--muted); font-size:13px; border-bottom:none}
 
 .sec{padding-top:14px}
-.sec h3{font:500 12px/1 var(--sans); letter-spacing:.24em; color:var(--muted);
-  margin:44px 0 0; padding-bottom:12px; border-bottom:1px solid var(--line); text-transform:uppercase}
+.sec h3{font:400 24px/1.25 var(--serif); letter-spacing:.04em; color:var(--fg);
+  margin:52px 0 0; padding-bottom:14px; border-bottom:1px solid var(--line)}
 
 .card{padding:34px 0 30px; border-bottom:1px solid var(--line)}
 .card:last-child{border-bottom:0}

@@ -19,6 +19,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import comfort
 import re
 import sys
 import urllib.request
@@ -325,14 +326,15 @@ TALK_SYSTEM = """你是「蓝色大肥鱼」：自称"本鱼"的鲸鱼娘，傲�
 铁律：
 1. 只能使用素材里出现过的事实（人名、数字、事件），一个字都不许编。
 2. 拿不准、看不懂的梗就直说"本鱼没看懂"，可以硬着头皮解读，但不能伪造背景知识。
-3. 点评要具体针对这条内容，不许写"很有意思""值得关注"这种空话。
+3. 点评必须抓住这条内容里的具体东西（一个数字、一个物件、一个场景），把话落在这件事上；不许写"很有意思""值得关注""太带劲了""素材有了"这类放之四海皆准的套话。
+4. 用贪吃、呆萌的鲸鱼视角说话：把东西比成吃的（月亮像月饼、想啃一口）、怕胖嘴硬、装懂又露怯，但事实一个字都不许编。
 4. 语气像赛博宠物：短、俏皮、带一点呆。每条点评 20-45 字。
-5. 每条碎碎念必须写 note：用平实的中文 40-70 字说清"这是什么、发生了什么"，让没听过的人也能明白；不许复述标题，不许空着。
+5. 每条碎碎念必须写 note：用平实的中文 150-200 字把这件事讲完整——背景、经过、结果都要有，让完全没听过的人也能看懂；不许只复述标题，不许写到一半停住，不许空着。
 
 只输出 JSON：
 {"main": {"i": 素材序号, "comment": "点评"},
- "policy": {"i": 政策素材序号, "note": "40-70字说清是什么", "comment": "点评"} 或 null（素材里没有政策就填 null）,
- "others": [{"i": 序号, "note": "40-70字说清是什么", "comment": "点评"}, ...最多3条]}
+ "policy": {"i": 政策素材序号, "note": "150-200字把事讲完整", "comment": "点评"} 或 null（素材里没有政策就填 null）,
+ "others": [{"i": 序号, "note": "150-200字把事讲完整", "comment": "点评"}, ...最多3条]}
 """
 
 QUIZ_SYSTEM = """你是「蓝色大肥鱼」，要给高中生讲一道题。
@@ -363,7 +365,7 @@ def call_llm(cfg: dict, system: str, user: str) -> dict | None:
 POLICY_WRITE_SYSTEM = """你是「蓝色大肥鱼」，要给高中生讲清一条教育政策。
 铁律：
 1. 只能复述给定标题里已经写明的事实，禁止补充数字、日期、适用范围、实施细节——素材里没有的，一个字都不许编。
-2. note：40-70 字，平实说清「这条讲的是什么、跟谁有关」。
+2. note：150-200 字，平实说清「这条讲的是什么、为什么有这个动作、影响到谁」，把事讲完整，不许只复述标题。
 3. comment：40-80 字，认真写——这条对高中生意味着什么、要注意什么；可以带一点本鱼的口气，但不许耍宝糊弄。
 只输出 JSON：{"note": "...", "comment": "..."}
 """
@@ -438,6 +440,30 @@ def build_talk(now: dt.datetime, cfg: dict | None, cands: list[dict]) -> dict:
     return {"main": main, "others": others}
 
 
+COMFORT_SYSTEM = """你是「蓝色大肥鱼」，现在要说一句安慰的话给刷手机的高中生听。
+要求：
+1. 顺着这句金句本身的意思往下说，不要另起话题。
+2. 40-80 字，口吻是呆萌、心软、有点笨拙的鲸鱼，可以拿吃的东西打比方、可以撒娇、可以自嘲胖，但不许喊口号（不要"加油""你可以的""相信自己"这类）。
+3. 不评价读者，不说教，不编造与这句话无关的事实。
+只输出 JSON：{"comment": "..."}
+"""
+
+
+def build_comfort(cfg: dict | None, now: dt.datetime) -> dict:
+    """解忧铺：本地句子库按日期轮换，点评交给模型写成治愈口气。"""
+    q = dict(comfort.pick(now.toordinal()))
+    comment = ""
+    if cfg:
+        llm = call_llm(cfg, COMFORT_SYSTEM,
+                       f"这句话：{q['q']}\n出处：{q['from']}\n白话意思：{q['gloss']}")
+        if llm and llm.get("comment"):
+            comment = clean_text(llm.get("comment") or "")
+    if not comment:
+        comment = "这句话本鱼收在贝壳里了，心里乱的时候拿出来念一遍。"
+    q["comment"] = comment
+    return q
+
+
 def build_quiz(now: dt.datetime, cfg: dict | None) -> dict | None:
     q = pick_question(now)
     if not q:
@@ -460,7 +486,7 @@ def build_quiz(now: dt.datetime, cfg: dict | None) -> dict | None:
 
 
 # ---------------- 渲染 ----------------
-def render(talk: dict, quiz: dict | None, now: dt.datetime, mode: str) -> str:
+def render(talk: dict, quiz: dict | None, now: dt.datetime, mode: str, comfort_row: dict | None = None) -> str:
     d = now.strftime("%Y-%m-%d")
     lines = [
         f"# 🐟 学生简报 · {d}",
@@ -497,6 +523,20 @@ def render(talk: dict, quiz: dict | None, now: dt.datetime, mode: str) -> str:
                 "",
             ]
 
+    if comfort_row:
+        lines += [
+            "## 🐟 大肥鱼解忧铺",
+            "",
+            f"### {comfort_row['q']}",
+            "",
+            f"- {comfort_row['gloss']}（{comfort_row['from']}）",
+            "",
+            f"> 🐟 **大肥鱼**：{comfort_row['comment']}",
+            "",
+            f"*来源：{comfort_row['from']}*",
+            "",
+        ]
+
     lines += ["## ✏️ 一道小题", ""]
     if quiz:
         lines += [
@@ -531,7 +571,7 @@ def clip_summary(text: str, limit: int = 200) -> str:
     return t[:limit].rstrip("，,、；;") + "…"
 
 
-def to_json(talk: dict, quiz: dict | None, now: dt.datetime) -> dict:
+def to_json(talk: dict, quiz: dict | None, now: dt.datetime, comfort_row: dict | None = None) -> dict:
     sections = [{
         "name": "🐟 肥鱼主推",
         "items": [{
@@ -557,6 +597,19 @@ def to_json(talk: dict, quiz: dict | None, now: dt.datetime) -> dict:
                 "badge": "",
                 "small": True,
             } for it in talk["others"]],
+        })
+    if comfort_row:
+        sections.append({
+            "name": "🐟 大肥鱼解忧铺",
+            "items": [{
+                "title": comfort_row["q"],
+                "summary": f"{comfort_row['gloss']}（{comfort_row['from']}）",
+                "points": [],
+                "comment": comfort_row["comment"],
+                "source": comfort_row["from"],
+                "link": "",
+                "badge": "",
+            }],
         })
     if quiz:
         subj = quiz.get("subject", "")
@@ -650,13 +703,14 @@ def main() -> int:
     talk = build_talk(now, cfg, cands)
     quiz = build_quiz(now, cfg)
     mode = "模型" if cfg else "本地"
-    text = render(talk, quiz, now, mode)
+    comfort_row = build_comfort(cfg, now)
+    text = render(talk, quiz, now, mode, comfort_row)
 
     OUT_MD.write_text(text, encoding="utf-8")
     HIST_DIR.mkdir(exist_ok=True)
     today.write_text(text, encoding="utf-8")
     DOCS_DATA.mkdir(parents=True, exist_ok=True)
-    STUDENT_JSON.write_text(json.dumps(to_json(talk, quiz, now), ensure_ascii=False, indent=1), "utf-8")
+    STUDENT_JSON.write_text(json.dumps(to_json(talk, quiz, now, comfort_row), ensure_ascii=False, indent=1), "utf-8")
 
     log(f"✅ 学生简报已生成（{len(text)} 字，{mode}）")
     return 0
