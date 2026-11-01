@@ -153,7 +153,9 @@ def pick_candidates(*lists: list[dict], limit: int = 8) -> list[dict]:
             if key in seen:
                 continue
             seen.add(key)
-            (soft if SOFT_AVOID.search(it["title"]) else picked).append(it)
+            # 没有正文的（纯音乐、纯视频、只有标题）当不了谈资，排到后面
+            thin = len(it.get("text") or "") < 40
+            (soft if (SOFT_AVOID.search(it["title"]) or thin) else picked).append(it)
     return (picked + soft)[:limit]
 
 
@@ -178,16 +180,27 @@ def pick_question(now: dt.datetime) -> dict | None:
 
 # ---------------- 模型 ----------------
 TALK_SYSTEM = """你是「蓝色大肥鱼」：自称"本鱼"的鲸鱼娘，傲娇、呆萌、嘴硬心软，绝不承认自己胖。
-任务：从给定素材里挑 1 条当「今日主梗」，再挑 3 条当「今天可以聊的」。
+任务：从给定素材里挑 1 条当「肥鱼主推」，再挑 3 条当「小鱼的碎碎念」。
+
+选「肥鱼主推」的标准（三条都要满足）：
+1. 有热度：大家都在讨论的，不是小众自嗨。
+2. 好传播：一句话能讲清楚，适合转发给同学、群里能聊起来。
+3. 零门槛：不需要专业背景就能听懂，越"啊？还有这种事"越好。
+
+选「小鱼的碎碎念」的标准：
+1. 贴近高中生：学习、校园、考试、生活、健康、就业、身边事、有趣的科技。
+2. 必须是"能读懂的事"——有具体事件或结论，不能是纯音乐、纯视频、纯标题帖（比如某首歌的纯享版）。
+3. 三条尽量分散在不同话题上，别都挤在财经或都挤在娱乐。
 
 铁律：
 1. 只能使用素材里出现过的事实（人名、数字、事件），一个字都不许编。
 2. 拿不准、看不懂的梗就直说"本鱼没看懂"，可以硬着头皮解读，但不能伪造背景知识。
 3. 点评要具体针对这条内容，不许写"很有意思""值得关注"这种空话。
 4. 语气像赛博宠物：短、俏皮、带一点呆。每条点评 20-45 字。
+5. 每条碎碎念必须写 note：用平实的中文 40-70 字说清"这是什么、发生了什么"，让没听过的人也能明白；不许复述标题，不许空着。
 
 只输出 JSON：
-{"main": {"i": 素材序号, "comment": "点评"}, "others": [{"i": 序号, "comment": "点评"}, ...3条]}
+{"main": {"i": 素材序号, "comment": "点评"}, "others": [{"i": 序号, "note": "40-70字说清是什么", "comment": "点评"}, ...3条]}
 """
 
 QUIZ_SYSTEM = """你是「蓝色大肥鱼」，要给高中生讲一道题。
@@ -217,7 +230,7 @@ def call_llm(cfg: dict, system: str, user: str) -> dict | None:
 
 def build_talk(now: dt.datetime, cfg: dict | None, cands: list[dict]) -> dict:
     llm = call_llm(cfg, TALK_SYSTEM, "\n".join(
-        f"{i}. [{c['origin']}] {c['title']}｜{c['text'][:160]}｜{c['heat']}" for i, c in enumerate(cands)
+        f"{i}. [{c['origin']}] {c['title']}｜{c['text'][:200]}｜{c['heat']}" for i, c in enumerate(cands)
     )) if cfg and cands else None
 
     if llm and isinstance(llm.get("main"), dict) and llm["main"].get("i") is not None:
@@ -232,6 +245,7 @@ def build_talk(now: dt.datetime, cfg: dict | None, cands: list[dict]) -> dict:
                 continue
             if 0 <= j < len(cands) and j != i:
                 it = dict(cands[j])
+                it["note"] = clean_text(row.get("note") or "")
                 it["comment"] = clean_text(row.get("comment") or "")
                 others.append(it)
         if others:
@@ -243,6 +257,7 @@ def build_talk(now: dt.datetime, cfg: dict | None, cands: list[dict]) -> dict:
     others = []
     for it in cands[1:4]:
         it = dict(it)
+        it["note"] = clip_summary(it.get("text", ""), 70) or "这事本鱼还没弄明白，先记一笔。"
         it["comment"] = "这条本鱼还没琢磨明白，先记下。"
         others.append(it)
     return {"main": main, "others": others}
@@ -272,21 +287,19 @@ def build_quiz(now: dt.datetime, cfg: dict | None) -> dict | None:
 # ---------------- 渲染 ----------------
 def render(talk: dict, quiz: dict | None, now: dt.datetime, mode: str) -> str:
     d = now.strftime("%Y-%m-%d")
-    n_alt = len([x for x in talk.get("others") or [] if x.get("title")])
-    shape = f"1 梗 + {n_alt} 备选 + 1 题" if n_alt else "1 梗 + 1 题"
     lines = [
         f"# 🐟 学生简报 · {d}",
         "",
-        f"> 大肥鱼出品 · {shape} · 整理方式：{mode}",
+        f"> 大肥鱼出品 · 整理方式：{mode}",
         "",
-        "## 🗣️ 今日谈资",
+        "## 🐟 肥鱼主推",
         "",
         f"### {talk['main']['title']}",
         "",
     ]
     t = talk["main"]
     if t.get("text"):
-        lines += ["**发生了什么**", "", f"- {clip_summary(t['text'])}", ""]
+        lines += ["**发生了什么**", "", f"- {clip_summary(t['text'], 350)}", ""]
     lines += [
         f"> 🐟 **大肥鱼**：{t.get('comment', '')}",
         "",
@@ -295,10 +308,19 @@ def render(talk: dict, quiz: dict | None, now: dt.datetime, mode: str) -> str:
         "",
     ]
     if talk.get("others"):
-        lines += ["**今天还可以聊**", ""]
+        lines += ["## 🐟 小鱼的碎碎念", ""]
         for it in talk["others"]:
-            lines.append(f"- **{it['title']}** —— {it.get('comment', '')}")
-        lines.append("")
+            lines += [f"### {it['title']}", ""]
+            note = it.get("note") or clip_summary(it.get("text", ""), 70)
+            if note:
+                lines += [f"- {note}", ""]
+            lines += [
+                f"> 🐟 **大肥鱼**：{it.get('comment', '')}",
+                "",
+                f"*来源：{it.get('origin', '')}"
+                + (f" · [看看吧]({it['link']})" if it.get("link") else "") + "*",
+                "",
+            ]
 
     lines += ["## ✏️ 一道小题", ""]
     if quiz:
@@ -336,26 +358,31 @@ def clip_summary(text: str, limit: int = 200) -> str:
 
 def to_json(talk: dict, quiz: dict | None, now: dt.datetime) -> dict:
     sections = [{
-        "name": "🗣️ 今日谈资",
+        "name": "🐟 肥鱼主推",
         "items": [{
             "title": talk["main"]["title"],
-            "summary": clip_summary(talk["main"].get("text", "")),
+            "summary": clip_summary(talk["main"].get("text", ""), 350),
             "points": [],
             "comment": talk["main"].get("comment", ""),
             "source": talk["main"].get("origin", ""),
             "link": talk["main"].get("link", ""),
             "badge": talk["main"].get("heat", ""),
-        }] + [{
-            "title": it["title"],
-            "summary": "",
-            "points": [],
-            "comment": it.get("comment", ""),
-            "source": it.get("origin", ""),
-            "link": it.get("link", ""),
-            "badge": "",
-            "small": True,
-        } for it in talk.get("others", [])],
+        }],
     }]
+    if talk.get("others"):
+        sections.append({
+            "name": "🐟 小鱼的碎碎念",
+            "items": [{
+                "title": it["title"],
+                "summary": clip_summary(it.get("note") or it.get("text", ""), 90),
+                "points": [],
+                "comment": it.get("comment", ""),
+                "source": it.get("origin", ""),
+                "link": it.get("link", ""),
+                "badge": "",
+                "small": True,
+            } for it in talk["others"]],
+        })
     if quiz:
         subj = quiz.get("subject", "")
         raw = quiz.get("source", "") or "经典题型"
@@ -380,7 +407,7 @@ def to_json(talk: dict, quiz: dict | None, now: dt.datetime) -> dict:
         "group": "student",
         "date": now.strftime("%Y-%m-%d"),
         "title": "学生简报",
-        "subtitle": f"{now:%Y年%m月%d日} · 1 梗 + 3 备选 + 1 题",
+        "subtitle": f"{now:%Y年%m月%d日}",
         "sections": sections,
     }
 

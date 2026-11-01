@@ -40,11 +40,11 @@ def _trim_title(raw: str) -> str:
         return raw
 
 
-def _clip(text: str) -> str:
-    """知乎摘要常是整段转载稿，压到 200 字以内。"""
+def _clip(text: str, limit: int = 350) -> str:
+    """知乎摘要常是整段转载稿，压到 limit 字以内。"""
     try:
         from student_brief import clip_summary
-        return clip_summary(text)
+        return clip_summary(text, limit)
     except Exception:  # noqa: BLE001
         return text
 
@@ -109,36 +109,56 @@ def student_from_md(md: Path) -> dict | None:
     date = m.group(1) if m else dt.date.today().isoformat()
 
     talk_items = []
+    alt_items = []
     quiz_items = []
 
-    talk_block = re.search(r"^## 🗣️ 今日谈资\s*$(.*?)(?=^## |\Z)", text, re.M | re.S)
-    if talk_block:
-        body = talk_block.group(1)
-        # 主梗
-        main = re.search(r"^### (.+?)$(.*?)(?=^\*\*今天还可以聊\*\*|\Z)", body, re.M | re.S)
-        if main:
-            item = _blank_item(_trim_title(main.group(1).strip()))
-            rest = main.group(2)
-            sm = re.search(r"\*\*发生了什么\*\*\s*\n+\s*- (.+)", rest)
+    def parse_items(block: str, small: bool) -> list[dict]:
+        out = []
+        for chunk in re.split(r"^### ", block, flags=re.M)[1:]:
+            title, _, rest = chunk.partition("\n")
+            it = _blank_item(_trim_title(title.strip()))
+            if not it["title"]:
+                continue
+            sm = re.search(r"^\s*- (.+)$", rest, re.M)
             if sm:
-                item["summary"] = _clip(sm.group(1).strip())
+                it["summary"] = _clip(sm.group(1).strip(), 350 if not small else 90)
             cm = re.search(r"> 🐟 \*\*大肥鱼\*\*：(.+)", rest)
             if cm:
-                item["comment"] = cm.group(1).strip()
-            src = re.search(r"\*来源：(.+?)(?: · (.+?))?(?: · \[看看吧\]\((.+?)\))?\*", rest)
+                it["comment"] = cm.group(1).strip()
+            src = re.search(r"\*来源：(.+?)\*\s*$", rest, re.M)
             if src:
-                item["source"] = src.group(1).strip()
-                item["badge"] = (src.group(2) or "").strip()
-                item["link"] = (src.group(3) or "").strip()
-            if item["title"]:
-                talk_items.append(item)
-        # 今天还可以聊：知乎热榜条目不单独给链接，来源统一标注
-        for line in re.findall(r"^- \*\*(.+?)\*\*[^\n]*?——\s*(.+)$", body, re.M):
-            it = _blank_item(_trim_title(line[0].strip()))
-            it["comment"] = line[1].strip()
-            it["small"] = True
-            it["source"] = "知乎热榜"
-            talk_items.append(it)
+                raw = src.group(1)
+                lm = re.search(r"\[看看吧\]\((.+?)\)", raw)
+                if lm:
+                    it["link"] = lm.group(1).strip()
+                    raw = raw.replace(lm.group(0), "")
+                parts = [p.strip() for p in raw.split("·") if p.strip()]
+                if parts:
+                    it["source"] = parts[0]
+                if len(parts) > 1:
+                    it["badge"] = parts[1]
+            it["small"] = small
+            out.append(it)
+        return out
+
+    main_block = re.search(r"^## 🐟 肥鱼主推\s*$(.*?)(?=^## |\Z)", text, re.M | re.S)
+    if main_block:
+        talk_items = parse_items(main_block.group(1), small=False)
+
+    alt_block = re.search(r"^## 🐟 小鱼的碎碎念\s*$(.*?)(?=^## |\Z)", text, re.M | re.S)
+    if alt_block:
+        alt_items = parse_items(alt_block.group(1), small=True)
+    else:
+        # 兼容旧版「今日谈资」里的一行式备选
+        old = re.search(r"^## 🗣️ 今日谈资\s*$(.*?)(?=^## |\Z)", text, re.M | re.S)
+        if old and not talk_items:
+            talk_items = parse_items(old.group(1), small=False)
+            for line in re.findall(r"^- \*\*(.+?)\*\*[^\n]*?——\s*(.+)$", old.group(1), re.M):
+                it = _blank_item(_trim_title(line[0].strip()))
+                it["comment"] = line[1].strip()
+                it["small"] = True
+                it["source"] = "知乎热榜"
+                alt_items.append(it)
 
     quiz_block = re.search(r"^## ✏️ 一道小题\s*$(.*?)(?=^## |\Z)", text, re.M | re.S)
     if quiz_block:
@@ -174,15 +194,19 @@ def student_from_md(md: Path) -> dict | None:
 
     sections = []
     if talk_items:
-        sections.append({"name": "🗣️ 今日谈资", "items": talk_items})
+        sections.append({"name": "🐟 肥鱼主推", "items": talk_items})
+    if alt_items:
+        sections.append({"name": "🐟 小鱼的碎碎念", "items": alt_items})
     if quiz_items:
         subject = (quiz_items[0]["title"].split("·")[0] or "").strip() or "综合"
         sections.append({"name": f"✏️ 一道小题 · {subject}", "items": quiz_items})
+    d_obj = dt.date.fromisoformat(date)
+    pretty = f"{d_obj.year}年{d_obj.month}月{d_obj.day}日"
     return {
         "group": "student",
         "date": date,
         "title": "学生简报",
-        "subtitle": f"{date} · 1 梗 + 3 备选 + 1 题",
+        "subtitle": pretty,
         "sections": sections,
     }
 

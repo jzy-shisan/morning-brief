@@ -1,6 +1,6 @@
 const GROUPS = {
   news:    { icon: "🌊", name: "新闻简报", desc: "前沿 · 世界 · 财经 · 体育" },
-  student: { icon: "🎒", name: "学生简报", desc: "今日谈资 + 一道小题" },
+  student: { icon: "🎒", name: "学生简报", desc: "肥鱼主推 + 小鱼的碎碎念 + 一道小题" },
 };
 const app = document.getElementById("app");
 const esc = (s = "") => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -47,13 +47,14 @@ function card(it) {
   </article>`;
 }
 
-// 主梗之后、备选之前插一条分隔标签
+// 同一板块里既有主条又有小条时，中间插一条分隔标签
 function itemsHtml(items) {
+  const mixed = items.some(i => i.small) && items.some(i => !i.small);
   let html = "";
   let marked = false;
   for (const it of items) {
-    if (it.small && !marked) {
-      html += `<div class="divider"><span>今天还可以聊</span></div>`;
+    if (mixed && it.small && !marked) {
+      html += `<div class="divider"><span>还可以看看</span></div>`;
       marked = true;
     }
     html += card(it);
