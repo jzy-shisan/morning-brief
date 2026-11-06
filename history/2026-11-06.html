@@ -1,0 +1,403 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>肥鱼晨报 · 2026-11-06</title>
+<meta property="og:type" content="article">
+<meta property="og:title" content="肥鱼晨报">
+<meta property="og:image" content="https://jzy-shisan.github.io/morning-brief/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jzy-shisan.github.io/morning-brief/og.png">
+<style>
+:root{
+  --bg:#f6f4ef; --surface:#fffefb; --fg:#1c1a17; --muted:#8a847a;
+  --line:rgba(28,26,23,.10); --accent:#a8452a;
+  --serif: "Noto Serif SC","Source Han Serif SC","Songti SC","SimSun",Georgia,serif;
+  --sans: -apple-system,"Segoe UI","Microsoft YaHei UI","PingFang SC","Hiragino Sans GB",sans-serif;
+  --fs: 16px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--bg); color:var(--fg);
+  font-family:var(--sans); font-size:var(--fs); line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+  transition:background .35s ease,color .35s ease;
+}
+#progress{position:fixed;top:0;left:0;height:2px;width:0;background:var(--accent);
+  z-index:50;transition:width .1s linear;opacity:.85}
+.wrap{max-width:728px;margin:0 auto;padding:72px 28px 96px}
+
+/* 顶栏 */
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:44px}
+.brand{font-family:var(--serif);font-size:15px;letter-spacing:.18em;color:var(--muted)}
+.tools{display:flex;gap:6px}
+.tools button{
+  border:1px solid var(--line);background:transparent;color:var(--muted);
+  font-family:var(--sans);font-size:12px;letter-spacing:.08em;
+  padding:5px 10px;border-radius:999px;cursor:pointer;transition:.2s;
+}
+.tools button:hover{color:var(--fg);border-color:var(--muted)}
+.panel{
+  display:none;margin:0 0 40px;padding:16px 18px;border:1px solid var(--line);
+  border-radius:14px;background:var(--surface);
+}
+.panel.open{display:block}
+.panel .row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.panel .row > span{font-size:12px;color:var(--muted);letter-spacing:.1em;min-width:52px}
+.swatch{width:26px;height:26px;border-radius:50%;border:1px solid var(--line);cursor:pointer;
+  position:relative;transition:.2s;display:flex;align-items:center;justify-content:center;padding:0}
+.swatch i{display:block;width:9px;height:9px;border-radius:50%}
+.swatch:hover{transform:scale(1.08)}
+.swatch[data-active="1"]{box-shadow:0 0 0 2px var(--bg),0 0 0 3px var(--accent)}
+.sizewrap button{font-size:12px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);
+  background:transparent;color:var(--muted);cursor:pointer;margin-right:4px}
+.sizewrap button[data-active="1"]{color:var(--accent);border-color:var(--accent)}
+.bgwrap{display:flex;align-items:center;gap:10px}
+.bgwrap input[type=color]{width:26px;height:26px;padding:0;border:1px solid var(--line);
+  border-radius:50%;background:transparent;cursor:pointer;-webkit-appearance:none;appearance:none}
+.bgwrap input[type=color]::-webkit-color-swatch-wrapper{padding:2px}
+.bgwrap input[type=color]::-webkit-color-swatch{border:none;border-radius:50%}
+.bgwrap button{font-size:12px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);
+  background:transparent;color:var(--muted);cursor:pointer}
+
+/* 领域切换 */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:0 0 40px;
+  position:sticky;top:0;z-index:30;padding:10px 0 12px;
+  background:linear-gradient(var(--bg) 72%,transparent)}
+.tabs::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
+  background:var(--line);opacity:.5}
+.tabs button{
+  border:1px solid transparent;background:transparent;color:var(--muted);cursor:pointer;
+  font-family:var(--sans);font-size:12.5px;letter-spacing:.1em;padding:5px 11px;border-radius:999px;
+  transition:.2s;
+}
+.tabs button:hover{color:var(--fg)}
+.tabs button[data-active="1"]{color:var(--accent);border-color:var(--line);background:var(--surface)}
+
+/* 头图区 */
+header{text-align:center;margin-bottom:44px;position:relative}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(30px,5vw,42px);
+  line-height:1.3;margin:0 0 14px;letter-spacing:.01em}
+.date{font-size:13px;letter-spacing:.3em;color:var(--muted);text-transform:uppercase}
+.tagline{margin-top:18px;font-family:var(--serif);font-size:15px;color:var(--muted);letter-spacing:.06em}
+.digest{margin:34px 0 6px;padding:18px 20px;border-left:2px solid var(--accent);background:color-mix(in srgb,var(--accent) 5%,transparent)}
+.digest .lb{display:block;font:600 11px/1 -apple-system,"PingFang SC",sans-serif;letter-spacing:.22em;color:var(--accent);margin-bottom:10px}
+.digest ol{margin:0;padding-left:1.35em}
+.digest li{margin:6px 0;font-size:15px;line-height:1.75}
+.digest li::marker{color:var(--muted);font-size:13px}
+.rule{width:36px;height:1px;background:var(--accent);margin:26px auto 0;opacity:.7}
+
+/* 板块 */
+section{margin:0 0 52px}
+.sechead{display:flex;align-items:baseline;gap:12px;margin-bottom:22px}
+.sechead h2{font-family:var(--serif);font-size:17px;font-weight:600;margin:0;letter-spacing:.12em}
+.sechead h2::before{content:"";display:inline-block;width:5px;height:5px;margin-right:11px;
+  border:1px solid var(--accent);transform:rotate(45deg) translateY(-3px);opacity:.75}
+.sechead .n{font-size:11px;color:var(--muted);letter-spacing:.2em}
+.sechead .fill{flex:1;height:1px;background:var(--line);transform:translateY(-4px)}
+
+/* 条目 */
+article{padding:26px 0;border-top:1px solid var(--line)}
+article:first-of-type{border-top:none;padding-top:0}
+.hit{display:inline-flex;align-items:center;gap:5px;font-size:11px;letter-spacing:.16em;
+  color:var(--accent);margin-bottom:9px}
+.hit::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--accent)}
+.hit .pin{font-size:10px;letter-spacing:.06em;color:var(--muted);margin-left:4px}
+h3{font-family:var(--serif);font-weight:600;font-size:21px;line-height:1.5;margin:0 0 12px;
+  letter-spacing:.005em}
+h3 a{color:inherit;text-decoration:none}
+h3 a:hover{color:var(--accent)}
+.orig{font-family:var(--sans);font-size:12.5px;line-height:1.65;color:var(--muted);
+  letter-spacing:.01em;margin:-6px 0 12px}
+.lead{margin:0 0 16px;color:var(--fg);opacity:.92;font-size:15.5px;line-height:1.9;
+  letter-spacing:.005em}
+.points{margin:0 0 4px;padding:0;list-style:none;font-size:14.5px;color:var(--fg);opacity:.78;
+  line-height:1.85}
+.points li{position:relative;padding-left:16px;margin:5px 0}
+.points li::before{content:"";position:absolute;left:2px;top:.72em;width:4px;height:4px;
+  border-radius:50%;background:var(--accent);opacity:.55}
+em.kw{font-style:normal;background:rgba(168,69,42,.16);border-radius:3px;padding:0 3px;
+  box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.verdict{margin:18px 0 0;padding:12px 0 12px 16px;border-left:2px solid var(--line);
+  font-size:14.5px;color:var(--fg);opacity:.88;line-height:1.85}
+.verdict .who{font-family:var(--serif);color:var(--accent);letter-spacing:.18em;margin-right:10px;
+  font-size:12.5px;white-space:nowrap}
+.verdict .said{display:inline}
+details{margin-top:14px}
+details summary{cursor:pointer;font-size:12.5px;color:var(--muted);letter-spacing:.12em;
+  list-style:none;display:inline-flex;align-items:center;gap:6px;user-select:none}
+details summary::-webkit-details-marker{display:none}
+details summary::before{content:"＋";font-size:11px;transition:transform .2s;color:var(--accent)}
+details[open] summary::before{content:"－"}
+details ul{margin:12px 0 0;padding-left:18px;font-size:14.5px;color:var(--muted);line-height:1.9}
+details ul li{margin:3px 0}
+.src{margin-top:16px;font-size:12px;color:var(--muted);letter-spacing:.06em}
+.src a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line)}
+.src a:hover{color:var(--accent);border-color:var(--accent)}
+.more{margin-top:18px}
+.more button{background:transparent;border:none;padding:0;color:var(--muted);font-size:12.5px;
+  letter-spacing:.1em;cursor:pointer;border-bottom:1px dashed var(--line);font-family:var(--sans)}
+.more button:hover{color:var(--accent);border-color:var(--accent)}
+.hidden{display:none}
+.hidden-sec{display:none}
+.empty{font-size:13px;color:var(--muted);font-style:normal;padding:4px 0}
+
+/* 小公告栏 */
+.tips{border-top:1px solid var(--line);padding-top:34px;margin-top:8px}
+.tips h2{font-family:var(--serif);font-size:15px;font-weight:600;letter-spacing:.16em;
+  color:var(--muted);margin:0 0 20px}
+.tip{padding:14px 0;border-top:1px dashed var(--line)}
+.tip:first-of-type{border-top:none}
+.tip .cat{font-size:11px;letter-spacing:.2em;color:var(--accent);margin-bottom:6px}
+.tip .txt{font-size:15px}
+.tip .cm{margin-top:9px;font-size:13.5px;color:var(--muted);line-height:1.8}
+
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--line);
+  text-align:center;font-size:11.5px;color:var(--muted);letter-spacing:.1em;line-height:2}
+footer::before{content:"◦ ◦ ◦";display:block;margin-bottom:14px;font-size:9px;
+  letter-spacing:.5em;color:var(--accent);opacity:.5}
+
+@media (max-width:640px){
+  .wrap{padding:48px 20px 72px}
+  h3{font-size:19px}
+  .lead{font-size:15px}
+  .tabs{gap:4px;margin-bottom:34px}
+}
+@media print{
+  #progress,.tools,.panel,.more{display:none!important}
+  body{background:#fff}
+  article{break-inside:avoid}
+}
+</style>
+</head><body data-limit="2">
+<div id="progress"></div><div class="wrap">
+<div class="top">
+<div class="brand">肥鱼晨报</div>
+<div class="tools"><button id="tbtn" type="button">外观</button></div>
+</div>
+<div class="panel" id="panel">
+<div class="row"><span>配色</span><div style="display:flex;gap:10px"><button class="swatch" type="button" data-p="paper" data-vars="{&quot;--bg&quot;: &quot;#f6f4ef&quot;, &quot;--surface&quot;: &quot;#fffefb&quot;, &quot;--fg&quot;: &quot;#1c1a17&quot;, &quot;--muted&quot;: &quot;#8a847a&quot;, &quot;--line&quot;: &quot;rgba(28,26,23,.10)&quot;, &quot;--accent&quot;: &quot;#a8452a&quot;}" style="background:#f6f4ef;border-color:rgba(28,26,23,.10)" title="纸"><i style="background:#a8452a"></i></button><button class="swatch" type="button" data-p="ink" data-vars="{&quot;--bg&quot;: &quot;#f2f4f6&quot;, &quot;--surface&quot;: &quot;#fbfcfd&quot;, &quot;--fg&quot;: &quot;#16202a&quot;, &quot;--muted&quot;: &quot;#7d8894&quot;, &quot;--line&quot;: &quot;rgba(22,32,42,.10)&quot;, &quot;--accent&quot;: &quot;#2f5d8a&quot;}" style="background:#f2f4f6;border-color:rgba(22,32,42,.10)" title="墨"><i style="background:#2f5d8a"></i></button><button class="swatch" type="button" data-p="moss" data-vars="{&quot;--bg&quot;: &quot;#f3f4ee&quot;, &quot;--surface&quot;: &quot;#fcfdf8&quot;, &quot;--fg&quot;: &quot;#1d2118&quot;, &quot;--muted&quot;: &quot;#828777&quot;, &quot;--line&quot;: &quot;rgba(29,33,24,.10)&quot;, &quot;--accent&quot;: &quot;#4d6141&quot;}" style="background:#f3f4ee;border-color:rgba(29,33,24,.10)" title="苔"><i style="background:#4d6141"></i></button><button class="swatch" type="button" data-p="night" data-vars="{&quot;--bg&quot;: &quot;#15161a&quot;, &quot;--surface&quot;: &quot;#1c1e23&quot;, &quot;--fg&quot;: &quot;#e8e6e1&quot;, &quot;--muted&quot;: &quot;#8b8a86&quot;, &quot;--line&quot;: &quot;rgba(232,230,225,.12)&quot;, &quot;--accent&quot;: &quot;#d98b5f&quot;}" style="background:#15161a;border-color:rgba(232,230,225,.12)" title="夜"><i style="background:#d98b5f"></i></button></div></div>
+<div class="row"><span>背景</span><div class="bgwrap"><input type="color" id="bgpick" value="#f6f4ef" aria-label="自定义背景色"><button type="button" id="bgreset">恢复</button></div></div>
+<div class="row"><span>字号</span><div class="sizewrap"><button type="button" data-fs="15px">小</button><button type="button" data-fs="16px">中</button><button type="button" data-fs="17.5px">大</button></div></div>
+<div class="row"><span>条数</span><div class="sizewrap"><button type="button" data-den="1">少</button><button type="button" data-den="2">标准</button><button type="button" data-den="3">全</button></div></div>
+</div>
+<header>
+<h1>11 月 6 日</h1>
+<div class="date">2026-11-06 · 周五 · 约 <span id="mins">9</span> 分钟 · <span id="cnt">10 条</span></div>
+<div class="tagline">十分钟，过一遍今天</div>
+<div class="rule"></div>
+</header>
+<div class="digest"><span class="lb">今天三句话</span><ol><li>国家医保局升级医保钱包至2.0版，职工医保个人账户已实现省内共济，正加快跨省共济，家庭资金可互通使用。</li><li>中国基本医保参保人数达13.28亿并连续两年正增长，覆盖面持续扩大，关系每个人的看病保障。</li><li>实验性基因疗法首次直接作用于人脑，让三名癫痫患者发作近乎消失，为难治性癫痫带来新希望。</li></ol></div>
+<nav class="tabs" id="tabs"><button type="button" data-view="all" data-active="1">全部</button><button type="button" data-view="tech">科技 AI</button><button type="button" data-view="biz">商业财经</button><button type="button" data-view="society">社会热点</button><button type="button" data-view="life">生活健康</button><button type="button" data-view="digital">数码娱乐</button></nav>
+<section data-dom="tech">
+<div class="sechead">
+<h2>科技 AI</h2>
+<span class="n">03</span><span class="fill"></span>
+</div>
+<article class="" data-hit="0" data-ord="1" data-dom="tech"><h3><a href="https://www.theverge.com/ai-artificial-intelligence/1028302/perplexity-teammates-ai-agents-work" target="_blank" rel="noopener">Perplexity推出办公AI代理Teammates，正面挑战OpenAI与Anthropic</a></h3><p class="orig">Perplexity launches its own take on AI agents for work</p><p class="lead">Perplexity发布面向工作场景的常驻AI代理Teammates，可在同一工作区内承担多种角色，并直接调用用户已有的项目、技能与记忆，同时与Perplexity Computer系统打通，后者能把代理部署到用户设备上执行任务。这意味着AI代理竞争从单次问答转向长期驻留的工作流接管，Perplexity试图用与现有工具深度绑定的方式，对抗OpenAI和Anthropic在企业端的布局。值得知道的是，代理能否稳定接管多角色任务、权限边界如何划分，将决定这类产品是真提效还是添乱。</p><ul class="points"><li>Teammates主打常驻在线，可在工作区内切换多个职能角色</li><li>可直接继承用户已有的项目、技能和记忆，减少重复配置</li><li>与Perplexity Computer联动，支持把代理部署到用户设备执行任务</li><li>此举被视为对OpenAI和Anthropic企业级代理产品的直接回应</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">常驻代理听着很美，真正难的是权限和边界，一旦代理乱动文件、乱发消息，收拾起来比省下的时间还多。Perplexity拿现有工具的记忆做粘性，思路聪明，但企业肯不肯把工作流交给一家搜索起家的公司，还得看它能不能把失控风险讲清楚。</span></blockquote><div class="src">The Verge · <a href="https://www.theverge.com/ai-artificial-intelligence/1028302/perplexity-teammates-ai-agents-work" target="_blank" rel="noopener">原文</a></div></article>
+<article class="" data-hit="0" data-ord="2" data-dom="tech"><h3><a href="https://techcrunch.com/2026/11/05/dropbox-acquires-tigris-data-for-350m-to-bolster-its-ai-iinfrastructure/" target="_blank" rel="noopener">Dropbox以3.5亿美元收购Tigris Data，补强AI基础设施</a></h3><p class="orig">Dropbox acquires Tigris Data for $350M to bolster its AI infrastructure</p><p class="lead">Dropbox宣布以3.5亿美元收购数据存储公司Tigris Data，交易预计用于支撑DBX Agent Cloud的开发，这是一个面向构建AI模型和代理的开发者提供的新存储平台。Dropbox近年增长承压，此次收购是把存储老本行往AI基础设施方向延伸，试图从消费级网盘转向开发者市场。值得知道的是，存储层正成为AI代理落地的基础设施战场，3.5亿美元的价格说明Dropbox愿意为这条新故事付真金白银，但能否吸引开发者离开现有云厂商仍是未知数。</p><ul class="points"><li>资金将用于开发DBX Agent Cloud存储平台</li><li>目标用户是构建AI模型和代理的开发者</li><li>Dropbox借此从消费级存储向AI基础设施延伸</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">Dropbox买存储公司做AI云，逻辑上说得通，毕竟代理跑起来总得有地方存数据。但开发者市场早被几家云巨头占满，3.5亿美元买来的团队能不能撬动迁移，才是真考验。别把这次收购当成转型成功的信号，它更像是一次押注。</span></blockquote><div class="src">TechCrunch AI · <a href="https://techcrunch.com/2026/11/05/dropbox-acquires-tigris-data-for-350m-to-bolster-its-ai-iinfrastructure/" target="_blank" rel="noopener">原文</a></div></article>
+<article class="hidden" data-hit="0" data-ord="3" data-dom="tech"><h3><a href="https://openai.com/index/introducing-gpt-6-cyber" target="_blank" rel="noopener">OpenAI发布GPT-6 Cyber，专攻漏洞发现与修复</a></h3><p class="orig">GPT‑6 Cyber: Advancing the frontier of aligned cybersecurity agents</p><p class="lead">OpenAI推出名为GPT-6 Cyber的网络安全模型，定位是发现可利用漏洞并开发修复方案，训练时刻意约束其行为停留在授权范围内。这标志着前沿模型厂商开始把安全攻防作为专门产品线，而不是通用能力的副产品。值得知道的是，漏洞挖掘类模型一旦越界就是双刃剑，OpenAI强调授权范围，说明能力与滥用之间的界线正是这类产品能否被企业采用的关键。</p><ul class="points"><li>模型专用于寻找可被利用的漏洞并给出修复方案</li><li>训练目标包含将行为限制在授权范围内</li><li>属于OpenAI面向网络安全场景的专门模型</li><li>反映前沿厂商把安全攻防拆分为独立产品线</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">安全模型最怕的不是能力不够，而是能力太够又不听话。强调授权范围是必须的，但训练时的约束和真实环境里的表现是两回事。这类产品成不成，得看企业敢不敢让它碰生产系统，光发个模型说明不了什么。</span></blockquote><div class="src">OpenAI News · <a href="https://openai.com/index/introducing-gpt-6-cyber" target="_blank" rel="noopener">原文</a></div></article>
+<div class="more"><button type="button">还有 1 条 · 展开</button></div>
+</section>
+<section data-dom="biz">
+<div class="sechead">
+<h2>商业财经</h2>
+<span class="n">03</span><span class="fill"></span>
+</div>
+<article class="" data-hit="1" data-ord="1" data-dom="biz"><div class="hit">关键词 · 芯片<span class="pin">已置顶</span></div><h3><a href="http://www.xueqiu.com/9391624441/415645532" target="_blank" rel="noopener">有点意思！Q3财报，低估区反而在改善？（11.05）（A股80只指数2026年Q3财报出炉，科技与消费冰火两重天）</a></h3><p class="lead">A股各大指数2026年Q3财报更新完毕，跟踪的80个A股指数中47只ROE变强、33只变弱，中位数变化为+0.32个百分点，沪深全A基准ROE为6.55%，仅微增0.02个百分点。结构分化极为割裂：科创创业50、创业板50、科创50和创业板指领衔增长，科技龙头ROE暴增7.95个百分点，中证有色、细分化工、国证<em class="kw">芯片</em>同步走强；而泛消费全面下行，中证畜牧同比下降16.09个百分点垫底，中证消费、中证白酒、中证旅游、家电均处下行通道。值得知道的是，盈利修复的增量高度集中在双创和泛科技领域，宽基整体企稳掩盖不了行业间的巨大裂口。</p><ul class="points"><li>80只指数中47只ROE变强、33只变弱，中位数+0.32pp</li><li>沪深全A基准ROE为6.55%，微增0.02pp</li><li>科技龙头ROE暴增7.95pp，中证有色+6.48pp，国证芯片+5.85pp</li><li>中证畜牧同比下降16.09pp垫底，消费与家电集体走弱</li><li>深市整体优于沪市，成长风格明显好于价值风格</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">一边是芯片有色化工猛拉ROE，一边是白酒旅游家电往下掉，这不是企稳，是换了一批人赚钱。拿宽基平均数安慰自己没意义，结构裂成这样，选错方向照样亏。泛科技的盈利修复是真的，但涨幅已经把预期打进去多少，得自己掂量。</span></blockquote><div class="src">雪球 · <a href="http://www.xueqiu.com/9391624441/415645532" target="_blank" rel="noopener">原文</a></div></article>
+<article class="" data-hit="0" data-ord="2" data-dom="biz"><h3><a href="https://wallstreetcn.com/livenews/3195512" target="_blank" rel="noopener">报道：部分投资者对Anthropic能否按计划于下周开展路演、赶在11月上市一事表示怀疑</a></h3><p class="lead">据路透报道，Anthropic首次公开发行的潜在投资者怀疑其能否按计划在下周启动路演、赶在11月完成上市，投资者正要求更具吸引力的估值才愿认购，部分人认为近期讨论的1.5万亿美元估值已处于预期高端。投资者还在等待Anthropic的10月营收数据，以判断近几个月的增长放缓是否已被扭转，Anthropic对此拒绝置评。值得知道的是，AI头部公司的上市定价正在接受真实市场检验，估值叙事和营收增速之间的落差会被放大审视。</p><ul class="points"><li>投资者怀疑下周路演、11月上市的时间表能否兑现</li><li>部分投资者认为1.5万亿美元估值已处预期高端</li><li>投资者要求更有吸引力的估值才愿意认购</li><li>市场正等待10月营收数据评估增长放缓是否扭转</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">1.5万亿美元的估值摆上桌，投资者开始讨价还价，这画面比任何融资新闻都真实。路演能不能按时开，本质上取决于营收数据能不能撑住故事。AI公司上市从讲故事进入对账阶段，接下来比的不是谁嗓门大，是谁的报表经得起翻。</span></blockquote><div class="src">华尔街见闻 · <a href="https://wallstreetcn.com/livenews/3195512" target="_blank" rel="noopener">原文</a></div></article>
+<article class="hidden" data-hit="0" data-ord="3" data-dom="biz"><h3><a href="https://www.cnbc.com/2026/11/05/iren-earnings-report-q1-2027-.html" target="_blank" rel="noopener">IREN称40亿美元年化收入因客户要求推迟确认</a></h3><p class="orig">Neocloud IREN says $4 billion in annualized revenue being delayed due to customer request</p><p class="lead">云计算服务商IREN（原名Iris Energy）在股价大幅下跌后披露，约40亿美元的年化收入将因客户要求从2026年推迟到明年年初确认。这一数字相当于该公司当前收入规模的数倍，推迟确认直接冲击了市场对其增长节奏的预期，也解释了此前股价的剧烈波动。对投资者而言，关键不在于收入是否存在，而在于确认时点后移是否意味着客户需求或合同执行出现变化，这决定了IREN的高增长叙事能否站得住。</p><ul class="points"><li>公司称推迟系客户主动要求，而非合同取消</li><li>消息发布前IREN股价已出现大幅下跌</li><li>该收入规模远超公司当前年化收入水平</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">客户一句话，40亿美元就从2026年挪到了明年，时间点卡得真巧。收入没丢不等于没事，客户为什么要求推迟、合同条款有没有变，这些才是要害。股价先跌为敬，说明市场早就不信这套说辞了。</span></blockquote><div class="src">CNBC · <a href="https://www.cnbc.com/2026/11/05/iren-earnings-report-q1-2027-.html" target="_blank" rel="noopener">原文</a></div></article>
+<div class="more"><button type="button">还有 1 条 · 展开</button></div>
+</section>
+<section data-dom="society">
+<div class="sechead">
+<h2>社会热点</h2>
+<span class="n">03</span><span class="fill"></span>
+</div>
+<article class="" data-hit="0" data-ord="1" data-dom="society"><h3><a href="https://www.chinanews.com.cn/sh/2026/11-05/10726616.shtml" target="_blank" rel="noopener">医保钱包2.0版上线 这笔钱怎么用？（医保钱包升级2.0版 个人账户跨省共济加速落地）</a></h3><p class="lead">国家医保局宣布医保钱包升级至2.0版本，全国已全面实现职工医保个人账户省内共济，并依托医保钱包加快跨省共济落地。所谓医保钱包，是把个人账户资金用于家庭成员之间共济的工具，此次升级的重点在于打通跨省使用的堵点。对长期异地工作、家庭成员分散在不同省份的职工来说，账户里的钱能否真正流动起来，直接关系到这笔资金的使用效率，也是医保个人账户改革能否落到实处的关键一步。</p><ul class="points"><li>医保钱包已升级至2.0版本，功能和服务范围进一步扩展</li><li>全国已全面实现职工医保个人账户省内共济</li><li>跨省共济依托医保钱包加快落地</li><li>国家医保局就使用方式等问题作出解读</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">账户里的钱终于能跨省给家人用了，这事本身是实打实的便利。但2.0版到底比1.0多了什么、哪些省份真正跑通、操作流程顺不顺，报道里说得含糊。升级版本号容易，让钱在各省之间顺畅流转才是硬功夫。</span></blockquote><div class="src">中新网 · 要闻 · <a href="https://www.chinanews.com.cn/sh/2026/11-05/10726616.shtml" target="_blank" rel="noopener">原文</a></div></article>
+<article class="" data-hit="0" data-ord="2" data-dom="society"><h3><a href="https://www.chinanews.com.cn/gn/2026/11-05/10726870.shtml" target="_blank" rel="noopener">中国国家医保局：基本医保参保人数将连续两年实现正增长</a></h3><p class="lead">国家医保局规财法规司副司长张晨光在媒体解读会上表示，截至今年9月，中国基本医保参保人数达13.28亿，已超过2024年全年水平，10月底可接近2025年全年水平，全年超过去年已成定局，将连续两年实现正增长。参保人数止跌回升，意味着此前关于医保断缴、退保的担忧有所缓解，但13亿多人的盘子下，参保结构的稳定性和基金可持续性仍是更值得盯住的问题。</p><ul class="points"><li>截至今年9月基本医保参保人数达13.28亿</li><li>该数字已超过2024年全年参保水平</li><li>10月底参保人数可接近2025年全年水平</li><li>全年参保人数超过去年已成定局</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">连续两年正增长，数字好看。但参保人数回升和缴费质量是两码事，居民医保个人缴费压力、断缴后重新参保的等待期，这些才是真正影响参保意愿的东西。光看总数涨了，容易把结构性问题盖过去。</span></blockquote><div class="src">中新网 · 国内 · <a href="https://www.chinanews.com.cn/gn/2026/11-05/10726870.shtml" target="_blank" rel="noopener">原文</a></div></article>
+<article class="hidden" data-hit="0" data-ord="3" data-dom="society"><h3><a href="https://www.chinanews.com.cn/sh/2026/11-06/10727006.shtml" target="_blank" rel="noopener">冷空气继续影响中东部地区 中东部地区将有大范围雨雪天气</a></h3><p class="lead">中央气象台预计，11月6日内蒙古、东北等地及东海、南海海域风力较大，7日至9日新一轮冷空气将影响我国，带来大风降温和较大范围雨雪。华北北部、辽宁南部部分地区雨雪较强，可能引发次生灾害。此前内蒙古及东北已出现大风降温和雨雪，湖南、广东等地出现分散性大雨或暴雨。连续两轮冷空气叠加，对交通出行、能源供应和城乡防火都构成压力，降温幅度和雨雪落区是防范重点。</p><ul class="points"><li>6日内蒙古、东北及东海、南海海域风力较大</li><li>7日至9日新一轮冷空气影响我国大部</li><li>华北北部、辽宁南部部分地区雨雪较强</li><li>需防范次生灾害并做好森林草原和城乡防火</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">两轮冷空气排队报到，北方雨雪南方暴雨，天气这台戏唱得挺满。真正要留意的是华北北部和辽宁南部的强雨雪，次生灾害往往出在这种地方。供暖、交通、用电都得提前打算，别等雪压下来才想起来。</span></blockquote><div class="src">中新网 · 社会 · <a href="https://www.chinanews.com.cn/sh/2026/11-06/10727006.shtml" target="_blank" rel="noopener">原文</a></div></article>
+<div class="more"><button type="button">还有 1 条 · 展开</button></div>
+</section>
+<section data-dom="life">
+<div class="sechead">
+<h2>生活健康</h2>
+<span class="n">03</span><span class="fill"></span>
+</div>
+<article class="" data-hit="0" data-ord="1" data-dom="life"><h3><a href="https://www.statnews.com/2026/11/05/rasonque-revolution-medicines-pancreatic-cancer-commercial-launch/?utm_campaign=rss" target="_blank" rel="noopener">Revolution Medicines胰腺癌药物上市首秀惊艳</a></h3><p class="orig">STAT+: Revolution Medicines’ pancreatic cancer drug has stunning commercial debut</p><p class="lead">Revolution Medicines研发的新型胰腺癌药物上市后商业表现强劲，被业内视为史上最成功的肿瘤药物首发之一。胰腺癌素来以难治、预后差著称，长期缺乏有效新药，这款药物能在上市初期就取得如此成绩，说明临床需求和医生接受度都超出预期。值得关注的是，首发数据亮眼不等于长期放量顺利，产能、支付覆盖和后续临床数据都将决定它能否把开局优势延续下去。</p><ul class="points"><li>该药物上市初期销售表现被称为史上最佳肿瘤药首发之一</li><li>胰腺癌治疗长期缺乏有效新药，临床需求巨大</li><li>商业成功反映医生接受度和处方转化速度较快</li><li>后续产能、医保覆盖和临床数据将影响长期表现</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">胰腺癌这个领域憋了太多年，终于有药物在上市初期打出漂亮数据，方向是对的。但首发漂亮和长期放量之间隔着产能、支付和适应症拓展几道坎。历史上开局惊艳、后劲不足的肿瘤药不在少数，别急着封神。</span></blockquote><div class="src">STAT News · <a href="https://www.statnews.com/2026/11/05/rasonque-revolution-medicines-pancreatic-cancer-commercial-launch/?utm_campaign=rss" target="_blank" rel="noopener">原文</a></div></article>
+<article class="" data-hit="0" data-ord="2" data-dom="life"><h3><a href="https://www.nature.com/articles/d41586-026-03566-2" target="_blank" rel="noopener">实验性基因疗法让三名癫痫患者脑内发作近乎消失</a></h3><p class="orig">Epileptic seizures nearly vanish after people receive experimental gene therapy in their brains</p><p class="lead">一项针对三名癫痫患者的小型临床试验，将携带基因的病毒与一种药物联合使用，结果患者的癫痫发作频率几乎降至零。这是基因疗法首次直接作用于人脑以控制癫痫，受试者数量虽少，却为药物难治性癫痫提供了全新思路。关键之处在于，该方案并非单纯抑制神经活动，而是通过病毒递送基因、再由药物调控，从分子层面干预异常放电，若后续扩大试验能复制这一结果，将可能改变难治性癫痫的治疗格局。</p><ul class="points"><li>试验共纳入三名癫痫患者，接受病毒载体与药物联合治疗。</li><li>治疗后患者癫痫发作频率大幅下降，接近完全消失。</li><li>该方案通过基因递送加药物调控，从分子层面干预异常放电。</li><li>受试规模极小，疗效与安全性仍需更大规模试验验证。</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">三名患者就说近乎消失，样本小得可怜，离临床普及还差着十万八千里。但方向确实有意思：不是拿电极板硬压，而是往脑子里送基因再用药调控，算是换了条路。先别急着欢呼，等几十上百人的数据出来再说话。</span></blockquote><div class="src">Nature · <a href="https://www.nature.com/articles/d41586-026-03566-2" target="_blank" rel="noopener">原文</a></div></article>
+<article class="hidden" data-hit="0" data-ord="3" data-dom="life"><h3><a href="https://www.sciencedaily.com/releases/2026/11/261101010556.htm" target="_blank" rel="noopener">科学家发现与记忆衰退相关的神秘孤独脑电波</a></h3><p class="orig">Scientists discover mysterious “lonely” brain waves linked to memory loss</p><p class="lead">研究人员发现，Alzheimer（阿尔茨海默病）相关蛋白的堆积、深睡期脑电波的紊乱与记忆衰退之间存在出人意料的联系。在症状出现之前很久，大脑夜间处理记忆的方式就已悄然改变，这种被形容为孤独的脑电波异常，可能是年龄相关记忆丧失的早期信号。该发现把睡眠、蛋白沉积与记忆三者串成一条线索，提示夜间脑电活动或可成为超早期筛查的观察窗口，但因果链条尚待厘清。</p><ul class="points"><li>研究将Alzheimer相关蛋白堆积与深睡期脑电波紊乱联系起来。</li><li>脑电异常出现在Alzheimer症状显现之前，或为早期信号。</li><li>夜间记忆处理方式的隐蔽改变可能推动年龄相关记忆衰退。</li><li>发现提示睡眠脑电活动有望成为超早期筛查的观察指标。</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">相关性研究，别当成因果结论来读。孤独脑电波这名字起得挺会抓眼球，实际说的是深睡期节律被打乱。真正有价值的是时间点：症状还没冒头，夜里就不对劲了。要是指标能标准化，筛查上或许有用；现在嘛，先当线索看。</span></blockquote><div class="src">ScienceDaily 健康 · <a href="https://www.sciencedaily.com/releases/2026/11/261101010556.htm" target="_blank" rel="noopener">原文</a></div></article>
+<div class="more"><button type="button">还有 1 条 · 展开</button></div>
+</section>
+<section data-dom="digital">
+<div class="sechead">
+<h2>数码娱乐</h2>
+<span class="n">03</span><span class="fill"></span>
+</div>
+<article class="" data-hit="0" data-ord="1" data-dom="digital"><h3><a href="https://www.gcores.com/articles/221994" target="_blank" rel="noopener">点击冒险新作《鬼灵精探》免费试玩版现已上线，向LucasArts经典冒险游戏致敬</a></h3><p class="lead">Daedalic Entertainment（德达利克娱乐）与 Three Headed Monkey Studios（三头猴工作室）宣布，2D 点击式冒险游戏《鬼灵精探》免费试玩版已在 Steam 上线，并参与本期 Steam Point &amp; Click Showcase（点击冒险展示活动）。作品以手绘像素画面和黑色幽默致敬 LucasArts（卢卡斯艺术）经典，主角吉吉为找回奶奶闯荡阴间，试玩版提供英语和德语配音，文本支持包括中文在内的 12 种语言，完整版计划 2027 年登陆 PC、Mac、Xbox 和 PlayStation。</p><ul class="points"><li>试玩版已在Steam上线，展示活动结束后仍继续开放。</li><li>故事讲述吉吉与南瓜恶魔合作，前往阴间寻找奶奶。</li><li>试玩版含英语和德语配音，文本本地化覆盖12种语言。</li><li>完整版融合经典谜题与现代提示、得分、快速旅行等功能。</li><li>计划2027年登陆PC、Mac、Xbox和PlayStation平台。</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">致敬 LucasArts 的作品年年有，做砸的也不少。这回背后有 Daedalic 撑着，它做过《德波尼亚》系列，手感应该不至于跑偏。像素画面加黑色幽默是讨巧路线，但真正见功夫的是谜题设计。试玩免费，先摸一把再决定要不要期待 2027 年。</span></blockquote><div class="src">机核 · <a href="https://www.gcores.com/articles/221994" target="_blank" rel="noopener">原文</a></div></article>
+<article class="" data-hit="0" data-ord="2" data-dom="digital"><h3><a href="https://www.gamespot.com/articles/switch-2-wont-get-another-price-hike-at-least-not-soon-nintendo-says/" target="_blank" rel="noopener">任天堂称Switch 2短期内不会再涨价</a></h3><p class="orig">Switch 2 Won’t Get Another Price Hike, At Least Not Soon, Nintendo Says</p><p class="lead">在最新财报说明会上，任天堂表示没有再次上调 Switch 2 价格的计划，至少短期内不会。管理层称公司储备了足够的内存库存，可以缓冲成本压力，因而无需再度提价。此前 Switch 2 已于 9 月从 450 美元涨至 500 美元，此前 PlayStation 5 与 Xbox Series X|S 也已相继涨价，三大主机平台全部完成一轮调价。涨价背后是关税以及 AI 企业对内存和零部件需求带来的宏观压力。</p><ul class="points"><li>任天堂称已储备足够内存库存，可缓冲成本上涨压力。</li><li>Switch 2于9月由450美元上调至500美元。</li><li>PS5与Xbox Series X|S此前均已涨价，三大平台齐涨。</li><li>涨价主因包括关税及AI企业对内存和零部件的需求。</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">短期不涨这话留了活口，库存能撑多久才是关键。内存价格被 AI 公司抬着走，任天堂囤货只是把问题往后推。三大主机都涨过一轮了，玩家钱包已经被教育过一遍。别把承诺当合同，等下一份财报再看口风。</span></blockquote><div class="src">GameSpot · <a href="https://www.gamespot.com/articles/switch-2-wont-get-another-price-hike-at-least-not-soon-nintendo-says/" target="_blank" rel="noopener">原文</a></div></article>
+<article class="hidden" data-hit="0" data-ord="3" data-dom="digital"><h3><a href="https://www.ithome.com/1/023/082.htm" target="_blank" rel="noopener">含《暴力摩托》周年纪念版等，EA 把 25 款经典 PC 游戏带到 Steam 平台</a></h3><p class="lead">艺电（Electronic Arts，简称 EA）宣布在 Steam 启动经典重现特卖，共上线 25 款经典 PC 游戏，其中包括《暴力摩托》与《银河飞将》系列等 7 款周年纪念版，以及 18 款经典作品。纪念版保留原作画面与体验，同时加入现代系统与操作支持等便利性优化。修复团队从一处存放数千盘 Betacam、VHS 和 D1 磁带的实体媒体库中找回被认为已遗失的主 FMV（全动态视频）片段，重新剪辑修复了 1500 多个过场场景。</p><ul class="points"><li>活动上线25款游戏，含7款周年纪念版和18款经典作品。</li><li>纪念版保留原作画面体验，增加现代系统与操作支持。</li><li>修复素材源自存放数千盘磁带的实体媒体库。</li><li>《创世纪》系列、《十字军》《主题医院》等首次重登Steam。</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">老游戏上架不稀奇，稀奇的是真去翻磁带库找母带。1500 多个过场场景重新剪辑，这份力气比单纯打包卖情怀实在得多。不过便利性优化做得好不好，得玩过才知道，别让现代操作把原味改没了。情怀可以买，先看修复质量。</span></blockquote><div class="src">IT之家 · <a href="https://www.ithome.com/1/023/082.htm" target="_blank" rel="noopener">原文</a></div></article>
+<div class="more"><button type="button">还有 1 条 · 展开</button></div>
+</section>
+<footer>生成于 2026-11-06 10:06 · 大肥鱼晨报 v2 · 每天 06:00 自动更新</footer>
+</div>
+<script>window.PRESETS_HASH={"paper": {"--bg": "#f6f4ef", "--surface": "#fffefb", "--fg": "#1c1a17", "--muted": "#8a847a", "--line": "rgba(28,26,23,.10)", "--accent": "#a8452a"}, "ink": {"--bg": "#f2f4f6", "--surface": "#fbfcfd", "--fg": "#16202a", "--muted": "#7d8894", "--line": "rgba(22,32,42,.10)", "--accent": "#2f5d8a"}, "moss": {"--bg": "#f3f4ee", "--surface": "#fcfdf8", "--fg": "#1d2118", "--muted": "#828777", "--line": "rgba(29,33,24,.10)", "--accent": "#4d6141"}, "night": {"--bg": "#15161a", "--surface": "#1c1e23", "--fg": "#e8e6e1", "--muted": "#8b8a86", "--line": "rgba(232,230,225,.12)", "--accent": "#d98b5f"}};</script>
+<script>
+(function(){
+  var root=document.documentElement, KEY='fyb-share-theme';
+  var sw=document.querySelectorAll('.swatch');
+  var sz=document.querySelectorAll('.sizewrap button');
+  var saved=null;
+  try{saved=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){}
+  function apply(cfg){
+    if(!cfg) return;
+    if(cfg.vars){for(var k in cfg.vars){root.style.setProperty(k,cfg.vars[k])}}
+    if(cfg.fs){root.style.setProperty('--fs',cfg.fs)}
+    sw.forEach(function(b){b.dataset.active = (b.dataset.p===cfg.p)?'1':'0'});
+    sz.forEach(function(b){b.dataset.active = (b.dataset.fs===cfg.fs)?'1':'0'});
+  }
+  function save(cfg){try{localStorage.setItem(KEY,JSON.stringify(cfg))}catch(e){}}
+  sw.forEach(function(b){
+    b.addEventListener('click',function(){
+      var vars=JSON.parse(b.dataset.vars);
+      var cur={p:b.dataset.p,vars:vars,fs:(saved&&saved.fs)||''};
+      Object.keys(vars).forEach(function(k){root.style.setProperty(k,vars[k])});
+      apply(cur);save(cur);
+    });
+  });
+  sz.forEach(function(b){
+    b.addEventListener('click',function(){
+      var fs=b.dataset.fs, vars=saved?saved.vars:null, p=saved?saved.p:'paper';
+      var cur={p:p,vars:vars,fs:fs};
+      apply(cur);save(cur);
+    });
+  });
+  var t=document.getElementById('tbtn'), panel=document.getElementById('panel');
+  // #night 这类链接可直接指定配色；#panel 展开外观面板
+  (function(){
+    var h=(location.hash||'').replace('#','');
+    if(h && window.PRESETS_HASH && PRESETS_HASH[h]){
+      var v=PRESETS_HASH[h];
+      Object.keys(v).forEach(function(k){root.style.setProperty(k,v[k])});
+      var c={p:h,vars:v,fs:(saved&&saved.fs)||''}; save(c); apply(c);
+    }
+  })();
+  if(t){t.addEventListener('click',function(){panel.classList.toggle('open')})}
+  if((location.hash||'').indexOf('panel')>=0 && panel){panel.classList.add('open')}
+
+  // 条数密度：每个板块只露前 N 条，其余折叠进「还有 N 条」
+  var DKEY='fyb-share-density';
+  var dens=localStorage.getItem(DKEY)||document.body.getAttribute('data-limit')||'2';
+  if(['1','2','3'].indexOf(dens)<0){dens='2'}
+  var dn=document.querySelectorAll('.panel button[data-den]');
+  var VIEW='all';
+  function layout(){
+    var total=0;
+    Array.prototype.forEach.call(document.querySelectorAll('section'),function(s){
+      var inView=(VIEW==='all')||(s.getAttribute('data-dom')===VIEW);
+      s.classList.toggle('hidden-sec',!inView);
+      if(!inView){return}
+      var open=s.classList.contains('open');
+      var arts=s.querySelectorAll('article'), shown=0;
+      Array.prototype.forEach.call(arts,function(a){
+        var ord=parseInt(a.getAttribute('data-ord'),10)||0;
+        var hide=!open && ord>parseInt(dens,10);
+        a.classList.toggle('hidden',hide);
+        if(!hide){shown++}
+      });
+      total+=shown;
+      var btn=s.querySelector('.more button');      if(btn){
+        var rest=arts.length-shown;
+        if(rest>0){btn.style.display='';btn.textContent='还有 '+rest+' 条 · 展开'}
+        else{btn.style.display='none'}
+      }
+    });
+    var cnt=document.getElementById('cnt');
+    if(cnt){cnt.textContent=total+' 条'}
+    var mins=document.getElementById('mins');
+    if(mins){
+      var chars=0;
+      Array.prototype.forEach.call(document.querySelectorAll('article:not(.hidden)'),function(a){
+        if(a.closest('section.hidden-sec')){return}
+        chars+=a.textContent.length;
+      });
+      mins.textContent=Math.max(1,Math.round(chars/480));
+    }
+    Array.prototype.forEach.call(dn,function(b){b.dataset.active=(b.dataset.den===dens)?'1':'0'});
+  }
+  Array.prototype.forEach.call(dn,function(b){
+    b.addEventListener('click',function(){
+      dens=b.dataset.den;
+      try{localStorage.setItem(DKEY,dens)}catch(e){}
+      layout();
+    });
+  });
+  document.addEventListener('click',function(e){
+    var b=e.target.closest?e.target.closest('.more button'):null;
+    if(!b){return}
+    var s=b.closest('section');
+    if(s){s.classList.add('open');layout()}
+  });
+
+  // 领域切换：全部 / 科技AI / 商业财经 / 社会热点 / 生活健康 / 数码娱乐
+  var tabs=document.querySelectorAll('.tabs button');
+  function setView(v){
+    VIEW=v;
+    Array.prototype.forEach.call(tabs,function(x){
+      x.setAttribute('data-active',x.getAttribute('data-view')===v?'1':'0')
+    });
+    layout();
+  }
+  Array.prototype.forEach.call(tabs,function(b){
+    b.addEventListener('click',function(){
+      setView(b.getAttribute('data-view'));
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+  });
+  // #tech / #life 这类链接可直接打开某个领域
+  (function(){
+    var h=(location.hash||'').replace('#','');
+    if(!h){return}
+    Array.prototype.forEach.call(tabs,function(b){
+      if(b.getAttribute('data-view')===h){setView(h)}
+    });
+  })();
+
+  // 自定义背景色：按亮度自动配前景色，保证可读
+  var pick=document.getElementById('bgpick'), reset=document.getElementById('bgreset');
+  function lum(hex){
+    var m=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex||'');
+    if(!m){return 1}
+    var r=parseInt(m[1],16)/255,g=parseInt(m[2],16)/255,b=parseInt(m[3],16)/255;
+    return 0.2126*r+0.7152*g+0.0722*b;
+  }
+  function applyBg(hex){
+    var dark=lum(hex)<0.45;
+    var v= dark
+      ? {'--bg':hex,'--surface':'rgba(255,255,255,.05)','--fg':'#f2ede4','--muted':'#9d968c','--line':'rgba(255,255,255,.14)','--accent':'#d98b5f'}
+      : {'--bg':hex,'--surface':'rgba(0,0,0,.03)','--fg':'#1d1b18','--muted':'#7d776d','--line':'rgba(0,0,0,.13)','--accent':'#a8452a'};
+    Object.keys(v).forEach(function(k){root.style.setProperty(k,v[k])});
+    try{localStorage.setItem(KEY+'-bg',hex)}catch(e){}
+  }
+  if(pick){
+    var savedBg=null;
+    try{savedBg=localStorage.getItem(KEY+'-bg')}catch(e){}
+    if(savedBg){pick.value=savedBg;applyBg(savedBg)}
+    pick.addEventListener('input',function(){applyBg(pick.value)});
+  }
+  if(reset){
+    reset.addEventListener('click',function(){
+      try{localStorage.removeItem(KEY+'-bg');localStorage.removeItem(KEY)}catch(e){}
+      location.reload();
+    });
+  }
+  layout();
+  // 阅读进度
+  var bar=document.getElementById('progress');
+  function onScroll(){
+    var h=document.documentElement.scrollHeight-window.innerHeight;
+    bar.style.width=(h>0?(window.scrollY/h*100):0)+'%';
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});onScroll();
+})();
+</script>
+</body></html>
