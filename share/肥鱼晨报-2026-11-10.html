@@ -1,0 +1,403 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>肥鱼晨报 · 2026-11-10</title>
+<meta property="og:type" content="article">
+<meta property="og:title" content="肥鱼晨报">
+<meta property="og:image" content="https://jzy-shisan.github.io/morning-brief/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jzy-shisan.github.io/morning-brief/og.png">
+<style>
+:root{
+  --bg:#f6f4ef; --surface:#fffefb; --fg:#1c1a17; --muted:#8a847a;
+  --line:rgba(28,26,23,.10); --accent:#a8452a;
+  --serif: "Noto Serif SC","Source Han Serif SC","Songti SC","SimSun",Georgia,serif;
+  --sans: -apple-system,"Segoe UI","Microsoft YaHei UI","PingFang SC","Hiragino Sans GB",sans-serif;
+  --fs: 16px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--bg); color:var(--fg);
+  font-family:var(--sans); font-size:var(--fs); line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+  transition:background .35s ease,color .35s ease;
+}
+#progress{position:fixed;top:0;left:0;height:2px;width:0;background:var(--accent);
+  z-index:50;transition:width .1s linear;opacity:.85}
+.wrap{max-width:728px;margin:0 auto;padding:72px 28px 96px}
+
+/* 顶栏 */
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:44px}
+.brand{font-family:var(--serif);font-size:15px;letter-spacing:.18em;color:var(--muted)}
+.tools{display:flex;gap:6px}
+.tools button{
+  border:1px solid var(--line);background:transparent;color:var(--muted);
+  font-family:var(--sans);font-size:12px;letter-spacing:.08em;
+  padding:5px 10px;border-radius:999px;cursor:pointer;transition:.2s;
+}
+.tools button:hover{color:var(--fg);border-color:var(--muted)}
+.panel{
+  display:none;margin:0 0 40px;padding:16px 18px;border:1px solid var(--line);
+  border-radius:14px;background:var(--surface);
+}
+.panel.open{display:block}
+.panel .row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.panel .row > span{font-size:12px;color:var(--muted);letter-spacing:.1em;min-width:52px}
+.swatch{width:26px;height:26px;border-radius:50%;border:1px solid var(--line);cursor:pointer;
+  position:relative;transition:.2s;display:flex;align-items:center;justify-content:center;padding:0}
+.swatch i{display:block;width:9px;height:9px;border-radius:50%}
+.swatch:hover{transform:scale(1.08)}
+.swatch[data-active="1"]{box-shadow:0 0 0 2px var(--bg),0 0 0 3px var(--accent)}
+.sizewrap button{font-size:12px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);
+  background:transparent;color:var(--muted);cursor:pointer;margin-right:4px}
+.sizewrap button[data-active="1"]{color:var(--accent);border-color:var(--accent)}
+.bgwrap{display:flex;align-items:center;gap:10px}
+.bgwrap input[type=color]{width:26px;height:26px;padding:0;border:1px solid var(--line);
+  border-radius:50%;background:transparent;cursor:pointer;-webkit-appearance:none;appearance:none}
+.bgwrap input[type=color]::-webkit-color-swatch-wrapper{padding:2px}
+.bgwrap input[type=color]::-webkit-color-swatch{border:none;border-radius:50%}
+.bgwrap button{font-size:12px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);
+  background:transparent;color:var(--muted);cursor:pointer}
+
+/* 领域切换 */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:0 0 40px;
+  position:sticky;top:0;z-index:30;padding:10px 0 12px;
+  background:linear-gradient(var(--bg) 72%,transparent)}
+.tabs::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
+  background:var(--line);opacity:.5}
+.tabs button{
+  border:1px solid transparent;background:transparent;color:var(--muted);cursor:pointer;
+  font-family:var(--sans);font-size:12.5px;letter-spacing:.1em;padding:5px 11px;border-radius:999px;
+  transition:.2s;
+}
+.tabs button:hover{color:var(--fg)}
+.tabs button[data-active="1"]{color:var(--accent);border-color:var(--line);background:var(--surface)}
+
+/* 头图区 */
+header{text-align:center;margin-bottom:44px;position:relative}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(30px,5vw,42px);
+  line-height:1.3;margin:0 0 14px;letter-spacing:.01em}
+.date{font-size:13px;letter-spacing:.3em;color:var(--muted);text-transform:uppercase}
+.tagline{margin-top:18px;font-family:var(--serif);font-size:15px;color:var(--muted);letter-spacing:.06em}
+.digest{margin:34px 0 6px;padding:18px 20px;border-left:2px solid var(--accent);background:color-mix(in srgb,var(--accent) 5%,transparent)}
+.digest .lb{display:block;font:600 11px/1 -apple-system,"PingFang SC",sans-serif;letter-spacing:.22em;color:var(--accent);margin-bottom:10px}
+.digest ol{margin:0;padding-left:1.35em}
+.digest li{margin:6px 0;font-size:15px;line-height:1.75}
+.digest li::marker{color:var(--muted);font-size:13px}
+.rule{width:36px;height:1px;background:var(--accent);margin:26px auto 0;opacity:.7}
+
+/* 板块 */
+section{margin:0 0 52px}
+.sechead{display:flex;align-items:baseline;gap:12px;margin-bottom:22px}
+.sechead h2{font-family:var(--serif);font-size:17px;font-weight:600;margin:0;letter-spacing:.12em}
+.sechead h2::before{content:"";display:inline-block;width:5px;height:5px;margin-right:11px;
+  border:1px solid var(--accent);transform:rotate(45deg) translateY(-3px);opacity:.75}
+.sechead .n{font-size:11px;color:var(--muted);letter-spacing:.2em}
+.sechead .fill{flex:1;height:1px;background:var(--line);transform:translateY(-4px)}
+
+/* 条目 */
+article{padding:26px 0;border-top:1px solid var(--line)}
+article:first-of-type{border-top:none;padding-top:0}
+.hit{display:inline-flex;align-items:center;gap:5px;font-size:11px;letter-spacing:.16em;
+  color:var(--accent);margin-bottom:9px}
+.hit::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--accent)}
+.hit .pin{font-size:10px;letter-spacing:.06em;color:var(--muted);margin-left:4px}
+h3{font-family:var(--serif);font-weight:600;font-size:21px;line-height:1.5;margin:0 0 12px;
+  letter-spacing:.005em}
+h3 a{color:inherit;text-decoration:none}
+h3 a:hover{color:var(--accent)}
+.orig{font-family:var(--sans);font-size:12.5px;line-height:1.65;color:var(--muted);
+  letter-spacing:.01em;margin:-6px 0 12px}
+.lead{margin:0 0 16px;color:var(--fg);opacity:.92;font-size:15.5px;line-height:1.9;
+  letter-spacing:.005em}
+.points{margin:0 0 4px;padding:0;list-style:none;font-size:14.5px;color:var(--fg);opacity:.78;
+  line-height:1.85}
+.points li{position:relative;padding-left:16px;margin:5px 0}
+.points li::before{content:"";position:absolute;left:2px;top:.72em;width:4px;height:4px;
+  border-radius:50%;background:var(--accent);opacity:.55}
+em.kw{font-style:normal;background:rgba(168,69,42,.16);border-radius:3px;padding:0 3px;
+  box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.verdict{margin:18px 0 0;padding:12px 0 12px 16px;border-left:2px solid var(--line);
+  font-size:14.5px;color:var(--fg);opacity:.88;line-height:1.85}
+.verdict .who{font-family:var(--serif);color:var(--accent);letter-spacing:.18em;margin-right:10px;
+  font-size:12.5px;white-space:nowrap}
+.verdict .said{display:inline}
+details{margin-top:14px}
+details summary{cursor:pointer;font-size:12.5px;color:var(--muted);letter-spacing:.12em;
+  list-style:none;display:inline-flex;align-items:center;gap:6px;user-select:none}
+details summary::-webkit-details-marker{display:none}
+details summary::before{content:"＋";font-size:11px;transition:transform .2s;color:var(--accent)}
+details[open] summary::before{content:"－"}
+details ul{margin:12px 0 0;padding-left:18px;font-size:14.5px;color:var(--muted);line-height:1.9}
+details ul li{margin:3px 0}
+.src{margin-top:16px;font-size:12px;color:var(--muted);letter-spacing:.06em}
+.src a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line)}
+.src a:hover{color:var(--accent);border-color:var(--accent)}
+.more{margin-top:18px}
+.more button{background:transparent;border:none;padding:0;color:var(--muted);font-size:12.5px;
+  letter-spacing:.1em;cursor:pointer;border-bottom:1px dashed var(--line);font-family:var(--sans)}
+.more button:hover{color:var(--accent);border-color:var(--accent)}
+.hidden{display:none}
+.hidden-sec{display:none}
+.empty{font-size:13px;color:var(--muted);font-style:normal;padding:4px 0}
+
+/* 小公告栏 */
+.tips{border-top:1px solid var(--line);padding-top:34px;margin-top:8px}
+.tips h2{font-family:var(--serif);font-size:15px;font-weight:600;letter-spacing:.16em;
+  color:var(--muted);margin:0 0 20px}
+.tip{padding:14px 0;border-top:1px dashed var(--line)}
+.tip:first-of-type{border-top:none}
+.tip .cat{font-size:11px;letter-spacing:.2em;color:var(--accent);margin-bottom:6px}
+.tip .txt{font-size:15px}
+.tip .cm{margin-top:9px;font-size:13.5px;color:var(--muted);line-height:1.8}
+
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--line);
+  text-align:center;font-size:11.5px;color:var(--muted);letter-spacing:.1em;line-height:2}
+footer::before{content:"◦ ◦ ◦";display:block;margin-bottom:14px;font-size:9px;
+  letter-spacing:.5em;color:var(--accent);opacity:.5}
+
+@media (max-width:640px){
+  .wrap{padding:48px 20px 72px}
+  h3{font-size:19px}
+  .lead{font-size:15px}
+  .tabs{gap:4px;margin-bottom:34px}
+}
+@media print{
+  #progress,.tools,.panel,.more{display:none!important}
+  body{background:#fff}
+  article{break-inside:avoid}
+}
+</style>
+</head><body data-limit="2">
+<div id="progress"></div><div class="wrap">
+<div class="top">
+<div class="brand">肥鱼晨报</div>
+<div class="tools"><button id="tbtn" type="button">外观</button></div>
+</div>
+<div class="panel" id="panel">
+<div class="row"><span>配色</span><div style="display:flex;gap:10px"><button class="swatch" type="button" data-p="paper" data-vars="{&quot;--bg&quot;: &quot;#f6f4ef&quot;, &quot;--surface&quot;: &quot;#fffefb&quot;, &quot;--fg&quot;: &quot;#1c1a17&quot;, &quot;--muted&quot;: &quot;#8a847a&quot;, &quot;--line&quot;: &quot;rgba(28,26,23,.10)&quot;, &quot;--accent&quot;: &quot;#a8452a&quot;}" style="background:#f6f4ef;border-color:rgba(28,26,23,.10)" title="纸"><i style="background:#a8452a"></i></button><button class="swatch" type="button" data-p="ink" data-vars="{&quot;--bg&quot;: &quot;#f2f4f6&quot;, &quot;--surface&quot;: &quot;#fbfcfd&quot;, &quot;--fg&quot;: &quot;#16202a&quot;, &quot;--muted&quot;: &quot;#7d8894&quot;, &quot;--line&quot;: &quot;rgba(22,32,42,.10)&quot;, &quot;--accent&quot;: &quot;#2f5d8a&quot;}" style="background:#f2f4f6;border-color:rgba(22,32,42,.10)" title="墨"><i style="background:#2f5d8a"></i></button><button class="swatch" type="button" data-p="moss" data-vars="{&quot;--bg&quot;: &quot;#f3f4ee&quot;, &quot;--surface&quot;: &quot;#fcfdf8&quot;, &quot;--fg&quot;: &quot;#1d2118&quot;, &quot;--muted&quot;: &quot;#828777&quot;, &quot;--line&quot;: &quot;rgba(29,33,24,.10)&quot;, &quot;--accent&quot;: &quot;#4d6141&quot;}" style="background:#f3f4ee;border-color:rgba(29,33,24,.10)" title="苔"><i style="background:#4d6141"></i></button><button class="swatch" type="button" data-p="night" data-vars="{&quot;--bg&quot;: &quot;#15161a&quot;, &quot;--surface&quot;: &quot;#1c1e23&quot;, &quot;--fg&quot;: &quot;#e8e6e1&quot;, &quot;--muted&quot;: &quot;#8b8a86&quot;, &quot;--line&quot;: &quot;rgba(232,230,225,.12)&quot;, &quot;--accent&quot;: &quot;#d98b5f&quot;}" style="background:#15161a;border-color:rgba(232,230,225,.12)" title="夜"><i style="background:#d98b5f"></i></button></div></div>
+<div class="row"><span>背景</span><div class="bgwrap"><input type="color" id="bgpick" value="#f6f4ef" aria-label="自定义背景色"><button type="button" id="bgreset">恢复</button></div></div>
+<div class="row"><span>字号</span><div class="sizewrap"><button type="button" data-fs="15px">小</button><button type="button" data-fs="16px">中</button><button type="button" data-fs="17.5px">大</button></div></div>
+<div class="row"><span>条数</span><div class="sizewrap"><button type="button" data-den="1">少</button><button type="button" data-den="2">标准</button><button type="button" data-den="3">全</button></div></div>
+</div>
+<header>
+<h1>11 月 10 日</h1>
+<div class="date">2026-11-10 · 周二 · 约 <span id="mins">9</span> 分钟 · <span id="cnt">10 条</span></div>
+<div class="tagline">十分钟，过一遍今天</div>
+<div class="rule"></div>
+</header>
+<div class="digest"><span class="lb">今天三句话</span><ol><li>Anthropic推出Claude Fable 5.2和Mythos 5.2两款新模型，编程、推理和视觉能力均有提升。</li><li>国家发改委表示十五五时期高中学位供需矛盾凸显，将多渠道增加普通高中和高等教育学位供给。</li><li>研究提示阿尔茨海默病部分早期信号可能始于大脑之外，为早期发现提供新方向。</li></ol></div>
+<nav class="tabs" id="tabs"><button type="button" data-view="all" data-active="1">全部</button><button type="button" data-view="tech">科技 AI</button><button type="button" data-view="biz">商业财经</button><button type="button" data-view="society">社会热点</button><button type="button" data-view="life">生活健康</button><button type="button" data-view="digital">数码娱乐</button></nav>
+<section data-dom="tech">
+<div class="sechead">
+<h2>科技 AI</h2>
+<span class="n">03</span><span class="fill"></span>
+</div>
+<article class="" data-hit="1" data-ord="1" data-dom="tech"><div class="hit">关键词 · 芯片<span class="pin">已置顶</span></div><h3><a href="https://www.wired.com/story/jensen-huangs-troubles-leaves-the-ai-industry-reeling/" target="_blank" rel="noopener">黄仁勋婚外情传闻牵出疑似中国间谍，英伟达承压</a></h3><p class="orig">Jensen Huang’s Troubles Leave the AI Industry Reeling</p><p class="lead">据外媒报道，Nvidia（英伟达）CEO黄仁勋被指与一名疑似中国间谍的女性存在婚外情，此事可能危及他在AI行业的影响力。黄仁勋此前凭借雄厚资金和紧俏<em class="kw">芯片</em>，对全球AI产业拥有举足轻重的话语权。这则传闻之所以值得知道，不在于八卦本身，而在于它可能波及Nvidia对华业务的政策游说空间，把一家<em class="kw">芯片</em>公司的商业利益和地缘政治风险直接捆在了一起。</p><ul class="points"><li>传闻涉及黄仁勋与一名疑似中国间谍的女性</li><li>黄仁勋此前凭芯片供应和资金在AI圈影响力巨大</li><li>事件可能影响Nvidia在美国出口管制议题上的游说</li><li>报道来自外媒，具体细节和真实性尚未获官方确认</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">这条新闻的关键词是疑似和报道，事实层面还是一片模糊，但资本市场不等实锤就会先反应。真正要盯的不是绯闻，是Nvidia对华游说的节奏会不会被打乱。拿间谍标签做标题很抓眼球，可证据链没摆出来之前，别急着把商业故事写成谍战剧。</span></blockquote><div class="src">Wired · <a href="https://www.wired.com/story/jensen-huangs-troubles-leaves-the-ai-industry-reeling/" target="_blank" rel="noopener">原文</a></div></article>
+<article class="" data-hit="1" data-ord="2" data-dom="tech"><div class="hit">关键词 · 芯片<span class="pin">已置顶</span></div><h3><a href="https://techcrunch.com/2026/11/09/jensen-huangs-affair-with-alleged-chinese-spy-puts-nvidias-china-ambitions-under-scrutiny/" target="_blank" rel="noopener">黄仁勋绯闻或干扰英伟达放松对华<em class="kw">芯片</em>出口限制的游说</a></h3><p class="orig">Jensen Huang’s affair with alleged Chinese spy puts Nvidia’s China ambitions under scrutiny</p><p class="lead">外媒指出，黄仁勋与疑似中国间谍的婚外情传闻，可能让Nvidia（英伟达）游说美国政府放宽<em class="kw">芯片</em>出口限制的努力变得复杂。Nvidia一直试图维持进入中国AI市场的通道，这块市场利润丰厚。此事值得知道，是因为出口管制本就是政治敏感议题，CEO个人丑闻一旦被对手拿来做文章，企业游说的可信度会被削弱，最终买单的是在华营收预期。</p><ul class="points"><li>Nvidia正游说美方放宽芯片出口限制以保住中国市场</li><li>中国AI市场对Nvidia而言利润丰厚，是重要营收来源</li><li>CEO个人丑闻可能被用作攻击游说立场的政治素材</li><li>事件走向取决于传闻是否被证实及华盛顿的反应</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">把CEO私生活和企业游说绑在一起写，逻辑上说得通，但别忽略一个前提：游说靠的是利益交换，不是个人形象。真正会卡住Nvidia的是华盛顿的政治风向，绯闻只是给反对者递了把顺手的刀。中国市场的门能不能开，看的是政策博弈，不是花边新闻。</span></blockquote><div class="src">TechCrunch AI · <a href="https://techcrunch.com/2026/11/09/jensen-huangs-affair-with-alleged-chinese-spy-puts-nvidias-china-ambitions-under-scrutiny/" target="_blank" rel="noopener">原文</a></div></article>
+<article class="hidden" data-hit="0" data-ord="3" data-dom="tech"><h3><a href="https://www.theverge.com/ai-artificial-intelligence/1030005/anthropic-claude-fable-mythos-5-2" target="_blank" rel="noopener">Anthropic发布Claude Fable 5.2与Mythos 5.2两款新模型</a></h3><p class="orig">Anthropic launches new Claude Fable and Mythos 5.2 models</p><p class="lead">Anthropic（美国AI公司）推出Claude Fable 5.2和Claude Mythos 5.2两款新模型，声称在编程、推理和视觉能力上均有提升，输出速度也快于5.1版本，目标是应对所谓艰巨的技术挑战。这延续了该公司双线产品策略，Fable与Mythos分别面向不同场景。值得知道的是，模型版本号迭代越来越密，但官方通稿里只有形容词没有基准测试数字，实际能力提升幅度需要第三方评测来验证。</p><ul class="points"><li>两款模型均定位处理高难度技术任务，官方措辞为艰巨挑战</li><li>编程、推理、视觉三项能力被列为改进重点</li><li>输出速度较5.1版本更快，但未给出具体倍率</li><li>发布通稿未附基准测试分数，能力提升缺乏量化支撑</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">版本号从5.1跳到5.2，通稿里全是提升、更快这类词，一个跑分数字都没有，这种发布方式本身就说明问题。双模型并行更像产品线占位，Fable和Mythos的定位差异官方也没讲清楚。等第三方评测出来再判断实际水平，现在急着叫好纯属替人做宣传。</span></blockquote><div class="src">The Verge · <a href="https://www.theverge.com/ai-artificial-intelligence/1030005/anthropic-claude-fable-mythos-5-2" target="_blank" rel="noopener">原文</a></div></article>
+<div class="more"><button type="button">还有 1 条 · 展开</button></div>
+</section>
+<section data-dom="biz">
+<div class="sechead">
+<h2>商业财经</h2>
+<span class="n">03</span><span class="fill"></span>
+</div>
+<article class="" data-hit="0" data-ord="1" data-dom="biz"><h3><a href="https://wallstreetcn.com/livenews/3197363" target="_blank" rel="noopener">北京发行2年期其他专项地方债，规模2.5000亿元，发行利率1.2200%，边际倍数1.96倍，倍数预期1.22； 北京</a></h3><p class="lead">北京发行多个期限的其他专项地方债，涵盖2年、3年、5年、10年、15年、20年期，规模从1.18亿元到123.3亿元不等。2年期发行利率1.2200%，20年期升至2.1100%，期限越长利率越高，符合正常收益率曲线形态。值得知道的是，各期限边际倍数在1.27到2.22倍之间，均高于倍数预期，说明认购需求尚可，但利率整体处于低位，反映当前地方债发行成本偏低的市场环境。</p><ul class="points"><li>20年期利率最高达2.1100%，边际倍数2.22倍为各期限最高</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">一堆期限摆出来，核心信息就两条：利率低、倍数高于预期。低利率发债对财政是好事，对买债的机构就是收益被压薄。20年期边际倍数2.22倍最扎眼，长端需求不弱，说明配置盘还在找久期。别把边际倍数高当成抢购信号，那只是相对预期的偏离，量级本身并不夸张。</span></blockquote><div class="src">华尔街见闻 · <a href="https://wallstreetcn.com/livenews/3197363" target="_blank" rel="noopener">原文</a></div></article>
+<article class="" data-hit="0" data-ord="2" data-dom="biz"><h3><a href="http://xueqiu.com/1523840816/416080447" target="_blank" rel="noopener">光模块赛道投资逻辑与认知验证备忘录（投资者复盘光模块投资逻辑，最高回撤达70%）</a></h3><p class="lead">一位投资者在光模块板块遭遇最高70%回撤后，系统整理了该赛道的投资逻辑，核心论点是光模块并非无门槛代工组装，而是具备技术迭代快、耗材属性强、工艺壁垒高三重护城河的生意。文章指出传输速率约每两年翻一倍，从400G到800G再到1.6T、3.2T，龙头靠迭代速度让二三线厂商陷入追赶死局。值得知道的是，这套逻辑解释了龙头份额为何稳固，但也意味着高估值伴随高波动，回撤70%本身就是代价。</p><ul class="points"><li>传输速率约每两年翻倍，迭代节奏堪比半导体摩尔定律</li><li>AI训练环境下光模块寿命从5-10年缩短至3-5年，呈耗材属性</li><li>技术路线涵盖LPO、NPO、CPO、硅光、薄膜铌酸锂等多种方向</li><li>与光伏不同，光模块为非标品，后发者难以靠买设备拉平差距</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">回撤70%才来写认知备忘录，顺序有点反了。文章把护城河讲得挺细，迭代快、耗材属性、非标工艺，这些确实是龙头份额稳固的理由，但护城河深不等于买入价合理。技术路线切换快对龙头是壁垒，对持仓者就是估值杀的理由。复盘值得看，但别把逻辑自洽当成回本的保证。</span></blockquote><div class="src">雪球 · <a href="http://xueqiu.com/1523840816/416080447" target="_blank" rel="noopener">原文</a></div></article>
+<article class="hidden" data-hit="0" data-ord="3" data-dom="biz"><h3><a href="https://www.marketwatch.com/story/the-stock-market-rally-keeps-spreading-beyond-big-tech-october-inflation-data-could-put-it-to-the-test-c1b87dcd?mod=mw_rss_topstories" target="_blank" rel="noopener">美股涨势扩散至大型科技股之外，10月通胀数据将检验轮动持续性</a></h3><p class="orig">The stock-market rally keeps spreading beyond Big Tech. October inflation data could put it to the test.</p><p class="lead">美股近期的上涨行情正从大型科技股向更广泛板块扩散，市场称之为轮动交易（rotation trade）。但周二公布的10月CPI（消费者物价指数）通胀报告以及密集的美联储（Federal Reserve）官员讲话，可能对这股轮动势头构成考验。投资者关注的是：如果通胀数据高于预期，降息预期降温，资金是否还会继续从科技巨头流向中小盘和周期股。这关系到普通投资者的持仓结构，也决定年底行情是普涨还是再度收窄。</p><ul class="points"><li>周二CPI报告是本周最重磅数据，直接影响降息路径定价</li><li>多位美联储官员将发表讲话，措辞可能左右市场情绪</li><li>轮动交易指资金从大型科技股流向其他板块，近期表现活跃</li><li>若通胀超预期，周期股和小盘股可能首当其冲承压</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">涨势扩散听着热闹，但CPI一出就可能现原形。轮动交易最怕通胀不配合，美联储官员再补几句鹰派话，资金跑得比谁都快。普通投资者别急着追扩散行情，先看数据脸色再说。</span></blockquote><div class="src">MarketWatch · <a href="https://www.marketwatch.com/story/the-stock-market-rally-keeps-spreading-beyond-big-tech-october-inflation-data-could-put-it-to-the-test-c1b87dcd?mod=mw_rss_topstories" target="_blank" rel="noopener">原文</a></div></article>
+<div class="more"><button type="button">还有 1 条 · 展开</button></div>
+</section>
+<section data-dom="society">
+<div class="sechead">
+<h2>社会热点</h2>
+<span class="n">03</span><span class="fill"></span>
+</div>
+<article class="" data-hit="0" data-ord="1" data-dom="society"><h3><a href="https://www.chinanews.com.cn/edu/2026/11-10/10729247.shtml" target="_blank" rel="noopener">国家发改委：多渠道增加普通高中和高等教育学位供给</a></h3><p class="lead">国家发展改革委（NDRC）社会发展司副司长黄玮茹11月10日表示，“十五五”时期高中和高等教育学位供需矛盾将凸显。下一步将支持普通高中教学楼、宿舍、食堂、操场等设施建设，增加学位供给能力，缓解因学位不足上不了普高的焦虑；同时支持有条件的地方新建新型研究型大学，建设一批高水平职业本科学校，多渠道扩大优质高等教育资源。这意味着未来五年教育基建投入有望加码，普高录取率和本科升学路径都可能拓宽。</p><ul class="points"><li>“十五五”期间高中和高等教育学位供需矛盾被官方明确点出</li><li>支持普高教学楼、宿舍、食堂、操场等硬件建设，直接扩容学位</li><li>支持有条件地方新建新型研究型大学，增加优质高教资源</li><li>建设高水平职业本科学校，给考生更多元的升学选择</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">学位供给喊了多年，这回总算把宿舍食堂操场都写进文件，说明是真缺。新建研究型大学和职业本科听着不错，但落地速度才是关键。家长别光看文件高兴，得盯住本地普高录取率有没有真变化。</span></blockquote><div class="src">中新网 · 要闻 · <a href="https://www.chinanews.com.cn/edu/2026/11-10/10729247.shtml" target="_blank" rel="noopener">原文</a></div></article>
+<article class="" data-hit="0" data-ord="2" data-dom="society"><h3><a href="https://www.chinanews.com.cn/cul/2026/11-09/10728928.shtml" target="_blank" rel="noopener">年轻人开始寻找城市“树洞”（年轻人寻找城市树洞，情绪空间正嵌入城市肌理）</a></h3><p class="lead">在物质供给日益丰盈的当下，城市居民对精神栖息地的需求正在快速增长。报道指出，人们不仅需要遮风挡雨的住所，更需要安放焦虑、治愈疲惫的空间，城市因此从“硬基建”向“情绪基建”延伸。景区、社区、企业、商圈、公园、住房等场景都在嵌入情绪空间，城市治理越来越注重人的感受。这股趋势背后是年轻人压力释放渠道的稀缺，也意味着城市规划和商业空间设计可能迎来新方向。</p><ul class="points"><li>情绪基建概念从景区、社区延伸到企业、商圈和住房</li><li>城市空间设计开始把居民情绪释放需求纳入考量</li><li>年轻人对精神栖息地的需求在物质丰盈后反而更迫切</li><li>情绪空间嵌入城市肌理，或影响未来商业和公共空间规划</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">树洞这词听着文艺，说白了就是城市里能让人喘口气的地方太少。情绪基建是个好方向，但别搞成网红打卡点收门票。真正有用的是社区角落、公园长椅这些不花钱的去处，商家别急着把它变成生意。</span></blockquote><div class="src">中新网 · 文化 · <a href="https://www.chinanews.com.cn/cul/2026/11-09/10728928.shtml" target="_blank" rel="noopener">原文</a></div></article>
+<article class="hidden" data-hit="0" data-ord="3" data-dom="society"><h3><a href="https://www.chinanews.com.cn/gn/2026/11-09/10729100.shtml" target="_blank" rel="noopener">青海“十五五”5.9亿亩草原全面监管 牧区民生改善</a></h3><p class="lead">青海省林业和草原局11月9日透露，“十五五”期间该省将统筹草原生态保护与牧区民生改善，实现5.9亿亩草原资源全面监管。同时落实草原补奖政策，全省75万户农牧户每年获补助约27.55亿元人民币，户均3674元。这组数字说明生态保护不再是单纯禁牧限牧，而是与牧民收入挂钩的补偿机制。对牧区而言，监管覆盖面扩大意味着违规放牧空间收窄，但补助能否按时足额发放才是牧民最关心的。</p><ul class="points"><li>5.9亿亩草原纳入全面监管，覆盖青海主要草原资源</li><li>75万户农牧户每年补助约27.55亿元，户均3674元</li><li>草原补奖政策与生态保护统筹推进，兼顾民生</li><li>监管扩大意味着违规放牧空间收窄，执行力度待观察</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">5.9亿亩草原全面监管，听着气势足，但户均3674元摊到一年也就每天十块钱。生态保护不能只靠补助撑着，监管到位和补助及时发放缺一不可。牧民的账本比文件更诚实，别让好政策卡在最后一公里。</span></blockquote><div class="src">中新网 · 国内 · <a href="https://www.chinanews.com.cn/gn/2026/11-09/10729100.shtml" target="_blank" rel="noopener">原文</a></div></article>
+<div class="more"><button type="button">还有 1 条 · 展开</button></div>
+</section>
+<section data-dom="life">
+<div class="sechead">
+<h2>生活健康</h2>
+<span class="n">03</span><span class="fill"></span>
+</div>
+<article class="" data-hit="0" data-ord="1" data-dom="life"><h3><a href="https://www.sciencedaily.com/releases/2026/11/261108233103.htm" target="_blank" rel="noopener">研究称Alzheimer（阿尔茨海默病）早期信号可能出现在大脑之外</a></h3><p class="orig">Alzheimer’s may have early warning signs outside the brain</p><p class="lead">一项出人意料的发现提示，Alzheimer（阿尔茨海默病）的部分早期迹象可能始于大脑之外。科学家利用人类细胞构建的微型实验室系统发现，与遗传性Alzheimer相关的基因突变可在不涉及大脑或脊髓的情况下破坏神经与肌肉的连接。这或许能解释为何部分患者在记忆问题出现前很久就发生平衡、行走和协调方面的变化。若成立，未来筛查可能不再只盯着大脑，外周神经肌肉功能或成为早期预警窗口。</p><ul class="points"><li>研究使用人类细胞构建的微型实验系统，不依赖动物模型</li><li>遗传性Alzheimer相关突变可破坏神经与肌肉连接</li><li>该过程无需大脑或脊髓参与，提示病变可能始于外周</li><li>或解释患者记忆衰退前出现的平衡和行走异常</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">大脑之外找Alzheimer的早期信号，思路确实新鲜，但微型细胞系统离人体还远着呢。别看到“早期预警”就以为体检能查了，这研究顶多开了个方向。真正有价值的是提醒医生：走路不稳的老人，别只查骨科。</span></blockquote><div class="src">ScienceDaily 健康 · <a href="https://www.sciencedaily.com/releases/2026/11/261108233103.htm" target="_blank" rel="noopener">原文</a></div></article>
+<article class="" data-hit="0" data-ord="2" data-dom="life"><h3><a href="https://www.statnews.com/2026/11/09/cardiovascular-stroke-recurrence-bayer-drug-fda-approval/?utm_campaign=rss" target="_blank" rel="noopener">FDA批准拜耳新型抗凝药用于降低卒中复发风险</a></h3><p class="orig">STAT+: FDA approves novel Bayer drug to reduce recurrence of stroke</p><p class="lead">美国FDA批准了拜耳（Bayer）的一款新型抗凝药物，用于降低卒中复发风险。该药属于全新作用机制类别，设计目标是在预防血栓形成的同时不增加出血风险，这是传统抗凝治疗长期难以兼顾的两端。抗凝药市场长期由华法林和DOAC（直接口服抗凝药）占据，出血风险始终是临床用药的核心顾虑，一款能在疗效与安全性之间重新划线的药物，对房颤和卒中二级预防人群影响直接。不过新机制也意味着长期安全性数据、真实世界表现和定价策略仍需观察。</p><ul class="points"><li>该药是首个以“防血栓不增出血”为设计目标的新类别药物</li><li>获批适应症为降低卒中复发风险，面向二级预防人群</li><li>传统抗凝治疗的核心矛盾是疗效与出血风险的平衡</li><li>新药长期安全性数据和真实世界证据尚待积累</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">抗凝药领域憋了这么多年，终于有人换个思路解题了。拜耳这款药方向对，但别急着封神——新机制的首秀往往漂亮，真正的考验在上市后两三年的出血事件统计和真实世界数据。对患者是好消息，对同行是压力，对拜耳的财报是赌注。</span></blockquote><div class="src">STAT News · <a href="https://www.statnews.com/2026/11/09/cardiovascular-stroke-recurrence-bayer-drug-fda-approval/?utm_campaign=rss" target="_blank" rel="noopener">原文</a></div></article>
+<article class="hidden" data-hit="0" data-ord="3" data-dom="life"><h3><a href="https://www.nature.com/articles/s41591-026-04752-5" target="_blank" rel="noopener">抗阻训练可减少替尔泊肽减重期间的瘦体重流失</a></h3><p class="orig">Resistance exercise to attenuate lean mass loss during tirzepatide therapy for obesity: a randomized controlled trial</p><p class="lead">一项随机对照试验显示，肥胖患者在使用替尔泊肽（tirzepatide）减重期间同步进行抗阻训练，瘦体重流失明显少于单用药物者。GLP-1类药物的肌肉流失问题近年争议不断，这项研究给出了一个可操作的干预方案：药物负责减脂，训练负责保肌。对正在或计划使用替尔泊肽的人群来说，这意味着处方之外还需要配套运动方案，而不是把药吃下去就完事。研究同时提示，单纯依赖药物减重的身体成分变化并不理想。</p><ul class="points"><li>试验对比抗阻训练加替尔泊肽与单用替尔泊肽两组</li><li>联合训练组瘦体重流失显著低于单药组</li><li>GLP-1类药物减重伴随肌肉流失是已知争议点</li><li>结果支持将运动干预纳入减重药物治疗方案</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">这研究算是给“打针躺瘦”泼了盆冷水。药是好药，但肌肉不会自己长回来，瘦体重掉多了代谢跟着塌，反弹只是时间问题。药厂不会主动提这事，健身房倒是可以拿这篇当广告。减重这事，终究没有纯靠化学的捷径。</span></blockquote><div class="src">Nature Medicine · <a href="https://www.nature.com/articles/s41591-026-04752-5" target="_blank" rel="noopener">原文</a></div></article>
+<div class="more"><button type="button">还有 1 条 · 展开</button></div>
+</section>
+<section data-dom="digital">
+<div class="sechead">
+<h2>数码娱乐</h2>
+<span class="n">03</span><span class="fill"></span>
+</div>
+<article class="" data-hit="0" data-ord="1" data-dom="digital"><h3><a href="https://www.gamespot.com/articles/switch-2-just-had-its-best-sales-week-of-2026-and-its-all-because-of-zelda/" target="_blank" rel="noopener">塞尔达重制版带动Switch 2创2026年最佳单周销量</a></h3><p class="orig">Switch 2 Just Had Its Best Sales Week Of 2026, And It’s All Because Of Zelda</p><p class="lead">任天堂为Switch 2推出《塞尔达传说：时之笛》重制版，并同步发售40周年纪念版主机，带动Switch 2录得2026年至今按美元销售额计算的最佳单周成绩。Circana分析师Mat Piscatella公布的数据显示，这款定价520美元的限定主机10月29日开售，统计周期截至10月31日，短短几天就撑起了整周销量。限定版采用塞尔达主题几何设计，底座带大型三角力量标志，Joy-Con为经典绿金配色。硬件靠IP拉动，任天堂这套打法依旧有效。</p><ul class="points"><li>40周年纪念版Switch 2定价520美元，10月29日发售</li><li>统计周期截至10月31日，数日即创年度单周销售额新高</li><li>限定主机含三角力量底座图案与绿金配色Joy-Con</li><li>销量数据由Circana分析师Mat Piscatella披露</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">任天堂卖硬件从来不是卖硬件，是卖那张皮。520美元的限定机，配置没变，换个壳照样抢，粉丝的钱包确实好掏。不过这也说明Switch 2的常规销量可能没那么硬气，得靠大作和限定版撑场面。IP是护城河，也是遮羞布，看怎么用。</span></blockquote><div class="src">GameSpot · <a href="https://www.gamespot.com/articles/switch-2-just-had-its-best-sales-week-of-2026-and-its-all-because-of-zelda/" target="_blank" rel="noopener">原文</a></div></article>
+<article class="" data-hit="0" data-ord="2" data-dom="digital"><h3><a href="https://www.ithome.com/1/024/741.htm" target="_blank" rel="noopener">消息称 Pro 和 Ultra 版占据三星 Galaxy S27 系列智能手机七成规划出货量</a></h3><p class="lead">据韩媒ETNEWS报道，三星电子MX（移动体验）业务规划中，Galaxy S27系列的Pro和Ultra两个高阶版本将占整体出货量约七成。S系列旗舰年产能通常约3500万部，S27世代打破近年传统，在标准、Plus、Ultra之外新增Pro变体，定位“更小巧的Ultra”，屏幕缩小并取消手写笔支持，产能预计700至800万部。三星维持S27 Ultra约1800万部规模，把超两成产能上移到更高档次，意在改善MX业务盈利能力、抵御物料成本上涨。</p><ul class="points"><li>S27系列总产能维持约3500万部，与前代持平</li><li>新增S27 Pro定位小尺寸Ultra，产能700至800万部</li><li>S27 Ultra产能约1800万部，仍占过半份额</li><li>高端占比提升旨在改善MX业务盈利与成本抗压能力</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">三星这是把中端往死里挤，逼着用户往上加钱。Pro版砍了手写笔又缩了屏幕，叫“小Ultra”多少有点名不副实，更像是价格锚点。产能往高端堆，账面上好看，但要是消费者不买账，库存压力全压在贵的机型上。高端化没错，别把选择权也一起砍了。</span></blockquote><div class="src">IT之家 · <a href="https://www.ithome.com/1/024/741.htm" target="_blank" rel="noopener">原文</a></div></article>
+<article class="hidden" data-hit="0" data-ord="3" data-dom="digital"><h3><a href="https://www.gcores.com/articles/222121" target="_blank" rel="noopener">欢庆《GTA6》发售，R星将于本月21日在迈阿密举行音乐节（R星联合PlayStation于迈阿密举办GTA6发售音乐节）</a></h3><p class="lead">R星与PlayStation宣布，2026年11月21日在迈阿密Mana Wynwood举办《侠盗猎车手6》（GTA6）音乐节，庆祝游戏发售。活动由III Points团队制作，设两大舞台，阵容包括Travis Scott、Cardi B、Metro Boomin、Kodak Black、Don Toliver、Justice、Tainy等参与游戏及原声带配乐的艺人。入场须满17周岁，饮酒须满21周岁。门票采用抽签制，每人限购2张且不可转让，登记截止11月10日16时，同日19时公布中选名单，11月11日12时起通过DICE平台购票。</p><ul class="points"><li>音乐节定于2026年11月21日在迈阿密Mana Wynwood举行</li><li>由III Points团队制作，设两大舞台，阵容含Travis Scott、Cardi B等</li><li>门票抽签制，每人限购2张且不可转让</li><li>11月10日截止登记，11日12时起DICE平台购票</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">游戏没到，周边活动先铺满，R星这套预热玩得熟。音乐节阵容确实够看，但抽签限购这套操作，防黄牛是假，控节奏造稀缺是真。17岁入场、21岁喝酒的分级倒是规矩。归根结底，这是场营销活动，音乐是配菜，GTA6三个字才是主菜。</span></blockquote><div class="src">机核 · <a href="https://www.gcores.com/articles/222121" target="_blank" rel="noopener">原文</a></div></article>
+<div class="more"><button type="button">还有 1 条 · 展开</button></div>
+</section>
+<footer>生成于 2026-11-10 12:00 · 大肥鱼晨报 v2 · 每天 06:00 自动更新</footer>
+</div>
+<script>window.PRESETS_HASH={"paper": {"--bg": "#f6f4ef", "--surface": "#fffefb", "--fg": "#1c1a17", "--muted": "#8a847a", "--line": "rgba(28,26,23,.10)", "--accent": "#a8452a"}, "ink": {"--bg": "#f2f4f6", "--surface": "#fbfcfd", "--fg": "#16202a", "--muted": "#7d8894", "--line": "rgba(22,32,42,.10)", "--accent": "#2f5d8a"}, "moss": {"--bg": "#f3f4ee", "--surface": "#fcfdf8", "--fg": "#1d2118", "--muted": "#828777", "--line": "rgba(29,33,24,.10)", "--accent": "#4d6141"}, "night": {"--bg": "#15161a", "--surface": "#1c1e23", "--fg": "#e8e6e1", "--muted": "#8b8a86", "--line": "rgba(232,230,225,.12)", "--accent": "#d98b5f"}};</script>
+<script>
+(function(){
+  var root=document.documentElement, KEY='fyb-share-theme';
+  var sw=document.querySelectorAll('.swatch');
+  var sz=document.querySelectorAll('.sizewrap button');
+  var saved=null;
+  try{saved=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){}
+  function apply(cfg){
+    if(!cfg) return;
+    if(cfg.vars){for(var k in cfg.vars){root.style.setProperty(k,cfg.vars[k])}}
+    if(cfg.fs){root.style.setProperty('--fs',cfg.fs)}
+    sw.forEach(function(b){b.dataset.active = (b.dataset.p===cfg.p)?'1':'0'});
+    sz.forEach(function(b){b.dataset.active = (b.dataset.fs===cfg.fs)?'1':'0'});
+  }
+  function save(cfg){try{localStorage.setItem(KEY,JSON.stringify(cfg))}catch(e){}}
+  sw.forEach(function(b){
+    b.addEventListener('click',function(){
+      var vars=JSON.parse(b.dataset.vars);
+      var cur={p:b.dataset.p,vars:vars,fs:(saved&&saved.fs)||''};
+      Object.keys(vars).forEach(function(k){root.style.setProperty(k,vars[k])});
+      apply(cur);save(cur);
+    });
+  });
+  sz.forEach(function(b){
+    b.addEventListener('click',function(){
+      var fs=b.dataset.fs, vars=saved?saved.vars:null, p=saved?saved.p:'paper';
+      var cur={p:p,vars:vars,fs:fs};
+      apply(cur);save(cur);
+    });
+  });
+  var t=document.getElementById('tbtn'), panel=document.getElementById('panel');
+  // #night 这类链接可直接指定配色；#panel 展开外观面板
+  (function(){
+    var h=(location.hash||'').replace('#','');
+    if(h && window.PRESETS_HASH && PRESETS_HASH[h]){
+      var v=PRESETS_HASH[h];
+      Object.keys(v).forEach(function(k){root.style.setProperty(k,v[k])});
+      var c={p:h,vars:v,fs:(saved&&saved.fs)||''}; save(c); apply(c);
+    }
+  })();
+  if(t){t.addEventListener('click',function(){panel.classList.toggle('open')})}
+  if((location.hash||'').indexOf('panel')>=0 && panel){panel.classList.add('open')}
+
+  // 条数密度：每个板块只露前 N 条，其余折叠进「还有 N 条」
+  var DKEY='fyb-share-density';
+  var dens=localStorage.getItem(DKEY)||document.body.getAttribute('data-limit')||'2';
+  if(['1','2','3'].indexOf(dens)<0){dens='2'}
+  var dn=document.querySelectorAll('.panel button[data-den]');
+  var VIEW='all';
+  function layout(){
+    var total=0;
+    Array.prototype.forEach.call(document.querySelectorAll('section'),function(s){
+      var inView=(VIEW==='all')||(s.getAttribute('data-dom')===VIEW);
+      s.classList.toggle('hidden-sec',!inView);
+      if(!inView){return}
+      var open=s.classList.contains('open');
+      var arts=s.querySelectorAll('article'), shown=0;
+      Array.prototype.forEach.call(arts,function(a){
+        var ord=parseInt(a.getAttribute('data-ord'),10)||0;
+        var hide=!open && ord>parseInt(dens,10);
+        a.classList.toggle('hidden',hide);
+        if(!hide){shown++}
+      });
+      total+=shown;
+      var btn=s.querySelector('.more button');      if(btn){
+        var rest=arts.length-shown;
+        if(rest>0){btn.style.display='';btn.textContent='还有 '+rest+' 条 · 展开'}
+        else{btn.style.display='none'}
+      }
+    });
+    var cnt=document.getElementById('cnt');
+    if(cnt){cnt.textContent=total+' 条'}
+    var mins=document.getElementById('mins');
+    if(mins){
+      var chars=0;
+      Array.prototype.forEach.call(document.querySelectorAll('article:not(.hidden)'),function(a){
+        if(a.closest('section.hidden-sec')){return}
+        chars+=a.textContent.length;
+      });
+      mins.textContent=Math.max(1,Math.round(chars/480));
+    }
+    Array.prototype.forEach.call(dn,function(b){b.dataset.active=(b.dataset.den===dens)?'1':'0'});
+  }
+  Array.prototype.forEach.call(dn,function(b){
+    b.addEventListener('click',function(){
+      dens=b.dataset.den;
+      try{localStorage.setItem(DKEY,dens)}catch(e){}
+      layout();
+    });
+  });
+  document.addEventListener('click',function(e){
+    var b=e.target.closest?e.target.closest('.more button'):null;
+    if(!b){return}
+    var s=b.closest('section');
+    if(s){s.classList.add('open');layout()}
+  });
+
+  // 领域切换：全部 / 科技AI / 商业财经 / 社会热点 / 生活健康 / 数码娱乐
+  var tabs=document.querySelectorAll('.tabs button');
+  function setView(v){
+    VIEW=v;
+    Array.prototype.forEach.call(tabs,function(x){
+      x.setAttribute('data-active',x.getAttribute('data-view')===v?'1':'0')
+    });
+    layout();
+  }
+  Array.prototype.forEach.call(tabs,function(b){
+    b.addEventListener('click',function(){
+      setView(b.getAttribute('data-view'));
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+  });
+  // #tech / #life 这类链接可直接打开某个领域
+  (function(){
+    var h=(location.hash||'').replace('#','');
+    if(!h){return}
+    Array.prototype.forEach.call(tabs,function(b){
+      if(b.getAttribute('data-view')===h){setView(h)}
+    });
+  })();
+
+  // 自定义背景色：按亮度自动配前景色，保证可读
+  var pick=document.getElementById('bgpick'), reset=document.getElementById('bgreset');
+  function lum(hex){
+    var m=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex||'');
+    if(!m){return 1}
+    var r=parseInt(m[1],16)/255,g=parseInt(m[2],16)/255,b=parseInt(m[3],16)/255;
+    return 0.2126*r+0.7152*g+0.0722*b;
+  }
+  function applyBg(hex){
+    var dark=lum(hex)<0.45;
+    var v= dark
+      ? {'--bg':hex,'--surface':'rgba(255,255,255,.05)','--fg':'#f2ede4','--muted':'#9d968c','--line':'rgba(255,255,255,.14)','--accent':'#d98b5f'}
+      : {'--bg':hex,'--surface':'rgba(0,0,0,.03)','--fg':'#1d1b18','--muted':'#7d776d','--line':'rgba(0,0,0,.13)','--accent':'#a8452a'};
+    Object.keys(v).forEach(function(k){root.style.setProperty(k,v[k])});
+    try{localStorage.setItem(KEY+'-bg',hex)}catch(e){}
+  }
+  if(pick){
+    var savedBg=null;
+    try{savedBg=localStorage.getItem(KEY+'-bg')}catch(e){}
+    if(savedBg){pick.value=savedBg;applyBg(savedBg)}
+    pick.addEventListener('input',function(){applyBg(pick.value)});
+  }
+  if(reset){
+    reset.addEventListener('click',function(){
+      try{localStorage.removeItem(KEY+'-bg');localStorage.removeItem(KEY)}catch(e){}
+      location.reload();
+    });
+  }
+  layout();
+  // 阅读进度
+  var bar=document.getElementById('progress');
+  function onScroll(){
+    var h=document.documentElement.scrollHeight-window.innerHeight;
+    bar.style.width=(h>0?(window.scrollY/h*100):0)+'%';
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});onScroll();
+})();
+</script>
+</body></html>
