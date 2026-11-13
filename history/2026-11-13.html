@@ -1,0 +1,403 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>肥鱼晨报 · 2026-11-13</title>
+<meta property="og:type" content="article">
+<meta property="og:title" content="肥鱼晨报">
+<meta property="og:image" content="https://jzy-shisan.github.io/morning-brief/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jzy-shisan.github.io/morning-brief/og.png">
+<style>
+:root{
+  --bg:#f6f4ef; --surface:#fffefb; --fg:#1c1a17; --muted:#8a847a;
+  --line:rgba(28,26,23,.10); --accent:#a8452a;
+  --serif: "Noto Serif SC","Source Han Serif SC","Songti SC","SimSun",Georgia,serif;
+  --sans: -apple-system,"Segoe UI","Microsoft YaHei UI","PingFang SC","Hiragino Sans GB",sans-serif;
+  --fs: 16px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--bg); color:var(--fg);
+  font-family:var(--sans); font-size:var(--fs); line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+  transition:background .35s ease,color .35s ease;
+}
+#progress{position:fixed;top:0;left:0;height:2px;width:0;background:var(--accent);
+  z-index:50;transition:width .1s linear;opacity:.85}
+.wrap{max-width:728px;margin:0 auto;padding:72px 28px 96px}
+
+/* 顶栏 */
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:44px}
+.brand{font-family:var(--serif);font-size:15px;letter-spacing:.18em;color:var(--muted)}
+.tools{display:flex;gap:6px}
+.tools button{
+  border:1px solid var(--line);background:transparent;color:var(--muted);
+  font-family:var(--sans);font-size:12px;letter-spacing:.08em;
+  padding:5px 10px;border-radius:999px;cursor:pointer;transition:.2s;
+}
+.tools button:hover{color:var(--fg);border-color:var(--muted)}
+.panel{
+  display:none;margin:0 0 40px;padding:16px 18px;border:1px solid var(--line);
+  border-radius:14px;background:var(--surface);
+}
+.panel.open{display:block}
+.panel .row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.panel .row > span{font-size:12px;color:var(--muted);letter-spacing:.1em;min-width:52px}
+.swatch{width:26px;height:26px;border-radius:50%;border:1px solid var(--line);cursor:pointer;
+  position:relative;transition:.2s;display:flex;align-items:center;justify-content:center;padding:0}
+.swatch i{display:block;width:9px;height:9px;border-radius:50%}
+.swatch:hover{transform:scale(1.08)}
+.swatch[data-active="1"]{box-shadow:0 0 0 2px var(--bg),0 0 0 3px var(--accent)}
+.sizewrap button{font-size:12px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);
+  background:transparent;color:var(--muted);cursor:pointer;margin-right:4px}
+.sizewrap button[data-active="1"]{color:var(--accent);border-color:var(--accent)}
+.bgwrap{display:flex;align-items:center;gap:10px}
+.bgwrap input[type=color]{width:26px;height:26px;padding:0;border:1px solid var(--line);
+  border-radius:50%;background:transparent;cursor:pointer;-webkit-appearance:none;appearance:none}
+.bgwrap input[type=color]::-webkit-color-swatch-wrapper{padding:2px}
+.bgwrap input[type=color]::-webkit-color-swatch{border:none;border-radius:50%}
+.bgwrap button{font-size:12px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);
+  background:transparent;color:var(--muted);cursor:pointer}
+
+/* 领域切换 */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:0 0 40px;
+  position:sticky;top:0;z-index:30;padding:10px 0 12px;
+  background:linear-gradient(var(--bg) 72%,transparent)}
+.tabs::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
+  background:var(--line);opacity:.5}
+.tabs button{
+  border:1px solid transparent;background:transparent;color:var(--muted);cursor:pointer;
+  font-family:var(--sans);font-size:12.5px;letter-spacing:.1em;padding:5px 11px;border-radius:999px;
+  transition:.2s;
+}
+.tabs button:hover{color:var(--fg)}
+.tabs button[data-active="1"]{color:var(--accent);border-color:var(--line);background:var(--surface)}
+
+/* 头图区 */
+header{text-align:center;margin-bottom:44px;position:relative}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(30px,5vw,42px);
+  line-height:1.3;margin:0 0 14px;letter-spacing:.01em}
+.date{font-size:13px;letter-spacing:.3em;color:var(--muted);text-transform:uppercase}
+.tagline{margin-top:18px;font-family:var(--serif);font-size:15px;color:var(--muted);letter-spacing:.06em}
+.digest{margin:34px 0 6px;padding:18px 20px;border-left:2px solid var(--accent);background:color-mix(in srgb,var(--accent) 5%,transparent)}
+.digest .lb{display:block;font:600 11px/1 -apple-system,"PingFang SC",sans-serif;letter-spacing:.22em;color:var(--accent);margin-bottom:10px}
+.digest ol{margin:0;padding-left:1.35em}
+.digest li{margin:6px 0;font-size:15px;line-height:1.75}
+.digest li::marker{color:var(--muted);font-size:13px}
+.rule{width:36px;height:1px;background:var(--accent);margin:26px auto 0;opacity:.7}
+
+/* 板块 */
+section{margin:0 0 52px}
+.sechead{display:flex;align-items:baseline;gap:12px;margin-bottom:22px}
+.sechead h2{font-family:var(--serif);font-size:17px;font-weight:600;margin:0;letter-spacing:.12em}
+.sechead h2::before{content:"";display:inline-block;width:5px;height:5px;margin-right:11px;
+  border:1px solid var(--accent);transform:rotate(45deg) translateY(-3px);opacity:.75}
+.sechead .n{font-size:11px;color:var(--muted);letter-spacing:.2em}
+.sechead .fill{flex:1;height:1px;background:var(--line);transform:translateY(-4px)}
+
+/* 条目 */
+article{padding:26px 0;border-top:1px solid var(--line)}
+article:first-of-type{border-top:none;padding-top:0}
+.hit{display:inline-flex;align-items:center;gap:5px;font-size:11px;letter-spacing:.16em;
+  color:var(--accent);margin-bottom:9px}
+.hit::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--accent)}
+.hit .pin{font-size:10px;letter-spacing:.06em;color:var(--muted);margin-left:4px}
+h3{font-family:var(--serif);font-weight:600;font-size:21px;line-height:1.5;margin:0 0 12px;
+  letter-spacing:.005em}
+h3 a{color:inherit;text-decoration:none}
+h3 a:hover{color:var(--accent)}
+.orig{font-family:var(--sans);font-size:12.5px;line-height:1.65;color:var(--muted);
+  letter-spacing:.01em;margin:-6px 0 12px}
+.lead{margin:0 0 16px;color:var(--fg);opacity:.92;font-size:15.5px;line-height:1.9;
+  letter-spacing:.005em}
+.points{margin:0 0 4px;padding:0;list-style:none;font-size:14.5px;color:var(--fg);opacity:.78;
+  line-height:1.85}
+.points li{position:relative;padding-left:16px;margin:5px 0}
+.points li::before{content:"";position:absolute;left:2px;top:.72em;width:4px;height:4px;
+  border-radius:50%;background:var(--accent);opacity:.55}
+em.kw{font-style:normal;background:rgba(168,69,42,.16);border-radius:3px;padding:0 3px;
+  box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.verdict{margin:18px 0 0;padding:12px 0 12px 16px;border-left:2px solid var(--line);
+  font-size:14.5px;color:var(--fg);opacity:.88;line-height:1.85}
+.verdict .who{font-family:var(--serif);color:var(--accent);letter-spacing:.18em;margin-right:10px;
+  font-size:12.5px;white-space:nowrap}
+.verdict .said{display:inline}
+details{margin-top:14px}
+details summary{cursor:pointer;font-size:12.5px;color:var(--muted);letter-spacing:.12em;
+  list-style:none;display:inline-flex;align-items:center;gap:6px;user-select:none}
+details summary::-webkit-details-marker{display:none}
+details summary::before{content:"＋";font-size:11px;transition:transform .2s;color:var(--accent)}
+details[open] summary::before{content:"－"}
+details ul{margin:12px 0 0;padding-left:18px;font-size:14.5px;color:var(--muted);line-height:1.9}
+details ul li{margin:3px 0}
+.src{margin-top:16px;font-size:12px;color:var(--muted);letter-spacing:.06em}
+.src a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line)}
+.src a:hover{color:var(--accent);border-color:var(--accent)}
+.more{margin-top:18px}
+.more button{background:transparent;border:none;padding:0;color:var(--muted);font-size:12.5px;
+  letter-spacing:.1em;cursor:pointer;border-bottom:1px dashed var(--line);font-family:var(--sans)}
+.more button:hover{color:var(--accent);border-color:var(--accent)}
+.hidden{display:none}
+.hidden-sec{display:none}
+.empty{font-size:13px;color:var(--muted);font-style:normal;padding:4px 0}
+
+/* 小公告栏 */
+.tips{border-top:1px solid var(--line);padding-top:34px;margin-top:8px}
+.tips h2{font-family:var(--serif);font-size:15px;font-weight:600;letter-spacing:.16em;
+  color:var(--muted);margin:0 0 20px}
+.tip{padding:14px 0;border-top:1px dashed var(--line)}
+.tip:first-of-type{border-top:none}
+.tip .cat{font-size:11px;letter-spacing:.2em;color:var(--accent);margin-bottom:6px}
+.tip .txt{font-size:15px}
+.tip .cm{margin-top:9px;font-size:13.5px;color:var(--muted);line-height:1.8}
+
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--line);
+  text-align:center;font-size:11.5px;color:var(--muted);letter-spacing:.1em;line-height:2}
+footer::before{content:"◦ ◦ ◦";display:block;margin-bottom:14px;font-size:9px;
+  letter-spacing:.5em;color:var(--accent);opacity:.5}
+
+@media (max-width:640px){
+  .wrap{padding:48px 20px 72px}
+  h3{font-size:19px}
+  .lead{font-size:15px}
+  .tabs{gap:4px;margin-bottom:34px}
+}
+@media print{
+  #progress,.tools,.panel,.more{display:none!important}
+  body{background:#fff}
+  article{break-inside:avoid}
+}
+</style>
+</head><body data-limit="2">
+<div id="progress"></div><div class="wrap">
+<div class="top">
+<div class="brand">肥鱼晨报</div>
+<div class="tools"><button id="tbtn" type="button">外观</button></div>
+</div>
+<div class="panel" id="panel">
+<div class="row"><span>配色</span><div style="display:flex;gap:10px"><button class="swatch" type="button" data-p="paper" data-vars="{&quot;--bg&quot;: &quot;#f6f4ef&quot;, &quot;--surface&quot;: &quot;#fffefb&quot;, &quot;--fg&quot;: &quot;#1c1a17&quot;, &quot;--muted&quot;: &quot;#8a847a&quot;, &quot;--line&quot;: &quot;rgba(28,26,23,.10)&quot;, &quot;--accent&quot;: &quot;#a8452a&quot;}" style="background:#f6f4ef;border-color:rgba(28,26,23,.10)" title="纸"><i style="background:#a8452a"></i></button><button class="swatch" type="button" data-p="ink" data-vars="{&quot;--bg&quot;: &quot;#f2f4f6&quot;, &quot;--surface&quot;: &quot;#fbfcfd&quot;, &quot;--fg&quot;: &quot;#16202a&quot;, &quot;--muted&quot;: &quot;#7d8894&quot;, &quot;--line&quot;: &quot;rgba(22,32,42,.10)&quot;, &quot;--accent&quot;: &quot;#2f5d8a&quot;}" style="background:#f2f4f6;border-color:rgba(22,32,42,.10)" title="墨"><i style="background:#2f5d8a"></i></button><button class="swatch" type="button" data-p="moss" data-vars="{&quot;--bg&quot;: &quot;#f3f4ee&quot;, &quot;--surface&quot;: &quot;#fcfdf8&quot;, &quot;--fg&quot;: &quot;#1d2118&quot;, &quot;--muted&quot;: &quot;#828777&quot;, &quot;--line&quot;: &quot;rgba(29,33,24,.10)&quot;, &quot;--accent&quot;: &quot;#4d6141&quot;}" style="background:#f3f4ee;border-color:rgba(29,33,24,.10)" title="苔"><i style="background:#4d6141"></i></button><button class="swatch" type="button" data-p="night" data-vars="{&quot;--bg&quot;: &quot;#15161a&quot;, &quot;--surface&quot;: &quot;#1c1e23&quot;, &quot;--fg&quot;: &quot;#e8e6e1&quot;, &quot;--muted&quot;: &quot;#8b8a86&quot;, &quot;--line&quot;: &quot;rgba(232,230,225,.12)&quot;, &quot;--accent&quot;: &quot;#d98b5f&quot;}" style="background:#15161a;border-color:rgba(232,230,225,.12)" title="夜"><i style="background:#d98b5f"></i></button></div></div>
+<div class="row"><span>背景</span><div class="bgwrap"><input type="color" id="bgpick" value="#f6f4ef" aria-label="自定义背景色"><button type="button" id="bgreset">恢复</button></div></div>
+<div class="row"><span>字号</span><div class="sizewrap"><button type="button" data-fs="15px">小</button><button type="button" data-fs="16px">中</button><button type="button" data-fs="17.5px">大</button></div></div>
+<div class="row"><span>条数</span><div class="sizewrap"><button type="button" data-den="1">少</button><button type="button" data-den="2">标准</button><button type="button" data-den="3">全</button></div></div>
+</div>
+<header>
+<h1>11 月 13 日</h1>
+<div class="date">2026-11-13 · 周五 · 约 <span id="mins">9</span> 分钟 · <span id="cnt">10 条</span></div>
+<div class="tagline">十分钟，过一遍今天</div>
+<div class="rule"></div>
+</header>
+<div class="digest"><span class="lb">今天三句话</span><ol><li>Google发布新一代Gemini 4 Hydrogen模型，主打复杂问题拆解，能处理多子问题和拼写错误请求。</li><li>市场对美联储继续加息预期增强，债券收益率创2022年以来最大涨幅，波动或加剧。</li><li>全球团队绘制基底核近2600万脑细胞最详细图谱，有助理解帕金森病等神经疾病。</li></ol></div>
+<nav class="tabs" id="tabs"><button type="button" data-view="all" data-active="1">全部</button><button type="button" data-view="tech">科技 AI</button><button type="button" data-view="biz">商业财经</button><button type="button" data-view="society">社会热点</button><button type="button" data-view="life">生活健康</button><button type="button" data-view="digital">数码娱乐</button></nav>
+<section data-dom="tech">
+<div class="sechead">
+<h2>科技 AI</h2>
+<span class="n">03</span><span class="fill"></span>
+</div>
+<article class="" data-hit="1" data-ord="1" data-dom="tech"><div class="hit">关键词 · 开源<span class="pin">已置顶</span></div><h3><a href="https://techcrunch.com/2026/11/12/jensen-huangs-exit-puts-nvidias-support-for-open-source-in-question/" target="_blank" rel="noopener">黄仁勋卸任引发外界对 Nvidia <em class="kw">开源</em>承诺的疑虑</a></h3><p class="orig">Jensen Huang’s exit puts Nvidia’s support for open source in question</p><p class="lead">黄仁勋（Jensen Huang）的卸任让外界开始质疑 Nvidia 对<em class="kw">开源</em> AI 的投入是否可持续，涉及 Hugging Face 收购、开放权重模型发布以及反对监管限制的游说立场。公司正处在领导层过渡期，此前由黄仁勋个人推动的<em class="kw">开源</em>姿态，可能随管理层更替而调整。<em class="kw">开源</em>承诺往往与掌门人的个人意志绑定，一旦换人，战略优先级就可能重排，这对依赖 Nvidia 开放模型的开发者生态是直接变量。</p><ul class="points"><li>质疑集中在 Hugging Face 收购后的走向与开放权重模型策略</li><li>黄仁勋此前公开反对对开源 AI 施加限制</li><li>领导层过渡期可能改变公司对开源社区的支持力度</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">开源这事在芯片公司从来是手段不是信仰，黄仁勋在的时候说得漂亮，换人后还认不认账另说。开发者别把宝押在一家公司的善意上，生态依赖越深，被断供时越被动。</span></blockquote><div class="src">TechCrunch AI · <a href="https://techcrunch.com/2026/11/12/jensen-huangs-exit-puts-nvidias-support-for-open-source-in-question/" target="_blank" rel="noopener">原文</a></div></article>
+<article class="" data-hit="1" data-ord="2" data-dom="tech"><div class="hit">关键词 · 芯片<span class="pin">已置顶</span></div><h3><a href="https://www.technologyreview.com/2026/11/12/1148483/nvidia-chip-tracking/" target="_blank" rel="noopener">Nvidia 私下确认<em class="kw">芯片</em>可追踪，行业组织却公开质疑可行性</a></h3><p class="orig">Nvidia privately confirmed it could track chips to fight smuggling, even as industry publicly questioned feasibility</p><p class="lead">Nvidia 代表向伊利诺伊州众议员 Bill Foster 表示，从技术上讲可以实施《<em class="kw">芯片</em>安全法案》（Chip Security Act）所要求的反走私追踪措施；与此同时，一个行业组织公开称这些措施“可能不可行”。Foster 对 MIT Technology Review 透露了这一私下表态。企业私下认账、行业公开唱反调，这种分裂说明反走私追踪在技术上并非做不到，阻力更多来自合规成本与商业利益，<em class="kw">芯片</em>出口管制的执行方式可能因此生变。</p><ul class="points"><li>Nvidia 私下向议员确认追踪芯片技术上可行</li><li>行业组织公开称相关措施可能无法落地</li><li>争议围绕《芯片安全法案》要求的反走私机制展开</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">私下说能做、公开说做不到，这套两面话术不新鲜。技术可行性从来不是瓶颈，愿不愿意承担成本和暴露出货流向才是。法案真落地，先疼的是靠灰色渠道走量的那批生意。</span></blockquote><div class="src">MIT Tech Review · <a href="https://www.technologyreview.com/2026/11/12/1148483/nvidia-chip-tracking/" target="_blank" rel="noopener">原文</a></div></article>
+<article class="hidden" data-hit="0" data-ord="3" data-dom="tech"><h3><a href="https://www.theverge.com/ai-artificial-intelligence/1032505/google-search-ai-mode-gemini-4-hydrogen" target="_blank" rel="noopener">Google 推出 Gemini 4 Hydrogen 模型，强化复杂问题理解能力</a></h3><p class="orig">Google’s new Gemini model is better at understanding complicated questions</p><p class="lead">Google 发布新一代 Gemini 4 Hydrogen 模型，主打对复杂问题的理解与拆解能力，能处理包含多个子问题、难以辨读的拼写错误或高度具体化请求的提问，并逐项作答。该模型即日起接入搜索、Gemini 应用以及 Google 各档订阅服务。这次升级的重点不在参数规模，而在问答的分解与容错，说明大模型竞争正从拼分数转向拼实际使用体验，尤其针对搜索场景中大量模糊、口语化的真实提问。</p><ul class="points"><li>新模型可自动拆分多部分问题，并逐条回应各子问题</li><li>对拼写错误和高度具体请求的容错能力有所提升</li><li>发布当日即上线搜索与 Gemini 应用，覆盖全部订阅档位</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">搜索场景里用户提问本来就七零八落，能拆问题、认错字，比多考几分实在。但 Google 向来发布会吹得响，实际接入后答得准不准，还得看真实搜索流量下的表现。</span></blockquote><div class="src">The Verge · <a href="https://www.theverge.com/ai-artificial-intelligence/1032505/google-search-ai-mode-gemini-4-hydrogen" target="_blank" rel="noopener">原文</a></div></article>
+<div class="more"><button type="button">还有 1 条 · 展开</button></div>
+</section>
+<section data-dom="biz">
+<div class="sechead">
+<h2>商业财经</h2>
+<span class="n">03</span><span class="fill"></span>
+</div>
+<article class="" data-hit="0" data-ord="1" data-dom="biz"><h3><a href="https://www.marketwatch.com/story/bond-yields-just-saw-their-biggest-surge-since-2022-as-expectations-grow-for-more-fed-rate-hikes-d0a4f195?mod=mw_rss_topstories" target="_blank" rel="noopener">加息预期升温，债券收益率创 2022 年以来最大涨幅</a></h3><p class="orig">Bond yields just saw their biggest surge since 2022 as expectations grow for more Fed rate hikes</p><p class="lead">市场对美联储（Fed）进一步加息的预期增强，推动债券收益率出现 2022 年以来最大幅度的飙升。报道将市场波动加剧部分归因于美联储主席 Warsh 低调的利率沟通风格，信息释放不充分让交易员更依赖猜测。收益率急升意味着借贷成本全面抬升，对股市估值和房贷利率都会形成压力，而沟通方式本身成为波动来源，说明政策透明度已是市场定价的关键变量。</p><ul class="points"><li>债券收益率单轮涨幅为 2022 年以来最大</li><li>市场押注美联储将继续加息</li><li>Warsh 低调的沟通风格被认为加剧了市场波动</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">主席话少，市场就自己编剧本，波动能不大吗。收益率这么跳，先遭殃的是高估值资产和背房贷的普通人。别把沟通风格当花边，央行说不清楚话，本身就是风险。</span></blockquote><div class="src">MarketWatch · <a href="https://www.marketwatch.com/story/bond-yields-just-saw-their-biggest-surge-since-2022-as-expectations-grow-for-more-fed-rate-hikes-d0a4f195?mod=mw_rss_topstories" target="_blank" rel="noopener">原文</a></div></article>
+<article class="" data-hit="0" data-ord="2" data-dom="biz"><h3><a href="http://www.xueqiu.com/4957928282/416519336" target="_blank" rel="noopener">题材炒作和价值投资的根本逻辑（题材炒作靠预支未来业绩，证伪后往往跌破起点）</a></h3><p class="lead">文章把题材炒作的剧本概括为一条逻辑方向：因某些原因公司未来会赚很多钱，所以现在提前给高估值。问题在于被预支的预期终要兑现，一旦季报、公告或行业数据证伪，纪律资金先行砍仓，场内只剩深套的鸵鸟型持仓，筹码结构恶化，股价不仅回到原点，还会因信任损耗跌破启动位。文章由此解释价值投资者为何长期存在，核心是区分可验证的业绩与不可验证的故事。</p><ul class="points"><li>题材启动阶段交易的是想象而非当期报表</li><li>证伪后纪律资金先撤，留下躺平盘压制反弹</li><li>预期溢价归零之外还要额外扣除信任损耗</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">把预支未来包装成逻辑方向，本质是给讲故事找个体面说法。最狠的一句是跌破原点，很多人只算回到起点，没算信任折价。看题材先问一句：这钱什么时候真到账。</span></blockquote><div class="src">雪球 · <a href="http://www.xueqiu.com/4957928282/416519336" target="_blank" rel="noopener">原文</a></div></article>
+<article class="hidden" data-hit="0" data-ord="3" data-dom="biz"><h3><a href="https://wallstreetcn.com/livenews/3199467" target="_blank" rel="noopener">中芯国际联合CEO赵海军：三季度毛利率提升主要是因为客户提拉要求紧迫（中芯国际三季度毛利率升至29.9% 客户急单挤占研发投片）</a></h3><p class="lead">中芯国际（SMIC）三季度毛利率达29.9%，环比上升4.6个百分点，联合CEO赵海军在业绩会上解释，主因是客户提拉要求紧迫，公司为保客户出货放缓工程和研发投片，月产能新增2万片折合8英寸标准逻辑晶圆，产能利用率升至97.3%，产出环比增high single digit（高个位数百分比），摊薄单位晶圆成本，抵消折旧费用环比上升2.3%的拖累，毛利率因此超出指引上限。这说明成熟制程需求端确有急单支撑，但靠压缩研发换毛利，短期好看，长期要看后续投片回补节奏。</p><ul class="points"><li>毛利率29.9%，环比增4.6个百分点，超出公司此前指引上限。</li><li>产能利用率97.3%，环比增3.6个百分点，产出环比增high single digit（高个位数百分比）。</li><li>月产能新增2万片折合8英寸标准逻辑晶圆，折旧费用环比上升2.3%。</li><li>为支持客户出货，工程和研发投片相应减缓。</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">毛利率跳升靠的是客户催单催出来的，研发投片往后挪，账面上好看，里子是把明天的活推到后天干。急单能撑多久没人敢打包票，折旧还在往上走，等投片回补，成本压力还得回来。数字漂亮，但别当成景气反转的证据。</span></blockquote><div class="src">华尔街见闻 · <a href="https://wallstreetcn.com/livenews/3199467" target="_blank" rel="noopener">原文</a></div></article>
+<div class="more"><button type="button">还有 1 条 · 展开</button></div>
+</section>
+<section data-dom="society">
+<div class="sechead">
+<h2>社会热点</h2>
+<span class="n">03</span><span class="fill"></span>
+</div>
+<article class="" data-hit="0" data-ord="1" data-dom="society"><h3><a href="https://www.chinanews.com.cn/sh/2026/11-12/10731207.shtml" target="_blank" rel="noopener">留学生走进广西钦州：在平陆运河畔读懂海陆共兴与非遗传承</a></h3><p class="lead">广西民族大学组织26名留学生代表赴广西钦州开展2026年感知中国社会实践与文化体验活动，行程围绕平陆运河（Pinglu Canal）畔的海陆共兴主题与非遗传承展开，通过实地走访、文化体验和社会调研，让在华留学生了解中国历史文化底蕴与当代发展成就。这类活动规模不大，但把重大工程现场和非遗体验放在一条线路上，是对外讲发展叙事的一种常规做法，重点在于留学生回去后怎么转述。</p><ul class="points"><li>活动由广西民族大学组织，共26名留学生代表参加。</li><li>地点为广西钦州，主题涉及平陆运河（Pinglu Canal）与海陆共兴。</li><li>形式包括实地走访、文化体验与社会调研。</li><li>活动归属2026年感知中国社会实践与文化体验项目。</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">26个人的团，走一趟运河边看看非遗，规模上就是常规交流项目，别指望出什么大新闻。真正有意思的是路线设计，把在建工程和传统手艺摆一块，讲的是发展加传承的组合叙事。效果如何，得看留学生回去怎么写、怎么说，现场照片说明不了太多。</span></blockquote><div class="src">中新网 · 社会 · <a href="https://www.chinanews.com.cn/sh/2026/11-12/10731207.shtml" target="_blank" rel="noopener">原文</a></div></article>
+<article class="" data-hit="0" data-ord="2" data-dom="society"><h3><a href="https://www.chinanews.com.cn/cj/2026/11-13/10731251.shtml" target="_blank" rel="noopener">谷歌“司法战”受挫 欧洲法院顾问质疑撤销谷歌罚款裁决</a></h3><p class="lead">谷歌（Google）在欧洲司法战中受挫，欧盟最高司法机构欧洲法院（CJEU）一名法律总顾问11月12日发表意见书，就谷歌广告服务案中撤销罚款的裁决提出异议，建议下级法院欧盟普通法院（General Court）重新审理。此前普通法院推翻了欧盟委员会对谷歌广告业务的反垄断罚款，这次顾问意见虽无约束力，但通常对法官有相当影响。案件回到起点重审，意味着谷歌在广告技术领域的监管压力短期内不会消散。</p><ul class="points"><li>意见书由欧洲法院（CJEU）一名法律总顾问出具，针对谷歌广告服务案。</li><li>争议焦点是欧盟普通法院（General Court）此前撤销罚款的裁决。</li><li>顾问建议普通法院重新审理该案。</li><li>顾问意见不具约束力，但实践中常被法官采纳。</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">顾问意见不是判决，可欧洲法院的法官向来爱听自家顾问的话，谷歌这口气松不得。广告业务的反垄断账还没算完，发回重审等于把旧账翻出来再对一遍。别急着说谷歌赢了或输了，程序走完之前，罚款数字随时可能换个写法回来。</span></blockquote><div class="src">中新网 · 要闻 · <a href="https://www.chinanews.com.cn/cj/2026/11-13/10731251.shtml" target="_blank" rel="noopener">原文</a></div></article>
+<article class="hidden" data-hit="0" data-ord="3" data-dom="society"><h3><a href="https://www.chinanews.com.cn/gn/2026/11-12/10731067.shtml" target="_blank" rel="noopener">李强主持国务院第二十二次专题学习（国务院专题学习多层次社会保障体系建设）</a></h3><p class="lead">国务院11月12日以健全多层次社会保障体系、织密扎牢社会保障安全网为主题举行第二十二次专题学习，总理李强主持并强调深化社会保障制度改革，健全覆盖全民、统筹城乡、公平统一、安全规范、可持续的多层次社会保障体系，推动现代化建设成果更多更公平惠及全体人民。会议定调的是方向性表述，覆盖全民和可持续两个词并提，指向的是扩面与基金长期平衡之间的张力，后续具体政策落地节奏才是观察重点。</p><ul class="points"><li>专题学习主题为健全多层次社会保障体系。</li><li>这是国务院第二十二次专题学习，由总理李强主持。</li><li>强调覆盖全民、统筹城乡、公平统一、安全规范、可持续。</li><li>提出推动现代化建设成果更多更公平惠及全体人民。</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">专题学习是定调子的场合，关键词摆得齐，覆盖全民和可持续放一起，说明扩面和基金平衡两头都要顾。真正要盯的是后面有没有具体方案出来，光开会不落细则，体系还是那个体系。这类新闻看标题就够，细读全是熟悉的表述。</span></blockquote><div class="src">中新网 · 国内 · <a href="https://www.chinanews.com.cn/gn/2026/11-12/10731067.shtml" target="_blank" rel="noopener">原文</a></div></article>
+<div class="more"><button type="button">还有 1 条 · 展开</button></div>
+</section>
+<section data-dom="life">
+<div class="sechead">
+<h2>生活健康</h2>
+<span class="n">03</span><span class="fill"></span>
+</div>
+<article class="" data-hit="0" data-ord="1" data-dom="life"><h3><a href="https://www.nature.com/articles/d41586-026-03565-3" target="_blank" rel="noopener">全球团队绘制基底核最详细细胞图谱 覆盖近2600万脑细胞</a></h3><p class="orig">Massive atlas of brain region linked to a host of diseases is the most detailed yet</p><p class="lead">一个全球研究团队对基底核（basal ganglia）近2600万个脑细胞进行 profiling（图谱分析），构建跨物种参考数据库，用于理解帕金森病（Parkinson&#x27;s disease）到成瘾等一系列疾病。基底核长期缺乏高分辨率细胞层面的统一参考，这次规模接近2600万细胞，跨物种比对的设计让不同实验数据有了共同坐标系。对神经科学来说，这类图谱的价值不在单篇结论，而在于后续研究拿它当底图去定位异常细胞类型。</p><ul class="points"><li>成果是跨物种参考数据库，而非单一物种图谱。</li><li>目标疾病包括帕金森病（Parkinson&#x27;s disease）与成瘾等。</li><li>团队称其为该脑区迄今最详细的图谱。</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">细胞图谱这类工作，发的时候热闹，用的时候才知道好不好使。近2600万细胞的规模确实够看，跨物种参考库的思路也比单打独斗的图谱实在。但图谱不等于疗法，帕金森病和成瘾的机制复杂得很，别把数据库当成解题答案，它顶多是张更细的地图。</span></blockquote><div class="src">Nature · <a href="https://www.nature.com/articles/d41586-026-03565-3" target="_blank" rel="noopener">原文</a></div></article>
+<article class="" data-hit="0" data-ord="2" data-dom="life"><h3><a href="https://www.statnews.com/2026/11/12/brain-map-basal-ganglia-offers-treatment-clues-parkinsons-schizophrenia/?utm_campaign=rss" target="_blank" rel="noopener">科学家绘制基底核最详图，覆盖多种精神神经疾病</a></h3><p class="orig">STAT+: Scientists debut map of basal ganglia, a key brain region involved in an array of diseases</p><p class="lead">一个大规模科研协作项目完成了迄今最详细的基底核（basal ganglia）图谱，这一脑区与帕金森病（Parkinson&#x27;s disease）、亨廷顿病（Huntington&#x27;s disease）、强迫症（OCD）及多种精神疾病密切相关。图谱在细胞类型和空间组织层面提供了更高分辨率的数据，为理解这些疾病的神经环路机制和开发靶向疗法提供了基础参照。此前基底核的细胞分类和连接图谱长期缺乏统一标准，不同研究之间的数据难以直接比较，这次协作的意义在于给该领域建立了一个可共享的基准。</p><ul class="points"><li>基底核参与运动控制、奖赏学习和习惯形成，是多种神经精神疾病的共同交汇点</li><li>新图谱在细胞分辨率上超越以往，覆盖了此前难以区分的亚型</li><li>数据公开后可被其他实验室复用，有助于减少重复工作和结果不一致</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">脑图谱这类工作，新闻稿永远比论文热闹。真正要看的是数据能不能被别的实验室复现、能不能指向可验证的疾病靶点。图漂亮不等于有用，但基底核确实缺一份像样的参照，先收着，等后续功能验证再说。</span></blockquote><div class="src">STAT News · <a href="https://www.statnews.com/2026/11/12/brain-map-basal-ganglia-offers-treatment-clues-parkinsons-schizophrenia/?utm_campaign=rss" target="_blank" rel="noopener">原文</a></div></article>
+<article class="hidden" data-hit="0" data-ord="3" data-dom="life"><h3><a href="https://www.nature.com/articles/s41591-026-04789-6" target="_blank" rel="noopener">肠道与泌尿生殖道菌群影响更年期激素治疗应答</a></h3><p class="orig">Gut and urogenital microbiomes influence menopausal hormone therapy outcomes</p><p class="lead">一项为期6个月的研究发现，更年期激素治疗（menopausal hormone therapy）会引发多部位微生物组重塑，其中阴道菌群向育龄期状态回迁。反过来，基线时肠道和阴道的菌群类型又影响治疗后的临床反应：整合临床指标与肠道菌群特征可以预测症状是否快速缓解。这意味着更年期激素治疗的疗效差异，部分可能由个体菌群状态决定，为精准化更年期管理提供了一个可操作的预测维度。</p><ul class="points"><li>研究追踪6个月，观察到激素治疗对阴道和肠道菌群的双向影响</li><li>基线菌群类型不同，症状缓解速度存在明显差异</li><li>临床特征加肠道菌群特征的预测模型，指向个体化用药方案</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">菌群研究最容易滑向“万物皆可菌群”。这篇的价值在于给出了可量化的预测指标，而不是又一篇相关性故事。不过6个月、样本量未知，离临床决策还远。别急着把益生菌当成激素治疗的替代品，那是两码事。</span></blockquote><div class="src">Nature Medicine · <a href="https://www.nature.com/articles/s41591-026-04789-6" target="_blank" rel="noopener">原文</a></div></article>
+<div class="more"><button type="button">还有 1 条 · 展开</button></div>
+</section>
+<section data-dom="digital">
+<div class="sechead">
+<h2>数码娱乐</h2>
+<span class="n">03</span><span class="fill"></span>
+</div>
+<article class="" data-hit="0" data-ord="1" data-dom="digital"><h3><a href="https://www.gcores.com/articles/222286" target="_blank" rel="noopener">温馨治愈的放置收集游戏《Bottled by Bears》现已登陆Steam</a></h3><p class="lead">西班牙巴塞罗那独立工作室Monoii Studio开发的放置收集游戏《Bottled by Bears》正式登陆Steam，原价32元，首发限时75折。玩家帮Pawford熊熊一家经营蜂蜜农场，通过拆蜜蜂卡包收集不同稀有度的蜜蜂，蜜蜂种类决定花田开什么花，花卉组合又反过来影响蜂蜜产量和售价。游戏支持放置玩法，离线期间花田照常生长凋谢，回来看时农场状态会随蜂群变化。正式版包含花卉增益、蜂蜜订单、蜂巢升级和超过100种装饰品。</p><ul class="points"><li>核心循环是拆卡包集蜜蜂、配花卉、卖蜂蜜，稀有和闪光变种产出更高</li><li>放置机制让离线也有进展，适合低强度长期游玩</li><li>正式版新增Hex变种蜜蜂、神包概率和农场自由布局功能</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">放置加抽卡，这套组合拳就是冲着碎片时间和收集癖去的，32块定价算克制。但要看清楚：卡包概率、后期数值曲线、离线收益上限，这三样决定它是真休闲还是变相逼氪。独立小品，别抱大作期待，图个安静养蜂还行。</span></blockquote><div class="src">机核 · <a href="https://www.gcores.com/articles/222286" target="_blank" rel="noopener">原文</a></div></article>
+<article class="" data-hit="0" data-ord="2" data-dom="digital"><h3><a href="https://www.gamespot.com/articles/candy-crush-is-celebrating-xboxs-25th-anniversary-with-halo-fallout-and-doom-crossovers-including-remixed-music/" target="_blank" rel="noopener">糖果传奇联动光环辐射等IP庆祝Xbox二十五周年</a></h3><p class="orig">Candy Crush Is Celebrating Xbox’s 25th Anniversary With Halo, Fallout, And Doom Crossovers, Including Remixed Music</p><p class="lead">2026年是Xbox品牌25周年，尽管这一年经历了大规模裁员、工作室关闭和项目取消，庆祝活动仍照常推进。Xbox旗下的《糖果传奇》（Candy Crush Saga）推出“Game On”赛季，通过虚拟徽章收集活动把《光环》（Halo）、《辐射》（Fallout）、《盗贼之海》（Sea of Thieves）、《极限竞速》（Forza）、《毁灭战士》（Doom）、《班卓熊》（Banjo-Kazooie）、《古惑狼》（Crash Bandicoot）和《小龙斯派罗》（Spyro）的元素引入游戏，部分作品音乐还会以糖果风格重编。活动持续至12月6日。</p><ul class="points"><li>联动覆盖八个IP，以徽章收集形式嵌入糖果传奇的常规赛季结构</li><li>经典游戏配乐将被重新编曲，作为活动期间的听觉彩蛋</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">一边裁员关工作室，一边让消消乐去扛周年庆的旗，这画面挺有黑色幽默。联动本身做得不糙，八个IP的徽章和重编音乐对老玩家有点杀伤力。但别把这事读成Xbox回暖的信号，品牌生日和业务健康是两回事。</span></blockquote><div class="src">GameSpot · <a href="https://www.gamespot.com/articles/candy-crush-is-celebrating-xboxs-25th-anniversary-with-halo-fallout-and-doom-crossovers-including-remixed-music/" target="_blank" rel="noopener">原文</a></div></article>
+<article class="hidden" data-hit="0" data-ord="3" data-dom="digital"><h3><a href="https://www.ithome.com/1/026/473.htm" target="_blank" rel="noopener">时隔近九年《德军总部 3》官宣，由微软 Xbox 贝塞斯达旗下 MachineGames 工作室开发</a></h3><p class="lead">微软Xbox首席执行官阿莎·夏尔马（Asha Sharma）正式公布《德军总部3》（Wolfenstein 3），由Bethesda旗下MachineGames工作室开发，目前已进入制作阶段，发售日期、平台和售价均未公布。这将是MachineGames重启系列的第三部正传，上一部正传《德军总部II：新巨像》（Wolfenstein II: The New Colossus）于2017年发售，相隔近九年。配音演员布莱恩·布鲁姆（Brian Bloom）和黛布拉·威尔逊（Debra Wilson）预计回归，工作室公布的动作捕捉现场照片显示两人疑似参与拍摄。</p><ul class="points"><li>距离《新巨像》近九年，系列正传终于续上</li><li>官方仅确认制作中，未给出窗口期和登陆平台</li><li>BJ Blazkowicz与Grace Walker的配音演员预计回归</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">官宣归官宣，一个“制作中”加一张动捕照片，信息量约等于零。九年空窗期，重启系列的口碑和销量都在往下走，这次能不能把叙事和手感拉回来才是关键。微软现在最不缺的就是画饼，等实机演示再激动不迟。</span></blockquote><div class="src">IT之家 · <a href="https://www.ithome.com/1/026/473.htm" target="_blank" rel="noopener">原文</a></div></article>
+<div class="more"><button type="button">还有 1 条 · 展开</button></div>
+</section>
+<footer>生成于 2026-11-13 10:28 · 大肥鱼晨报 v2 · 每天 06:00 自动更新</footer>
+</div>
+<script>window.PRESETS_HASH={"paper": {"--bg": "#f6f4ef", "--surface": "#fffefb", "--fg": "#1c1a17", "--muted": "#8a847a", "--line": "rgba(28,26,23,.10)", "--accent": "#a8452a"}, "ink": {"--bg": "#f2f4f6", "--surface": "#fbfcfd", "--fg": "#16202a", "--muted": "#7d8894", "--line": "rgba(22,32,42,.10)", "--accent": "#2f5d8a"}, "moss": {"--bg": "#f3f4ee", "--surface": "#fcfdf8", "--fg": "#1d2118", "--muted": "#828777", "--line": "rgba(29,33,24,.10)", "--accent": "#4d6141"}, "night": {"--bg": "#15161a", "--surface": "#1c1e23", "--fg": "#e8e6e1", "--muted": "#8b8a86", "--line": "rgba(232,230,225,.12)", "--accent": "#d98b5f"}};</script>
+<script>
+(function(){
+  var root=document.documentElement, KEY='fyb-share-theme';
+  var sw=document.querySelectorAll('.swatch');
+  var sz=document.querySelectorAll('.sizewrap button');
+  var saved=null;
+  try{saved=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){}
+  function apply(cfg){
+    if(!cfg) return;
+    if(cfg.vars){for(var k in cfg.vars){root.style.setProperty(k,cfg.vars[k])}}
+    if(cfg.fs){root.style.setProperty('--fs',cfg.fs)}
+    sw.forEach(function(b){b.dataset.active = (b.dataset.p===cfg.p)?'1':'0'});
+    sz.forEach(function(b){b.dataset.active = (b.dataset.fs===cfg.fs)?'1':'0'});
+  }
+  function save(cfg){try{localStorage.setItem(KEY,JSON.stringify(cfg))}catch(e){}}
+  sw.forEach(function(b){
+    b.addEventListener('click',function(){
+      var vars=JSON.parse(b.dataset.vars);
+      var cur={p:b.dataset.p,vars:vars,fs:(saved&&saved.fs)||''};
+      Object.keys(vars).forEach(function(k){root.style.setProperty(k,vars[k])});
+      apply(cur);save(cur);
+    });
+  });
+  sz.forEach(function(b){
+    b.addEventListener('click',function(){
+      var fs=b.dataset.fs, vars=saved?saved.vars:null, p=saved?saved.p:'paper';
+      var cur={p:p,vars:vars,fs:fs};
+      apply(cur);save(cur);
+    });
+  });
+  var t=document.getElementById('tbtn'), panel=document.getElementById('panel');
+  // #night 这类链接可直接指定配色；#panel 展开外观面板
+  (function(){
+    var h=(location.hash||'').replace('#','');
+    if(h && window.PRESETS_HASH && PRESETS_HASH[h]){
+      var v=PRESETS_HASH[h];
+      Object.keys(v).forEach(function(k){root.style.setProperty(k,v[k])});
+      var c={p:h,vars:v,fs:(saved&&saved.fs)||''}; save(c); apply(c);
+    }
+  })();
+  if(t){t.addEventListener('click',function(){panel.classList.toggle('open')})}
+  if((location.hash||'').indexOf('panel')>=0 && panel){panel.classList.add('open')}
+
+  // 条数密度：每个板块只露前 N 条，其余折叠进「还有 N 条」
+  var DKEY='fyb-share-density';
+  var dens=localStorage.getItem(DKEY)||document.body.getAttribute('data-limit')||'2';
+  if(['1','2','3'].indexOf(dens)<0){dens='2'}
+  var dn=document.querySelectorAll('.panel button[data-den]');
+  var VIEW='all';
+  function layout(){
+    var total=0;
+    Array.prototype.forEach.call(document.querySelectorAll('section'),function(s){
+      var inView=(VIEW==='all')||(s.getAttribute('data-dom')===VIEW);
+      s.classList.toggle('hidden-sec',!inView);
+      if(!inView){return}
+      var open=s.classList.contains('open');
+      var arts=s.querySelectorAll('article'), shown=0;
+      Array.prototype.forEach.call(arts,function(a){
+        var ord=parseInt(a.getAttribute('data-ord'),10)||0;
+        var hide=!open && ord>parseInt(dens,10);
+        a.classList.toggle('hidden',hide);
+        if(!hide){shown++}
+      });
+      total+=shown;
+      var btn=s.querySelector('.more button');      if(btn){
+        var rest=arts.length-shown;
+        if(rest>0){btn.style.display='';btn.textContent='还有 '+rest+' 条 · 展开'}
+        else{btn.style.display='none'}
+      }
+    });
+    var cnt=document.getElementById('cnt');
+    if(cnt){cnt.textContent=total+' 条'}
+    var mins=document.getElementById('mins');
+    if(mins){
+      var chars=0;
+      Array.prototype.forEach.call(document.querySelectorAll('article:not(.hidden)'),function(a){
+        if(a.closest('section.hidden-sec')){return}
+        chars+=a.textContent.length;
+      });
+      mins.textContent=Math.max(1,Math.round(chars/480));
+    }
+    Array.prototype.forEach.call(dn,function(b){b.dataset.active=(b.dataset.den===dens)?'1':'0'});
+  }
+  Array.prototype.forEach.call(dn,function(b){
+    b.addEventListener('click',function(){
+      dens=b.dataset.den;
+      try{localStorage.setItem(DKEY,dens)}catch(e){}
+      layout();
+    });
+  });
+  document.addEventListener('click',function(e){
+    var b=e.target.closest?e.target.closest('.more button'):null;
+    if(!b){return}
+    var s=b.closest('section');
+    if(s){s.classList.add('open');layout()}
+  });
+
+  // 领域切换：全部 / 科技AI / 商业财经 / 社会热点 / 生活健康 / 数码娱乐
+  var tabs=document.querySelectorAll('.tabs button');
+  function setView(v){
+    VIEW=v;
+    Array.prototype.forEach.call(tabs,function(x){
+      x.setAttribute('data-active',x.getAttribute('data-view')===v?'1':'0')
+    });
+    layout();
+  }
+  Array.prototype.forEach.call(tabs,function(b){
+    b.addEventListener('click',function(){
+      setView(b.getAttribute('data-view'));
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+  });
+  // #tech / #life 这类链接可直接打开某个领域
+  (function(){
+    var h=(location.hash||'').replace('#','');
+    if(!h){return}
+    Array.prototype.forEach.call(tabs,function(b){
+      if(b.getAttribute('data-view')===h){setView(h)}
+    });
+  })();
+
+  // 自定义背景色：按亮度自动配前景色，保证可读
+  var pick=document.getElementById('bgpick'), reset=document.getElementById('bgreset');
+  function lum(hex){
+    var m=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex||'');
+    if(!m){return 1}
+    var r=parseInt(m[1],16)/255,g=parseInt(m[2],16)/255,b=parseInt(m[3],16)/255;
+    return 0.2126*r+0.7152*g+0.0722*b;
+  }
+  function applyBg(hex){
+    var dark=lum(hex)<0.45;
+    var v= dark
+      ? {'--bg':hex,'--surface':'rgba(255,255,255,.05)','--fg':'#f2ede4','--muted':'#9d968c','--line':'rgba(255,255,255,.14)','--accent':'#d98b5f'}
+      : {'--bg':hex,'--surface':'rgba(0,0,0,.03)','--fg':'#1d1b18','--muted':'#7d776d','--line':'rgba(0,0,0,.13)','--accent':'#a8452a'};
+    Object.keys(v).forEach(function(k){root.style.setProperty(k,v[k])});
+    try{localStorage.setItem(KEY+'-bg',hex)}catch(e){}
+  }
+  if(pick){
+    var savedBg=null;
+    try{savedBg=localStorage.getItem(KEY+'-bg')}catch(e){}
+    if(savedBg){pick.value=savedBg;applyBg(savedBg)}
+    pick.addEventListener('input',function(){applyBg(pick.value)});
+  }
+  if(reset){
+    reset.addEventListener('click',function(){
+      try{localStorage.removeItem(KEY+'-bg');localStorage.removeItem(KEY)}catch(e){}
+      location.reload();
+    });
+  }
+  layout();
+  // 阅读进度
+  var bar=document.getElementById('progress');
+  function onScroll(){
+    var h=document.documentElement.scrollHeight-window.innerHeight;
+    bar.style.width=(h>0?(window.scrollY/h*100):0)+'%';
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});onScroll();
+})();
+</script>
+</body></html>
