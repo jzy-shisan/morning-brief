@@ -1,0 +1,403 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>肥鱼晨报 · 2026-11-14</title>
+<meta property="og:type" content="article">
+<meta property="og:title" content="肥鱼晨报">
+<meta property="og:image" content="https://jzy-shisan.github.io/morning-brief/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jzy-shisan.github.io/morning-brief/og.png">
+<style>
+:root{
+  --bg:#f6f4ef; --surface:#fffefb; --fg:#1c1a17; --muted:#8a847a;
+  --line:rgba(28,26,23,.10); --accent:#a8452a;
+  --serif: "Noto Serif SC","Source Han Serif SC","Songti SC","SimSun",Georgia,serif;
+  --sans: -apple-system,"Segoe UI","Microsoft YaHei UI","PingFang SC","Hiragino Sans GB",sans-serif;
+  --fs: 16px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--bg); color:var(--fg);
+  font-family:var(--sans); font-size:var(--fs); line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+  transition:background .35s ease,color .35s ease;
+}
+#progress{position:fixed;top:0;left:0;height:2px;width:0;background:var(--accent);
+  z-index:50;transition:width .1s linear;opacity:.85}
+.wrap{max-width:728px;margin:0 auto;padding:72px 28px 96px}
+
+/* 顶栏 */
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:44px}
+.brand{font-family:var(--serif);font-size:15px;letter-spacing:.18em;color:var(--muted)}
+.tools{display:flex;gap:6px}
+.tools button{
+  border:1px solid var(--line);background:transparent;color:var(--muted);
+  font-family:var(--sans);font-size:12px;letter-spacing:.08em;
+  padding:5px 10px;border-radius:999px;cursor:pointer;transition:.2s;
+}
+.tools button:hover{color:var(--fg);border-color:var(--muted)}
+.panel{
+  display:none;margin:0 0 40px;padding:16px 18px;border:1px solid var(--line);
+  border-radius:14px;background:var(--surface);
+}
+.panel.open{display:block}
+.panel .row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.panel .row > span{font-size:12px;color:var(--muted);letter-spacing:.1em;min-width:52px}
+.swatch{width:26px;height:26px;border-radius:50%;border:1px solid var(--line);cursor:pointer;
+  position:relative;transition:.2s;display:flex;align-items:center;justify-content:center;padding:0}
+.swatch i{display:block;width:9px;height:9px;border-radius:50%}
+.swatch:hover{transform:scale(1.08)}
+.swatch[data-active="1"]{box-shadow:0 0 0 2px var(--bg),0 0 0 3px var(--accent)}
+.sizewrap button{font-size:12px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);
+  background:transparent;color:var(--muted);cursor:pointer;margin-right:4px}
+.sizewrap button[data-active="1"]{color:var(--accent);border-color:var(--accent)}
+.bgwrap{display:flex;align-items:center;gap:10px}
+.bgwrap input[type=color]{width:26px;height:26px;padding:0;border:1px solid var(--line);
+  border-radius:50%;background:transparent;cursor:pointer;-webkit-appearance:none;appearance:none}
+.bgwrap input[type=color]::-webkit-color-swatch-wrapper{padding:2px}
+.bgwrap input[type=color]::-webkit-color-swatch{border:none;border-radius:50%}
+.bgwrap button{font-size:12px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);
+  background:transparent;color:var(--muted);cursor:pointer}
+
+/* 领域切换 */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:0 0 40px;
+  position:sticky;top:0;z-index:30;padding:10px 0 12px;
+  background:linear-gradient(var(--bg) 72%,transparent)}
+.tabs::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
+  background:var(--line);opacity:.5}
+.tabs button{
+  border:1px solid transparent;background:transparent;color:var(--muted);cursor:pointer;
+  font-family:var(--sans);font-size:12.5px;letter-spacing:.1em;padding:5px 11px;border-radius:999px;
+  transition:.2s;
+}
+.tabs button:hover{color:var(--fg)}
+.tabs button[data-active="1"]{color:var(--accent);border-color:var(--line);background:var(--surface)}
+
+/* 头图区 */
+header{text-align:center;margin-bottom:44px;position:relative}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(30px,5vw,42px);
+  line-height:1.3;margin:0 0 14px;letter-spacing:.01em}
+.date{font-size:13px;letter-spacing:.3em;color:var(--muted);text-transform:uppercase}
+.tagline{margin-top:18px;font-family:var(--serif);font-size:15px;color:var(--muted);letter-spacing:.06em}
+.digest{margin:34px 0 6px;padding:18px 20px;border-left:2px solid var(--accent);background:color-mix(in srgb,var(--accent) 5%,transparent)}
+.digest .lb{display:block;font:600 11px/1 -apple-system,"PingFang SC",sans-serif;letter-spacing:.22em;color:var(--accent);margin-bottom:10px}
+.digest ol{margin:0;padding-left:1.35em}
+.digest li{margin:6px 0;font-size:15px;line-height:1.75}
+.digest li::marker{color:var(--muted);font-size:13px}
+.rule{width:36px;height:1px;background:var(--accent);margin:26px auto 0;opacity:.7}
+
+/* 板块 */
+section{margin:0 0 52px}
+.sechead{display:flex;align-items:baseline;gap:12px;margin-bottom:22px}
+.sechead h2{font-family:var(--serif);font-size:17px;font-weight:600;margin:0;letter-spacing:.12em}
+.sechead h2::before{content:"";display:inline-block;width:5px;height:5px;margin-right:11px;
+  border:1px solid var(--accent);transform:rotate(45deg) translateY(-3px);opacity:.75}
+.sechead .n{font-size:11px;color:var(--muted);letter-spacing:.2em}
+.sechead .fill{flex:1;height:1px;background:var(--line);transform:translateY(-4px)}
+
+/* 条目 */
+article{padding:26px 0;border-top:1px solid var(--line)}
+article:first-of-type{border-top:none;padding-top:0}
+.hit{display:inline-flex;align-items:center;gap:5px;font-size:11px;letter-spacing:.16em;
+  color:var(--accent);margin-bottom:9px}
+.hit::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--accent)}
+.hit .pin{font-size:10px;letter-spacing:.06em;color:var(--muted);margin-left:4px}
+h3{font-family:var(--serif);font-weight:600;font-size:21px;line-height:1.5;margin:0 0 12px;
+  letter-spacing:.005em}
+h3 a{color:inherit;text-decoration:none}
+h3 a:hover{color:var(--accent)}
+.orig{font-family:var(--sans);font-size:12.5px;line-height:1.65;color:var(--muted);
+  letter-spacing:.01em;margin:-6px 0 12px}
+.lead{margin:0 0 16px;color:var(--fg);opacity:.92;font-size:15.5px;line-height:1.9;
+  letter-spacing:.005em}
+.points{margin:0 0 4px;padding:0;list-style:none;font-size:14.5px;color:var(--fg);opacity:.78;
+  line-height:1.85}
+.points li{position:relative;padding-left:16px;margin:5px 0}
+.points li::before{content:"";position:absolute;left:2px;top:.72em;width:4px;height:4px;
+  border-radius:50%;background:var(--accent);opacity:.55}
+em.kw{font-style:normal;background:rgba(168,69,42,.16);border-radius:3px;padding:0 3px;
+  box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.verdict{margin:18px 0 0;padding:12px 0 12px 16px;border-left:2px solid var(--line);
+  font-size:14.5px;color:var(--fg);opacity:.88;line-height:1.85}
+.verdict .who{font-family:var(--serif);color:var(--accent);letter-spacing:.18em;margin-right:10px;
+  font-size:12.5px;white-space:nowrap}
+.verdict .said{display:inline}
+details{margin-top:14px}
+details summary{cursor:pointer;font-size:12.5px;color:var(--muted);letter-spacing:.12em;
+  list-style:none;display:inline-flex;align-items:center;gap:6px;user-select:none}
+details summary::-webkit-details-marker{display:none}
+details summary::before{content:"＋";font-size:11px;transition:transform .2s;color:var(--accent)}
+details[open] summary::before{content:"－"}
+details ul{margin:12px 0 0;padding-left:18px;font-size:14.5px;color:var(--muted);line-height:1.9}
+details ul li{margin:3px 0}
+.src{margin-top:16px;font-size:12px;color:var(--muted);letter-spacing:.06em}
+.src a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line)}
+.src a:hover{color:var(--accent);border-color:var(--accent)}
+.more{margin-top:18px}
+.more button{background:transparent;border:none;padding:0;color:var(--muted);font-size:12.5px;
+  letter-spacing:.1em;cursor:pointer;border-bottom:1px dashed var(--line);font-family:var(--sans)}
+.more button:hover{color:var(--accent);border-color:var(--accent)}
+.hidden{display:none}
+.hidden-sec{display:none}
+.empty{font-size:13px;color:var(--muted);font-style:normal;padding:4px 0}
+
+/* 小公告栏 */
+.tips{border-top:1px solid var(--line);padding-top:34px;margin-top:8px}
+.tips h2{font-family:var(--serif);font-size:15px;font-weight:600;letter-spacing:.16em;
+  color:var(--muted);margin:0 0 20px}
+.tip{padding:14px 0;border-top:1px dashed var(--line)}
+.tip:first-of-type{border-top:none}
+.tip .cat{font-size:11px;letter-spacing:.2em;color:var(--accent);margin-bottom:6px}
+.tip .txt{font-size:15px}
+.tip .cm{margin-top:9px;font-size:13.5px;color:var(--muted);line-height:1.8}
+
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--line);
+  text-align:center;font-size:11.5px;color:var(--muted);letter-spacing:.1em;line-height:2}
+footer::before{content:"◦ ◦ ◦";display:block;margin-bottom:14px;font-size:9px;
+  letter-spacing:.5em;color:var(--accent);opacity:.5}
+
+@media (max-width:640px){
+  .wrap{padding:48px 20px 72px}
+  h3{font-size:19px}
+  .lead{font-size:15px}
+  .tabs{gap:4px;margin-bottom:34px}
+}
+@media print{
+  #progress,.tools,.panel,.more{display:none!important}
+  body{background:#fff}
+  article{break-inside:avoid}
+}
+</style>
+</head><body data-limit="2">
+<div id="progress"></div><div class="wrap">
+<div class="top">
+<div class="brand">肥鱼晨报</div>
+<div class="tools"><button id="tbtn" type="button">外观</button></div>
+</div>
+<div class="panel" id="panel">
+<div class="row"><span>配色</span><div style="display:flex;gap:10px"><button class="swatch" type="button" data-p="paper" data-vars="{&quot;--bg&quot;: &quot;#f6f4ef&quot;, &quot;--surface&quot;: &quot;#fffefb&quot;, &quot;--fg&quot;: &quot;#1c1a17&quot;, &quot;--muted&quot;: &quot;#8a847a&quot;, &quot;--line&quot;: &quot;rgba(28,26,23,.10)&quot;, &quot;--accent&quot;: &quot;#a8452a&quot;}" style="background:#f6f4ef;border-color:rgba(28,26,23,.10)" title="纸"><i style="background:#a8452a"></i></button><button class="swatch" type="button" data-p="ink" data-vars="{&quot;--bg&quot;: &quot;#f2f4f6&quot;, &quot;--surface&quot;: &quot;#fbfcfd&quot;, &quot;--fg&quot;: &quot;#16202a&quot;, &quot;--muted&quot;: &quot;#7d8894&quot;, &quot;--line&quot;: &quot;rgba(22,32,42,.10)&quot;, &quot;--accent&quot;: &quot;#2f5d8a&quot;}" style="background:#f2f4f6;border-color:rgba(22,32,42,.10)" title="墨"><i style="background:#2f5d8a"></i></button><button class="swatch" type="button" data-p="moss" data-vars="{&quot;--bg&quot;: &quot;#f3f4ee&quot;, &quot;--surface&quot;: &quot;#fcfdf8&quot;, &quot;--fg&quot;: &quot;#1d2118&quot;, &quot;--muted&quot;: &quot;#828777&quot;, &quot;--line&quot;: &quot;rgba(29,33,24,.10)&quot;, &quot;--accent&quot;: &quot;#4d6141&quot;}" style="background:#f3f4ee;border-color:rgba(29,33,24,.10)" title="苔"><i style="background:#4d6141"></i></button><button class="swatch" type="button" data-p="night" data-vars="{&quot;--bg&quot;: &quot;#15161a&quot;, &quot;--surface&quot;: &quot;#1c1e23&quot;, &quot;--fg&quot;: &quot;#e8e6e1&quot;, &quot;--muted&quot;: &quot;#8b8a86&quot;, &quot;--line&quot;: &quot;rgba(232,230,225,.12)&quot;, &quot;--accent&quot;: &quot;#d98b5f&quot;}" style="background:#15161a;border-color:rgba(232,230,225,.12)" title="夜"><i style="background:#d98b5f"></i></button></div></div>
+<div class="row"><span>背景</span><div class="bgwrap"><input type="color" id="bgpick" value="#f6f4ef" aria-label="自定义背景色"><button type="button" id="bgreset">恢复</button></div></div>
+<div class="row"><span>字号</span><div class="sizewrap"><button type="button" data-fs="15px">小</button><button type="button" data-fs="16px">中</button><button type="button" data-fs="17.5px">大</button></div></div>
+<div class="row"><span>条数</span><div class="sizewrap"><button type="button" data-den="1">少</button><button type="button" data-den="2">标准</button><button type="button" data-den="3">全</button></div></div>
+</div>
+<header>
+<h1>11 月 14 日</h1>
+<div class="date">2026-11-14 · 周六 · 约 <span id="mins">8</span> 分钟 · <span id="cnt">10 条</span></div>
+<div class="tagline">十分钟，过一遍今天</div>
+<div class="rule"></div>
+</header>
+<div class="digest"><span class="lb">今天三句话</span><ol><li>OpenAI上线ChatGPT Wallet，美国Pro订阅者可让AI代理代下单付款，智能体从对话延伸到交易。</li><li>美联储副主席称通胀将决定利率决策，加息与否看物价走势，影响房贷、消费和投资成本。</li><li>2027年考研报名人数347万，考试定于2026年12月19日至20日，竞争仍激烈。</li></ol></div>
+<nav class="tabs" id="tabs"><button type="button" data-view="all" data-active="1">全部</button><button type="button" data-view="tech">科技 AI</button><button type="button" data-view="biz">商业财经</button><button type="button" data-view="society">社会热点</button><button type="button" data-view="life">生活健康</button><button type="button" data-view="digital">数码娱乐</button></nav>
+<section data-dom="tech">
+<div class="sechead">
+<h2>科技 AI</h2>
+<span class="n">03</span><span class="fill"></span>
+</div>
+<article class="" data-hit="0" data-ord="1" data-dom="tech"><h3><a href="https://www.theverge.com/ai-artificial-intelligence/1033425/openai-chatgpt-wallet" target="_blank" rel="noopener">OpenAI推出ChatGPT Wallet，让AI代理替用户下单付款</a></h3><p class="orig">ChatGPT Wallet lets OpenAI’s Dots agents make purchases for you</p><p class="lead">OpenAI今年早些时候上线Dots智能体平台后，又为智能体配上了钱包。ChatGPT Wallet即日起面向美国18岁以上、使用美国账单地址的ChatGPT Pro订阅者开放，支持符合条件的美国发行的American Express（美国运通）、Chase（大通）、Mastercard（万事达）和Visa（维萨）卡。绑定卡片后，智能体可在用户授权下完成购买。这意味着AI代理从“帮忙查资料”跨到“动真钱”，支付安全与责任归属是绕不开的关键问题。</p><ul class="points"><li>首批仅限美国ChatGPT Pro订阅者，且须年满18岁、持美国账单地址。</li><li>支持的卡组织限定为American Express、Chase、Mastercard、Visa四家。</li><li>钱包覆盖ChatGPT Work、Codex和Dots三类智能体场景。</li><li>每笔交易需用户批准，并沿用现有卡片保护机制。</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">让AI替人花钱，听着方便，实则是把授权边界推给了普通用户。首批只放给美国Pro用户，明显是小步试水。真正该盯的是出事之后谁担责，而不是发布会上演示的那几下结账。</span></blockquote><div class="src">The Verge · <a href="https://www.theverge.com/ai-artificial-intelligence/1033425/openai-chatgpt-wallet" target="_blank" rel="noopener">原文</a></div></article>
+<article class="" data-hit="0" data-ord="2" data-dom="tech"><h3><a href="https://techcrunch.com/2026/11/13/chatgpts-new-wallet-lets-ai-agents-shop-and-check-out-for-you/" target="_blank" rel="noopener">ChatGPT Wallet上线，AI代理可代用户购物结账</a></h3><p class="orig">ChatGPT’s new Wallet lets AI agents shop and check out for you</p><p class="lead">ChatGPT Wallet让AI代理代表用户完成购物和结账，初期以有限范围向美国Pro订阅者开放。这是OpenAI把智能体能力延伸到交易环节的一步：此前代理只能给建议，现在能直接下单。对电商和支付链条来说，入口从人转向代理，风控、退款和纠纷处理都要重新设计。消费者是否愿意把支付权限交给模型，取决于授权粒度和出问题后的追责是否清晰。</p><ul class="points"><li>功能定位是代用户购物并完成结账，而非仅比价推荐。</li><li>上线采取有限范围灰度，先在美国Pro订阅者中测试。</li><li>代理介入交易后，退款与纠纷流程需重新梳理。</li><li>支付权限下放程度，直接决定用户接受度。</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">购物结账交给代理，省的是点击，赌的是信任。灰度放量说明OpenAI自己也没底。别急着把卡绑上去，先看清楚授权能收多紧、出了错找谁。</span></blockquote><div class="src">TechCrunch AI · <a href="https://techcrunch.com/2026/11/13/chatgpts-new-wallet-lets-ai-agents-shop-and-check-out-for-you/" target="_blank" rel="noopener">原文</a></div></article>
+<article class="hidden" data-hit="0" data-ord="3" data-dom="tech"><h3><a href="https://openai.com/index/introducing-chatgpt-wallet" target="_blank" rel="noopener">OpenAI介绍ChatGPT Wallet：代理购物需用户批准</a></h3><p class="orig">Introducing ChatGPT Wallet</p><p class="lead">OpenAI正式介绍ChatGPT Wallet，称其为一种安全方式，让ChatGPT Work、Codex和Dots中的智能体在用户批准下完成购买，并沿用现有卡片保护。官方强调“用户批准”和“既有保护”，等于承认代理自主付款的风险需要制度兜底。这类产品能否铺开，不取决于模型多聪明，而取决于授权确认、交易记录和异常拦截做得够不够细。</p><ul class="points"><li>官方定位为安全支付通道，核心是用户批准环节。</li><li>覆盖ChatGPT Work、Codex和Dots三个智能体入口。</li><li>交易沿用现有信用卡保护，不另建赔付体系。</li><li>强调安全，侧面说明代理自主付款风险受重视。</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">通篇讲安全，说明最怕的就是不安全。“用户批准”四个字是底线，但批准频率一高，人就会闭眼点同意。产品好不好用另说，先把确认流程设计得让人愿意看。</span></blockquote><div class="src">OpenAI News · <a href="https://openai.com/index/introducing-chatgpt-wallet" target="_blank" rel="noopener">原文</a></div></article>
+<div class="more"><button type="button">还有 1 条 · 展开</button></div>
+</section>
+<section data-dom="biz">
+<div class="sechead">
+<h2>商业财经</h2>
+<span class="n">03</span><span class="fill"></span>
+</div>
+<article class="" data-hit="0" data-ord="1" data-dom="biz"><h3><a href="https://www.cnbc.com/2026/11/13/a-trading-strategy-to-ride-out-the-nvidia-uncertainty-and-generate-income-in-the-process.html" target="_blank" rel="noopener">用持续备兑看涨期权策略应对Nvidia不确定性并获取收益</a></h3><p class="orig">A trading strategy to ride out the Nvidia uncertainty and generate income in the process</p><p class="lead">面对Nvidia（英伟达）股价前景的不确定，有分析提出持续卖出备兑看涨期权（covered call）的策略：持有正股的同时不断卖出看涨期权，把市场对下跌的担忧转化为权利金收入。逻辑是用股票换取现金流，降低组合波动。代价是上涨时收益被封顶，若股价大幅回落，权利金也补不回本金损失。这类策略适合震荡或温和看涨，不适合单边行情。</p><ul class="points"><li>策略核心是持有Nvidia正股并持续卖出看涨期权。</li><li>权利金收入可对冲部分下跌，但上涨收益被封顶。</li><li>适合震荡市，单边大涨或大跌时效果都打折。</li><li>持续滚动操作对执行纪律要求较高。</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">拿市场对Nvidia的恐慌去收租，思路不算新鲜。备兑看涨本质是卖上涨空间换现金流，牛市里会难受得想撕合同。当收入策略看可以，当稳赚不赔的买卖看就危险了。</span></blockquote><div class="src">CNBC · <a href="https://www.cnbc.com/2026/11/13/a-trading-strategy-to-ride-out-the-nvidia-uncertainty-and-generate-income-in-the-process.html" target="_blank" rel="noopener">原文</a></div></article>
+<article class="" data-hit="0" data-ord="2" data-dom="biz"><h3><a href="https://wallstreetcn.com/livenews/3200064" target="_blank" rel="noopener">美联储副主席Jefferson：通胀将决定利率决策</a></h3><p class="lead">美联储副主席Philip Jefferson（菲利普·杰斐逊）表示，在考虑进一步加息时，通胀已成为决策者最重要的衡量指标。近期美国经济活动和劳动力市场稳健，但价格压力依然顽固，10月物价数据与远高于目标的通胀水平一致。他同时指出，货币政策能影响周期性状况，却解决不了决定长期就业率的结构性问题，比如工人技能与雇主需求之间的错配。这番话把利率路径重新锚定在通胀上。</p><ul class="points"><li>通胀被明确列为进一步加息决策的首要指标。</li><li>10月物价数据与远高于目标的通胀水平相符。</li><li>经济活动和劳动力市场近期表现稳健。</li><li>技能与岗位需求错配属结构性问题，货币政策无能为力。</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">把话挑明：加息与否看通胀，别指望货币政异解决就业结构问题。这种表态等于给降息预期泼冷水。市场要是还按老剧本抢跑，吃亏的是自己。</span></blockquote><div class="src">华尔街见闻 · <a href="https://wallstreetcn.com/livenews/3200064" target="_blank" rel="noopener">原文</a></div></article>
+<article class="hidden" data-hit="0" data-ord="3" data-dom="biz"><h3><a href="http://www.xueqiu.com/9928479458/416457424" target="_blank" rel="noopener">长线周期股如何买和卖（长线周期股买卖逻辑梳理：供需决定价格，供应型行业看供给边际变化）</a></h3><p class="lead">周期股投资的核心在于供需关系，但供应型行业因需求常年稳定，分析重点应放在供给端的限制与边际变化上。煤炭、电解铝、航运、生猪等典型品种均属此类：煤炭受供给侧改革和碳达峰碳中和约束，产能去化后扩产缓慢；航运关注运价跌破现金成本线、新船订单下滑等买入信号；生猪则紧盯能繁母猪存栏去化，连续10个月以上同比下滑、猪粮比低于6:1、头均亏损超3个月是左侧布局关键信号，去化10到15个月后传导至出栏量收缩，猪价随之抬升。理解这一逻辑，才能避免在周期股上追涨杀跌。</p><ul class="points"><li>供应型行业分两类，I型需求稳定但供应受限，价格对供给波动极度敏感。</li><li>煤炭产能受2016年供给侧改革和2020年双碳目标压制，扩产受环保安全约束。</li><li>航运买入信号为运价跌破现金成本线、新船订单同比大降、运力出清。</li><li>生猪需求刚性，能繁母猪存栏连续10个月以上下滑是核心先行指标。</li><li>能繁母猪去化10到15个月后传导至出栏量，供应缺口出现即推动猪价上涨。</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">这篇把周期股的买卖框架讲得挺实在，尤其生猪那段，能繁母猪存栏、猪粮比、头均亏损三个指标串起来，逻辑闭环。但别把框架当万能钥匙，煤炭受政策扰动大，航运受全球贸易影响深，猪周期近年也被规模化养殖拉平了不少。照搬指标容易踩坑，得盯住每个品种供给端真正的边际变量。</span></blockquote><div class="src">雪球 · <a href="http://www.xueqiu.com/9928479458/416457424" target="_blank" rel="noopener">原文</a></div></article>
+<div class="more"><button type="button">还有 1 条 · 展开</button></div>
+</section>
+<section data-dom="society">
+<div class="sechead">
+<h2>社会热点</h2>
+<span class="n">03</span><span class="fill"></span>
+</div>
+<article class="" data-hit="0" data-ord="1" data-dom="society"><h3><a href="https://www.chinanews.com.cn/edu/2026/11-13/10731392.shtml" target="_blank" rel="noopener">2027年全国硕士研究生招生考试报名人数为347万</a></h3><p class="lead">教育部公布2027年全国硕士研究生招生考试将于2026年12月19日至20日举行，报名人数为347万。教育部会同国家教育统一考试工作部际联席会议各成员单位召开安全工作视频会议，部署考试安全工作，副部长熊四皓出席讲话，中央网信办、中央保密办、工业和信息化部、公安部等部门参与相关工作。报名人数是观察考研热度的直接指标，347万这一数字背后反映的是就业压力与学历竞争的现实格局。</p><ul class="points"><li>2027年考研初试定于2026年12月19日至20日举行。</li><li>报名人数347万，教育部召开安全工作视频会议部署相关保障。</li><li>中央网信办、公安部等多部门协同参与考试安全工作。</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">347万，比前几年峰值降了些，但仍是天量。考研热降温不是学历不值钱了，是大家算账更精了——三年时间和学费换来的溢价在缩水。真正该盯的是录取结构，专硕扩招、学硕缩招，别光看总人数就判断竞争变缓。</span></blockquote><div class="src">中新网 · 要闻 · <a href="https://www.chinanews.com.cn/edu/2026/11-13/10731392.shtml" target="_blank" rel="noopener">原文</a></div></article>
+<article class="" data-hit="0" data-ord="2" data-dom="society"><h3><a href="https://www.chinanews.com.cn/sh/2026/11-13/10731728.shtml" target="_blank" rel="noopener">甘肃灵活就业群体权益保障有新解（甘肃聚焦灵活就业群体权益保障，构建和谐劳动关系）</a></h3><p class="lead">甘肃省人社厅副厅长向东透露，“十五五”时期当地人社部门将聚焦劳动关系治理、灵活就业群体权益保障、薪酬分配、纠纷化解等重点方向，构建规范有序、公正合理的和谐劳动关系。随着新就业形态和超龄劳动者等灵活就业群体持续壮大，劳动关系治理面临新挑战。这一部署回应了平台经济用工、超龄劳动者社保等现实痛点，地方层面的制度探索值得观察其落地效果。</p><ul class="points"><li>甘肃“十五五”时期重点方向包括劳动关系治理和灵活就业群体权益保障。</li><li>新就业形态和超龄劳动者群体持续壮大，给劳动关系治理带来新挑战。</li><li>薪酬分配和纠纷化解也被列为重点推进领域。</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">方向定得对，但灵活就业保障最难的是钱从哪出。平台用工的社保责任划分、超龄劳动者的工伤认定，这些硬骨头不啃，文件写得再漂亮也是纸上功夫。甘肃这种劳动力输出大省先试，成败看细则，别急着鼓掌。</span></blockquote><div class="src">中新网 · 社会 · <a href="https://www.chinanews.com.cn/sh/2026/11-13/10731728.shtml" target="_blank" rel="noopener">原文</a></div></article>
+<article class="hidden" data-hit="0" data-ord="3" data-dom="society"><h3><a href="https://www.solidot.org/story?sid=85873" target="_blank" rel="noopener">印度苹果代工厂发生三名合同工死亡事故（印度塔塔电子iPhone工厂三名合同工死亡，废水设施事故引关注）</a></h3><p class="lead">塔塔电子位于印度泰米尔纳德邦Hosur、为苹果iPhone生产零部件的工厂发生事故，三名合同工在检查外部纳滤罐时吸入气体死亡，事发周一晚间，工人送医后确认死亡。塔塔电子承担印度约40%的iPhone组装工作，其余由富士康负责。近几个月其iPhone业务已遭遇勒索软件攻击和水污染担忧。随着苹果将生产扩大至中国以外，印度已成关键制造枢纽，目前全球约四分之一iPhone产自印度，此次事故给产能转移的安全管理敲响警钟。</p><ul class="points"><li>事故发生在Krishnagiri的Hosur工厂，工人检查纳滤罐时吸入气体。</li><li>三名合同工送私立医院后确认死亡，塔塔电子承担印度约40%的iPhone组装。</li><li>塔塔电子近期还遭遇勒索软件攻击，并引发水污染担忧。</li><li>全球约四分之一iPhone产自印度，苹果产能外迁持续推进。</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">苹果把产能往印度搬，搬得快，安全管理和环保配套却没跟上。合同工干最危险的活、拿最薄的保障，出了事才暴露。塔塔电子接连出状况，勒索攻击加水污染再加人命，这不是偶然。产能转移的成本账，不能只算人工便宜。</span></blockquote><div class="src">Solidot · <a href="https://www.solidot.org/story?sid=85873" target="_blank" rel="noopener">原文</a></div></article>
+<div class="more"><button type="button">还有 1 条 · 展开</button></div>
+</section>
+<section data-dom="life">
+<div class="sechead">
+<h2>生活健康</h2>
+<span class="n">03</span><span class="fill"></span>
+</div>
+<article class="" data-hit="1" data-ord="1" data-dom="life"><div class="hit">关键词 · CRISPR<span class="pin">已置顶</span></div><h3><a href="https://www.nature.com/articles/d41586-026-03705-9" target="_blank" rel="noopener">新型<em class="kw">CRISPR</em>疗法有望获FDA首个体内基因编辑批准</a></h3><p class="orig">Novel <em class="kw">CRISPR</em> therapy is poised to gain first FDA approval to alter genes inside the body</p><p class="lead">一种新型<em class="kw">CRISPR</em>（基因编辑技术）疗法接近获得美国FDA批准，若成行将是首个无需取出患者细胞、直接在体内改写基因的获批疗法。现有基因编辑治疗普遍需要采集患者细胞、体外改造再回输，流程复杂且成本高昂。体内编辑把这一步省掉，意味着治疗可及性和规模化生产逻辑都可能被改写，但递送效率和脱靶风险仍是审评焦点。</p><ul class="points"><li>现有获批基因编辑疗法均需体外处理细胞，环节多、费用高</li><li>体内编辑直接在患者体内操作，省去细胞采集与回输流程</li><li>该疗法若获批，将成为FDA批准的首个此类产品</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">体内编辑喊了这么多年，终于走到审批门口，算是真进展。但别急着庆祝，递送载体往哪去、脱靶怎么控，这些才是决定它能不能落地的硬骨头。首个批准更像发令枪，不是终点线。</span></blockquote><div class="src">Nature · <a href="https://www.nature.com/articles/d41586-026-03705-9" target="_blank" rel="noopener">原文</a></div></article>
+<article class="" data-hit="0" data-ord="2" data-dom="life"><h3><a href="https://www.statnews.com/2026/11/13/cardiovascular-disease-heart-drug-failures-readout-loud-podcast/?utm_campaign=rss" target="_blank" rel="noopener">两款热门心脏病药物研究受挫，行业反思药物研发前景</a></h3><p class="orig">The future of heart drug research in the wake of study setbacks</p><p class="lead">两款备受关注的心脏病药物研究失败，引发业界对心血管领域药物研发未来的讨论。相关话题在本周The Readout节目中被专门探讨。心脏病药物研发长期面临疗效验证难、终点事件要求高、试验周期长等挑战，大型药企在该领域的投入回报比持续承压。两项研究的挫折不仅是单个项目的失利，更可能影响资本对心血管管线的配置节奏，后续同类靶点的跟进项目值得密切观察。</p><ul class="points"><li>两款受关注的心脏病药物研究未达预期，具体数据待披露。</li><li>The Readout节目本周专门讨论该挫折对领域研发的影响。</li><li>心血管药物研发面临终点事件要求高、试验周期长等结构性难题。</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">心血管药研发本来就是硬仗，失败率高得吓人，两款药折戟不算意外。真正要看的是失败原因——是靶点选错还是试验设计有问题，这决定了同赛道其他项目要不要跟着慌。别一听失败就唱衰整个领域，也别被“重磅管线”的说法牵着走。</span></blockquote><div class="src">STAT News · <a href="https://www.statnews.com/2026/11/13/cardiovascular-disease-heart-drug-failures-readout-loud-podcast/?utm_campaign=rss" target="_blank" rel="noopener">原文</a></div></article>
+<article class="hidden" data-hit="0" data-ord="3" data-dom="life"><h3><a href="https://www.nature.com/articles/s41587-026-03378-9" target="_blank" rel="noopener">FDA三十年AAV基因治疗IND申报分析揭示监管搁置常见原因</a></h3><p class="orig">A comprehensive analysis of CBER experience with AAV gene therapy IND submissions</p><p class="lead">一项覆盖1995至2025年的分析梳理了向美国FDA提交的AAV（腺相关病毒）基因治疗IND（新药临床试验申请），显示三十年间该领域研发规模快速膨胀。研究同时归纳了导致监管搁置的常见原因，为后续产品开发提供可参照的避坑清单。对基因治疗企业而言，申报数量增长意味着审评资源竞争加剧，而搁置原因的系统总结比单纯的成功案例更有实操价值。</p><ul class="points"><li>研究聚焦FDA对IND申请的监管搁置，而非仅统计获批数量</li><li>搁置原因被归纳为可复用的开发参考，指向CMC、临床前数据等环节</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">这类回顾分析比企业自己猜监管心思靠谱得多。AAV赛道挤成这样，申报被搁置往往不是科学问题而是材料问题。真正该看的是搁置原因的分类细不细，别又变成一句笼统的“数据不充分”。</span></blockquote><div class="src">Nature Biotechnology · <a href="https://www.nature.com/articles/s41587-026-03378-9" target="_blank" rel="noopener">原文</a></div></article>
+<div class="more"><button type="button">还有 1 条 · 展开</button></div>
+</section>
+<section data-dom="digital">
+<div class="sechead">
+<h2>数码娱乐</h2>
+<span class="n">03</span><span class="fill"></span>
+</div>
+<article class="" data-hit="0" data-ord="1" data-dom="digital"><h3><a href="https://www.ithome.com/1/027/031.htm" target="_blank" rel="noopener">拜雅推出 4 款新 Pro X 限量黑色特别版耳机，售价 1499 元起</a></h3><p class="lead">拜雅（beyerdynamic）扩充PRO X系列，推出DT 770 PRO X、DT 990 PRO X、DT 700 PRO X和DT 900 PRO X四款全黑特别版耳机，限量发售，欧洲建议零售价199欧元起，国内京东售价1499元和1799元。全黑设计源自录音工作室减少反光干扰的实际需求，四款分别对应录音监听、音乐制作、细节审听和母带处理等不同场景，均搭载STELLAR.45动圈单元、48欧姆阻抗，德国制造并保留可更换部件。</p><ul class="points"><li>四款均采用全黑外观，天鹅绒耳垫也改为黑色，主打低反光</li><li>封闭式770/700与开放式990/900分工明确，覆盖录音到母带全流程</li><li>统一48欧姆阻抗，可直连专业音频接口与移动设备</li><li>德国制造，保留可更换部件设计并提供长期备件支持</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">换色限量这套玩法在专业音频圈也流行起来了，好在拜雅没只换个壳，单元和结构还是那套老底子。真要挑刺，48欧姆配手机推得动但推不好，别被“移动设备可用”几个字带偏。录音室刚需可以看，纯收藏就免了。</span></blockquote><div class="src">IT之家 · <a href="https://www.ithome.com/1/027/031.htm" target="_blank" rel="noopener">原文</a></div></article>
+<article class="" data-hit="0" data-ord="2" data-dom="digital"><h3><a href="https://www.gcores.com/articles/222315" target="_blank" rel="noopener">沉迷《深空当铺》50小时后，我专访了游戏主创Bei Ning Pan（深空当铺主创专访谈定价与柜台时间静止设计）</a></h3><p class="lead">赛博朋克经营模拟游戏《深空当铺：可能是偷的》正式发售后，主创Bei Ning Pan接受专访，回应了正式版相对Demo新增的内容、定价逻辑以及柜台时间静止的设计初衷。游戏灵感来自《十三号空间站》和《请出示证件》，玩家白天在柜台甄别顾客身份、夜里外出拾荒升级店铺，没有倒计时和最终Boss，唯一持续上涨的是房东房租。主创强调定价需匹配内容量并照顾各地区购买力，发行方还咨询了社区玩家预期。</p><ul class="points"><li>正式版在Demo开放的少数职业和玩法之外补充了更多内容</li><li>定价由发行方按各地区购买力单独设定，并参考社区玩家预期</li><li>柜台时间静止是刻意设计，用于营造无压迫感的经营节奏</li><li>游戏无倒计时与最终Boss，房租上涨构成主要压力来源</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">把“没有Boss、只有房租”当核心张力，这思路挺对路，压力来自日常而不是打怪。定价那段说得体面，关键还是内容量撑不撑得住。专访里玩法平衡聊得偏浅，等更多更新再看它能不能把柜台前的发呆变成真正的乐趣。</span></blockquote><div class="src">机核 · <a href="https://www.gcores.com/articles/222315" target="_blank" rel="noopener">原文</a></div></article>
+<article class="hidden" data-hit="0" data-ord="3" data-dom="digital"><h3><a href="https://www.ign.com/articles/barbie-rewind-review" target="_blank" rel="noopener">芭比回归游戏评测复古合集难掩设计短板</a></h3><p class="orig">Barbie Rewind Review</p><p class="lead">《Barbie Rewind》是一款混合怀旧与室内装饰模拟的游戏，收录17款复古芭比小游戏并附带可布置家具的梦想屋。评测由两名小玩家Kora（9岁）和Paloma（5岁）协助完成，结果并不乐观：游戏在物件逻辑上出现明显断裂，例如角色配有潜水镜却没有马桶，引发小玩家直接质疑。文章认为时间并未善待芭比的游戏遗产，怀旧包装难以掩盖玩法设计的粗糙。</p><ul class="points"><li>合集包含17款复古芭比小游戏，外加梦想屋家具布置玩法</li><li>评测引入9岁和5岁两名儿童玩家，以真实反应检验可玩性</li><li>潜水镜与马桶缺失的对比成为物件逻辑混乱的典型例子</li></ul><blockquote class="verdict"><span class="who">大肥鱼</span><span class="said">拿情怀当卖点，结果连五岁小孩都骗不过去，潜水镜有马桶没有，这逻辑漏洞太扎眼。17款小游戏听着多，凑数的可能性不小。怀旧合集要真想做，先把基本常识补上，别指望家长为回忆买单。</span></blockquote><div class="src">IGN · <a href="https://www.ign.com/articles/barbie-rewind-review" target="_blank" rel="noopener">原文</a></div></article>
+<div class="more"><button type="button">还有 1 条 · 展开</button></div>
+</section>
+<footer>生成于 2026-11-14 10:04 · 大肥鱼晨报 v2 · 本次未取到：触乐（URLError） · 每天 06:00 自动更新</footer>
+</div>
+<script>window.PRESETS_HASH={"paper": {"--bg": "#f6f4ef", "--surface": "#fffefb", "--fg": "#1c1a17", "--muted": "#8a847a", "--line": "rgba(28,26,23,.10)", "--accent": "#a8452a"}, "ink": {"--bg": "#f2f4f6", "--surface": "#fbfcfd", "--fg": "#16202a", "--muted": "#7d8894", "--line": "rgba(22,32,42,.10)", "--accent": "#2f5d8a"}, "moss": {"--bg": "#f3f4ee", "--surface": "#fcfdf8", "--fg": "#1d2118", "--muted": "#828777", "--line": "rgba(29,33,24,.10)", "--accent": "#4d6141"}, "night": {"--bg": "#15161a", "--surface": "#1c1e23", "--fg": "#e8e6e1", "--muted": "#8b8a86", "--line": "rgba(232,230,225,.12)", "--accent": "#d98b5f"}};</script>
+<script>
+(function(){
+  var root=document.documentElement, KEY='fyb-share-theme';
+  var sw=document.querySelectorAll('.swatch');
+  var sz=document.querySelectorAll('.sizewrap button');
+  var saved=null;
+  try{saved=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){}
+  function apply(cfg){
+    if(!cfg) return;
+    if(cfg.vars){for(var k in cfg.vars){root.style.setProperty(k,cfg.vars[k])}}
+    if(cfg.fs){root.style.setProperty('--fs',cfg.fs)}
+    sw.forEach(function(b){b.dataset.active = (b.dataset.p===cfg.p)?'1':'0'});
+    sz.forEach(function(b){b.dataset.active = (b.dataset.fs===cfg.fs)?'1':'0'});
+  }
+  function save(cfg){try{localStorage.setItem(KEY,JSON.stringify(cfg))}catch(e){}}
+  sw.forEach(function(b){
+    b.addEventListener('click',function(){
+      var vars=JSON.parse(b.dataset.vars);
+      var cur={p:b.dataset.p,vars:vars,fs:(saved&&saved.fs)||''};
+      Object.keys(vars).forEach(function(k){root.style.setProperty(k,vars[k])});
+      apply(cur);save(cur);
+    });
+  });
+  sz.forEach(function(b){
+    b.addEventListener('click',function(){
+      var fs=b.dataset.fs, vars=saved?saved.vars:null, p=saved?saved.p:'paper';
+      var cur={p:p,vars:vars,fs:fs};
+      apply(cur);save(cur);
+    });
+  });
+  var t=document.getElementById('tbtn'), panel=document.getElementById('panel');
+  // #night 这类链接可直接指定配色；#panel 展开外观面板
+  (function(){
+    var h=(location.hash||'').replace('#','');
+    if(h && window.PRESETS_HASH && PRESETS_HASH[h]){
+      var v=PRESETS_HASH[h];
+      Object.keys(v).forEach(function(k){root.style.setProperty(k,v[k])});
+      var c={p:h,vars:v,fs:(saved&&saved.fs)||''}; save(c); apply(c);
+    }
+  })();
+  if(t){t.addEventListener('click',function(){panel.classList.toggle('open')})}
+  if((location.hash||'').indexOf('panel')>=0 && panel){panel.classList.add('open')}
+
+  // 条数密度：每个板块只露前 N 条，其余折叠进「还有 N 条」
+  var DKEY='fyb-share-density';
+  var dens=localStorage.getItem(DKEY)||document.body.getAttribute('data-limit')||'2';
+  if(['1','2','3'].indexOf(dens)<0){dens='2'}
+  var dn=document.querySelectorAll('.panel button[data-den]');
+  var VIEW='all';
+  function layout(){
+    var total=0;
+    Array.prototype.forEach.call(document.querySelectorAll('section'),function(s){
+      var inView=(VIEW==='all')||(s.getAttribute('data-dom')===VIEW);
+      s.classList.toggle('hidden-sec',!inView);
+      if(!inView){return}
+      var open=s.classList.contains('open');
+      var arts=s.querySelectorAll('article'), shown=0;
+      Array.prototype.forEach.call(arts,function(a){
+        var ord=parseInt(a.getAttribute('data-ord'),10)||0;
+        var hide=!open && ord>parseInt(dens,10);
+        a.classList.toggle('hidden',hide);
+        if(!hide){shown++}
+      });
+      total+=shown;
+      var btn=s.querySelector('.more button');      if(btn){
+        var rest=arts.length-shown;
+        if(rest>0){btn.style.display='';btn.textContent='还有 '+rest+' 条 · 展开'}
+        else{btn.style.display='none'}
+      }
+    });
+    var cnt=document.getElementById('cnt');
+    if(cnt){cnt.textContent=total+' 条'}
+    var mins=document.getElementById('mins');
+    if(mins){
+      var chars=0;
+      Array.prototype.forEach.call(document.querySelectorAll('article:not(.hidden)'),function(a){
+        if(a.closest('section.hidden-sec')){return}
+        chars+=a.textContent.length;
+      });
+      mins.textContent=Math.max(1,Math.round(chars/480));
+    }
+    Array.prototype.forEach.call(dn,function(b){b.dataset.active=(b.dataset.den===dens)?'1':'0'});
+  }
+  Array.prototype.forEach.call(dn,function(b){
+    b.addEventListener('click',function(){
+      dens=b.dataset.den;
+      try{localStorage.setItem(DKEY,dens)}catch(e){}
+      layout();
+    });
+  });
+  document.addEventListener('click',function(e){
+    var b=e.target.closest?e.target.closest('.more button'):null;
+    if(!b){return}
+    var s=b.closest('section');
+    if(s){s.classList.add('open');layout()}
+  });
+
+  // 领域切换：全部 / 科技AI / 商业财经 / 社会热点 / 生活健康 / 数码娱乐
+  var tabs=document.querySelectorAll('.tabs button');
+  function setView(v){
+    VIEW=v;
+    Array.prototype.forEach.call(tabs,function(x){
+      x.setAttribute('data-active',x.getAttribute('data-view')===v?'1':'0')
+    });
+    layout();
+  }
+  Array.prototype.forEach.call(tabs,function(b){
+    b.addEventListener('click',function(){
+      setView(b.getAttribute('data-view'));
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+  });
+  // #tech / #life 这类链接可直接打开某个领域
+  (function(){
+    var h=(location.hash||'').replace('#','');
+    if(!h){return}
+    Array.prototype.forEach.call(tabs,function(b){
+      if(b.getAttribute('data-view')===h){setView(h)}
+    });
+  })();
+
+  // 自定义背景色：按亮度自动配前景色，保证可读
+  var pick=document.getElementById('bgpick'), reset=document.getElementById('bgreset');
+  function lum(hex){
+    var m=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex||'');
+    if(!m){return 1}
+    var r=parseInt(m[1],16)/255,g=parseInt(m[2],16)/255,b=parseInt(m[3],16)/255;
+    return 0.2126*r+0.7152*g+0.0722*b;
+  }
+  function applyBg(hex){
+    var dark=lum(hex)<0.45;
+    var v= dark
+      ? {'--bg':hex,'--surface':'rgba(255,255,255,.05)','--fg':'#f2ede4','--muted':'#9d968c','--line':'rgba(255,255,255,.14)','--accent':'#d98b5f'}
+      : {'--bg':hex,'--surface':'rgba(0,0,0,.03)','--fg':'#1d1b18','--muted':'#7d776d','--line':'rgba(0,0,0,.13)','--accent':'#a8452a'};
+    Object.keys(v).forEach(function(k){root.style.setProperty(k,v[k])});
+    try{localStorage.setItem(KEY+'-bg',hex)}catch(e){}
+  }
+  if(pick){
+    var savedBg=null;
+    try{savedBg=localStorage.getItem(KEY+'-bg')}catch(e){}
+    if(savedBg){pick.value=savedBg;applyBg(savedBg)}
+    pick.addEventListener('input',function(){applyBg(pick.value)});
+  }
+  if(reset){
+    reset.addEventListener('click',function(){
+      try{localStorage.removeItem(KEY+'-bg');localStorage.removeItem(KEY)}catch(e){}
+      location.reload();
+    });
+  }
+  layout();
+  // 阅读进度
+  var bar=document.getElementById('progress');
+  function onScroll(){
+    var h=document.documentElement.scrollHeight-window.innerHeight;
+    bar.style.width=(h>0?(window.scrollY/h*100):0)+'%';
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});onScroll();
+})();
+</script>
+</body></html>
